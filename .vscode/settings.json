@@ -1,0 +1,5 @@
+{
+  "cmake.sourceDirectory": "/home/ricky/home_service_app/linux",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.configuration.updateBuildConfiguration": "interactive"
+}
