@@ -20,6 +20,7 @@ import 'package:home_service_app/widgets/language_selector.dart';
 import 'package:logger/web.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -58,16 +59,21 @@ class _HomePageState extends State<HomePage> {
       key: scaffoldKey,
       backgroundColor: Colors.grey[200],
       drawer: const SideNavDrawer(),
-      body: ListView(
-        children: [
-          _buildHeaderSection(),
-          _buildBannerSection(provider),
-          _buildServiceCategories(provider),
-          _buildservices(provider),
-          _buildTechnicianListView(),
-          _buildCustomerReviewsSection(),
-          const FAQSection(),
-        ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Provider.of<UserProvider>(context, listen: false).loadUser();
+        },
+        child: ListView(
+          children: [
+            _buildHeaderSection(),
+            _buildBannerSection(provider),
+            _buildServiceCategories(provider),
+            _buildservices(provider),
+            _buildTechnicianListView(),
+            _buildCustomerReviewsSection(),
+            const FAQSection(),
+          ],
+        ),
       ),
     );
   }
@@ -236,7 +242,7 @@ class _HomePageState extends State<HomePage> {
           Text(
             AppLocalizations.of(context)!.hello,
             style: TextStyle(
-              fontSize: 32,
+              fontSize: 32.sp,
               color: Colors.black.withOpacity(0.4),
               fontWeight: FontWeight.bold,
             ),
@@ -245,8 +251,8 @@ class _HomePageState extends State<HomePage> {
             user != null
                 ? '${user.name.substring(0, 1).toUpperCase()}${user.name.substring(1).toLowerCase()}'
                 : AppLocalizations.of(context)!.guest,
-            style: const TextStyle(
-              fontSize: 42,
+            style: TextStyle(
+              fontSize: 42.sp,
               color: Colors.black,
               fontWeight: FontWeight.bold,
               fontFamily: 'Poppins',

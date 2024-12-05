@@ -34,6 +34,7 @@
   "bookingSuccess": "ትዕዛዎ በትክክል ተጠናቋል።",
   "pending": "በመጠባበቅ ላይ",
   "accepted": "ተቀብሏል",
+  "accept": "ተቀበል",
   "started": "ተጀምሯል",
   "completed": "ተጠናቋል",
   "denied": "ተከለከለ",

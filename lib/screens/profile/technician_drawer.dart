@@ -32,31 +32,10 @@ class TechnicianDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text('See my Schedule'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const TechnicianSchedule()),
-              );
-            },
-          ),
-          ListTile(
             leading: const Icon(Icons.settings),
             title: const Text('Settings'),
             onTap: () {
               // Navigate to settings page
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text('Logout'),
-            onTap: () async {
-              await Provider.of<UserProvider>(context, listen: false)
-                  .clearUser();
-              Navigator.of(context, rootNavigator: true)
-                  .pushNamedAndRemoveUntil('/login', (route) => false);
             },
           ),
         ],

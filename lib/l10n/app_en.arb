@@ -34,6 +34,7 @@
   "bookingSuccess": "Your booking has been successfully placed.",
   "pending": "Pending",
   "accepted": "Accepted",
+  "accept": "Accept",
   "started": "Started",
   "completed": "Completed",
   "denied": "Denied",

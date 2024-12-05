@@ -19,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   User? _user = FirebaseAuth.instance.currentUser;
+  bool _authenticating = false;
 
   @override
   void initState() {
@@ -135,10 +136,20 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       GestureDetector(
-                        onTap: () => Provider.of<AuthenticationProvider>(
-                                context,
-                                listen: false)
-                            .handleGoogleSignIn(context),
+                        onTap: !_authenticating
+                            ? () async {
+                                setState(() {
+                                  _authenticating = true;
+                                });
+                                await Provider.of<AuthenticationProvider>(
+                                        context,
+                                        listen: false)
+                                    .handleGoogleSignIn(context);
+                                setState(() {
+                                  _authenticating = false;
+                                });
+                              }
+                            : null,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 32, vertical: 16),
@@ -146,23 +157,25 @@ class _LoginPageState extends State<LoginPage> {
                             border: Border.all(color: Colors.grey[400]!),
                             borderRadius: BorderRadius.circular(32),
                           ),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                'assets/images/google.png',
-                                width: 20,
-                                height: 20,
-                              ),
-                              const SizedBox(width: 12),
-                              const Text(
-                                "Google",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16),
-                              ),
-                            ],
-                          ),
+                          child: !_authenticating
+                              ? Row(
+                                  children: [
+                                    Image.asset(
+                                      'assets/images/google.png',
+                                      width: 20,
+                                      height: 20,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    const Text(
+                                      "Google",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                  ],
+                                )
+                              : CircularProgressIndicator(),
                         ),
                       ),
                       GestureDetector(

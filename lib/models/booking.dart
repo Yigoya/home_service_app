@@ -42,6 +42,22 @@ class Booking {
       review: json['review'] != null ? Review.fromJson(json['review']) : null,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'customerName': customerName,
+      'technicianName': technicianName,
+      'technicianProfileImage': technicianProfileImage,
+      'customerProfileImage': customerProfileImage,
+      'serviceName': serviceName,
+      'scheduledDate': scheduledDate,
+      'status': status,
+      'description': description, // Added description attribute
+      'address': address.toJson(),
+      'review': review?.toJson(),
+    };
+  }
 }
 
 class Address {
@@ -85,5 +101,21 @@ class Address {
       latitude: json['latitude'],
       longitude: json['longitude'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'customerId': customerId,
+      'street': street,
+      'city': city,
+      'subcity': subcity,
+      'wereda': wereda,
+      'state': state,
+      'country': country,
+      'zipCode': zipCode,
+      'latitude': latitude,
+      'longitude': longitude,
+    };
   }
 }

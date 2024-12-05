@@ -53,7 +53,6 @@ class HomeServiceProvider with ChangeNotifier {
       final res = await apiService.getRequestByQueryWithoutToken('/home', {
         'lang': locale.languageCode == 'en' ? 'ENGLISH' : 'AMHARIC',
       });
-      Logger().d(res.data);
       final topFiveTechnicians = res.data['topFiveTechnicians'];
       final services = res.data['services'];
       final topFiveReviews = res.data['topFiveReviews'];

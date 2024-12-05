@@ -13,7 +13,7 @@ class NotificationService {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   final storage = const FlutterSecureStorage();
 
-  Future<void> initialize() async {
+  Future<void> initialize(BuildContext context) async {
     // Request permission
     NotificationSettings settings = await _messaging.requestPermission(
       alert: true,
@@ -38,34 +38,34 @@ class NotificationService {
     await storage.write(key: "fcm_token", value: token);
 
     // Handle notifications in different states
-    handleNotifications();
+    handleNotifications(context);
 
     // Handle notification when app is launched via notification
     FirebaseMessaging.instance.getInitialMessage().then((message) {
       if (message != null) {
-        navigateToPage(message);
+        navigateToPage(message, context);
       }
     });
   }
 
-  void handleNotifications() {
+  void handleNotifications(BuildContext context) {
     // Foreground notifications
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       Logger().d('Foreground message received: ${message.notification?.title}');
       Logger().d('Message body: ${message.notification?.body}');
 
       // Optionally show a dialog for foreground notifications
-      showGlobalNotification(message);
+      showGlobalNotification(message, context);
     });
 
     // Background notification tap
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('Background notification clicked!');
-      navigateToPage(message);
+      navigateToPage(message, context);
     });
   }
 
-  void showGlobalNotification(RemoteMessage message) {
+  void showGlobalNotification(RemoteMessage message, BuildContext context) {
     final notification = message.notification;
     final android = message.notification?.android;
     final data = message.data;
@@ -75,7 +75,7 @@ class NotificationService {
     if (notification != null && android != null && !isForegroundMessage) {
       if (navigatorKey.currentContext != null) {
         showDialog(
-          context: navigatorKey.currentContext!,
+          context: context,
           builder: (context) => AlertDialog(
             title: Text(notification.title!),
             content: Text(notification.body!),
@@ -86,20 +86,15 @@ class NotificationService {
                   Navigator.of(context).pop();
                   if (targetPage != null) {
                     if (targetPage == 'details') {
-                      Navigator.of(navigatorKey.currentContext!,
-                              rootNavigator: true)
+                      Navigator.of(context, rootNavigator: true)
                           .pushNamed('/details');
                     } else if (targetPage == 'profile') {
-                      Navigator.of(navigatorKey.currentContext!,
-                              rootNavigator: true)
+                      Navigator.of(context, rootNavigator: true)
                           .pushNamed('/customer_profile');
                     } else if (targetPage == 'booking' && value != null) {
-                      Provider.of<BookingProvider>(navigatorKey.currentContext!,
-                              listen: false)
+                      Provider.of<BookingProvider>(context, listen: false)
                           .fetchSingleBooking(int.parse(value));
-                      Navigator.of(navigatorKey.currentContext!,
-                              rootNavigator: true)
-                          .pushNamed(
+                      Navigator.of(context, rootNavigator: true).pushNamed(
                         RouteGenerator.detailBookingPage,
                       );
                     } else {
@@ -117,7 +112,7 @@ class NotificationService {
     }
   }
 
-  void navigateToPage(RemoteMessage message) {
+  void navigateToPage(RemoteMessage message, BuildContext context) {
     // Use the data payload to determine the page to navigate to
     final data = message.data;
     Logger().d(message);
@@ -126,17 +121,14 @@ class NotificationService {
 
     if (targetPage != null) {
       if (targetPage == 'details') {
-        Navigator.of(navigatorKey.currentContext!, rootNavigator: true)
-            .pushNamed('/details');
+        Navigator.of(context, rootNavigator: true).pushNamed('/details');
       } else if (targetPage == 'profile') {
-        Navigator.of(navigatorKey.currentContext!, rootNavigator: true)
+        Navigator.of(context, rootNavigator: true)
             .pushNamed('/customer_profile');
       } else if (targetPage == 'booking' && value != null) {
-        Provider.of<BookingProvider>(navigatorKey.currentContext!,
-                listen: false)
+        Provider.of<BookingProvider>(context, listen: false)
             .fetchSingleBooking(int.parse(value));
-        Navigator.of(navigatorKey.currentContext!, rootNavigator: true)
-            .pushNamed(
+        Navigator.of(context, rootNavigator: true).pushNamed(
           RouteGenerator.detailBookingPage,
         );
       } else {

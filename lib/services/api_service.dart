@@ -6,7 +6,7 @@ import 'package:logger/web.dart';
 class ApiService {
   final Dio _dio = Dio();
   final storage = const FlutterSecureStorage();
-  static String API_URL = "http://192.168.86.17:8080";
+  static String API_URL = "http://188.245.43.110:8080";
   static String API_URL_FILE = "$API_URL/uploads/";
   ApiService() {
     _dio.options.baseUrl = API_URL; // Replace with actual URL

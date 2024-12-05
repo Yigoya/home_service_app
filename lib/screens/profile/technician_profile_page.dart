@@ -7,10 +7,12 @@ import 'package:home_service_app/provider/booking_provider.dart';
 import 'package:home_service_app/provider/profile_page_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/profile/technician_drawer.dart';
+import 'package:home_service_app/screens/profile/technician_schedule.dart';
 import 'package:home_service_app/screens/profile/user_profile_card.dart';
 import 'package:home_service_app/widgets/booking_card.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TechnicianProfilePage extends StatefulWidget {
   const TechnicianProfilePage({super.key});
@@ -40,7 +42,6 @@ class _TechnicianProfilePageState extends State<TechnicianProfilePage> {
   @override
   void initState() {
     super.initState();
-    // init();if
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ProfilePageProvider>(context, listen: false).fetchBookings();
       Provider.of<ProfilePageProvider>(context, listen: false)
@@ -72,18 +73,14 @@ class _TechnicianProfilePageState extends State<TechnicianProfilePage> {
 
           return ListView(
             children: [
-              IconButton(
-                  onPressed: () {
-                    scaffoldKey.currentState!.openDrawer();
-                  },
-                  icon: const Icon(Icons.menu)),
-              // User Profile Section
+              const SizedBox(height: 16),
               UserProfileComponent(
                   user: user!,
                   onImagePick: _pickImage,
                   onEditName: () => _showEditNameDialog(context, user)),
               const SizedBox(height: 16),
-              Expanded(
+              SizedBox(
+                height: 800,
                 child: DefaultTabController(
                   length: 5,
                   child: Column(
@@ -108,12 +105,12 @@ class _TechnicianProfilePageState extends State<TechnicianProfilePage> {
                             fontWeight: FontWeight.w500), //For Selected tab
                         unselectedLabelStyle: const TextStyle(
                             fontSize: 16.0, fontWeight: FontWeight.w500),
-                        tabs: const [
-                          Tab(text: 'Pending'),
-                          Tab(text: 'Accepted'),
-                          Tab(text: 'Started'),
-                          Tab(text: 'Completed'),
-                          Tab(text: 'Declined'),
+                        tabs: [
+                          Tab(text: AppLocalizations.of(context)!.pending),
+                          Tab(text: AppLocalizations.of(context)!.accepted),
+                          Tab(text: AppLocalizations.of(context)!.started),
+                          Tab(text: AppLocalizations.of(context)!.completed),
+                          Tab(text: AppLocalizations.of(context)!.declined),
                         ],
                       ),
                       SizedBox(
@@ -121,6 +118,7 @@ class _TechnicianProfilePageState extends State<TechnicianProfilePage> {
                         child: TabBarView(
                           children: [
                             BookingList(
+                                isTechnician: true,
                                 status: BookingStatus.PENDING.toString(),
                                 bookings: bookings
                                     .where((b) =>
@@ -135,6 +133,7 @@ class _TechnicianProfilePageState extends State<TechnicianProfilePage> {
                                         BookingStatus.ACCEPTED.toString())
                                     .toList()),
                             BookingList(
+                                isTechnician: true,
                                 status: BookingStatus.STARTED.toString(),
                                 bookings: bookings
                                     .where((b) =>
@@ -142,6 +141,7 @@ class _TechnicianProfilePageState extends State<TechnicianProfilePage> {
                                         BookingStatus.STARTED.toString())
                                     .toList()),
                             BookingList(
+                                isTechnician: true,
                                 status: BookingStatus.COMPLETED.toString(),
                                 bookings: bookings
                                     .where((b) =>

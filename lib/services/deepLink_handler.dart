@@ -15,24 +15,26 @@ final class DynamicLinkHandler {
   final _appLinks = AppLinks();
 
   /// Initializes the [DynamicLinkHandler].
-  Future<void> initialize() async {
+  Future<void> initialize(BuildContext context) async {
     // * Listens to the dynamic links and manages navigation.
-    _appLinks.uriLinkStream.listen(_handleLinkData).onError((error) {
+    _appLinks.uriLinkStream
+        .listen((Uri uri) => _handleLinkData(uri, context))
+        .onError((error) {
       log('$error', name: 'Dynamic Link Handler');
     });
-    _checkInitialLink();
+    _checkInitialLink(context);
   }
 
   /// Handle navigation if initial link is found on app start.
-  Future<void> _checkInitialLink() async {
+  Future<void> _checkInitialLink(BuildContext context) async {
     final initialLink = await _appLinks.getInitialLink();
     if (initialLink != null) {
-      _handleLinkData(initialLink);
+      _handleLinkData(initialLink, context);
     }
   }
 
   /// Handles the link navigation Dynamic Links.
-  void _handleLinkData(Uri data) {
+  void _handleLinkData(Uri data, BuildContext context) {
     final queryParams = data.queryParameters;
     log(data.toString(), name: 'Dynamic Link Handler');
     if (data.path == '/products') {
@@ -42,7 +44,7 @@ final class DynamicLinkHandler {
         // Navigate to the product page
         print('Product ID: $productId, Product Title: $productTitle');
         Navigator.push(
-          navigatorKey.currentContext!,
+          context,
           MaterialPageRoute(
             builder: (context) => const DisputePage(bookingId: 1),
           ),
@@ -55,7 +57,7 @@ final class DynamicLinkHandler {
         print('Token: $token');
 
         Navigator.push(
-          navigatorKey.currentContext!,
+          context,
           MaterialPageRoute(
             builder: (context) => UploadProofPage(
               token: token,

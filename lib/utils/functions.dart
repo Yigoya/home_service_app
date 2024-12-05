@@ -1,12 +1,6 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:home_service_app/provider/home_service_provider.dart';
-import 'package:home_service_app/provider/user_provider.dart';
-import 'package:home_service_app/services/notification_service.dart';
-import 'package:logger/logger.dart';
-import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 Future<Map<String, String>> getDeviceInfo() async {
@@ -33,33 +27,6 @@ Future<Map<String, String>> getDeviceInfo() async {
     "deviceModel": "Unknown",
     "operatingSystem": "Unknown"
   };
-}
-
-void openSpecificSettings() async {
-  if (Platform.isAndroid) {
-    const packageName =
-        'com.example.home_service_app'; // Replace with your actual package name
-    const url = 'package:$packageName';
-
-    try {
-      await launchUrl(
-        Uri.parse(
-            'intent:$url#Intent;action=android.settings.APPLICATION_DETAILS_SETTINGS;end'),
-        mode: LaunchMode.externalApplication,
-      );
-    } catch (e) {
-      debugPrint('Error opening specific settings: $e');
-    }
-  } else if (Platform.isIOS) {
-    const url = 'app-settings:';
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-    } else {
-      debugPrint('Could not open iOS app settings.');
-    }
-  } else {
-    debugPrint('Platform not supported.');
-  }
 }
 
 enum UserStatus {

@@ -205,7 +205,7 @@ class _TechnicianRegistrationPageState
         const SizedBox(height: 16),
         CustomDropdown(
           items: const ["Bole", "Akaki", "Nifas Silk"],
-          hint: AppLocalizations.of(context)!.selectSchedulingDateAndTime,
+          hint: AppLocalizations.of(context)!.selectYourSubCity,
           selectedValue: _subCity,
           onChanged: (value) => setState(() => _subCity = value),
         ),

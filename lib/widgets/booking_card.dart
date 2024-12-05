@@ -4,9 +4,11 @@ import 'package:home_service_app/models/booking.dart';
 import 'package:home_service_app/models/enums.dart';
 import 'package:home_service_app/provider/booking_provider.dart';
 import 'package:home_service_app/provider/profile_page_provider.dart';
+import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/booking/update_booking.dart';
 import 'package:home_service_app/screens/dispute_page.dart';
 import 'package:home_service_app/services/api_service.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -110,6 +112,9 @@ class BookingList extends StatefulWidget {
 class _BookingListState extends State<BookingList> {
   @override
   Widget build(BuildContext context) {
+    if (widget.status == BookingStatus.STARTED.toString()) {
+      Logger().d(widget.bookings.map((booking) => booking.toJson()).toList());
+    }
     return RefreshIndicator(
       onRefresh: () async {
         await Provider.of<ProfilePageProvider>(context, listen: false)
@@ -123,105 +128,152 @@ class _BookingListState extends State<BookingList> {
           List<Widget> actions = [];
           Widget? additionalContent;
 
-          switch (widget.status) {
-            case 'PENDING':
-              actions = [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => UpdateBookingPage(booking: booking),
-                        ));
-                  },
-                  child: _actionButton(
-                      AppLocalizations.of(context)!.edit, Colors.black),
-                ),
-                GestureDetector(
+          if (widget.isTechnician) {
+            switch (widget.status) {
+              case 'PENDING':
+                actions = [
+                  GestureDetector(
+                    onTap: () async {
+                      await Provider.of<BookingProvider>(context, listen: false)
+                          .updateBookingStatus(
+                              booking.id, BookingStatus.ACCEPTED.toString());
+                      await Provider.of<ProfilePageProvider>(context,
+                              listen: false)
+                          .fetchBookings();
+                    },
+                    child: _actionButton(
+                        AppLocalizations.of(context)!.accept, Colors.black),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      await Provider.of<BookingProvider>(context, listen: false)
+                          .updateBookingStatus(
+                              booking.id, BookingStatus.DENIED.toString());
+                      await Provider.of<ProfilePageProvider>(context,
+                              listen: false)
+                          .fetchBookings();
+                    },
+                    child: _actionButton(
+                        AppLocalizations.of(context)!.cancel, Colors.grey[300]!,
+                        textColor: Colors.black),
+                  )
+                ];
+                break;
+              case 'ACCEPTED':
+                break;
+              case 'STARTED':
+                break;
+              case 'COMPLETED':
+                additionalContent = booking.review != null
+                    ? _buildReviewDisplay(booking)
+                    : SizedBox.shrink();
+                break;
+              default:
+                actions = [];
+            }
+          } else {
+            switch (widget.status) {
+              case 'PENDING':
+                actions = [
+                  GestureDetector(
                     onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => DisputePage(bookingId: booking.id),
+                            builder: (_) => UpdateBookingPage(booking: booking),
                           ));
+                    },
+                    child: _actionButton(
+                        AppLocalizations.of(context)!.edit, Colors.black),
+                  ),
+                  GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  DisputePage(bookingId: booking.id),
+                            ));
+                      },
+                      child: _actionButton(
+                          AppLocalizations.of(context)!.dispute,
+                          Colors.grey[300]!,
+                          textColor: Colors.black)),
+                  GestureDetector(
+                    onTap: () async {
+                      await Provider.of<BookingProvider>(context, listen: false)
+                          .updateBookingStatus(
+                              booking.id, BookingStatus.CANCELED.toString());
+                      await Provider.of<ProfilePageProvider>(context,
+                              listen: false)
+                          .fetchBookings();
+                    },
+                    child: _actionButton(
+                        AppLocalizations.of(context)!.cancel, Colors.grey[300]!,
+                        textColor: Colors.black),
+                  )
+                ];
+              case 'ACCEPTED':
+                actions = [
+                  GestureDetector(
+                    onTap: () async {
+                      await Provider.of<BookingProvider>(context, listen: false)
+                          .updateBookingStatus(
+                              booking.id, BookingStatus.STARTED.toString());
+                      await Provider.of<ProfilePageProvider>(context,
+                              listen: false)
+                          .fetchBookings();
+                    },
+                    child: _actionButton('Start', Colors.black),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/dispute',
+                          arguments: booking.id);
                     },
                     child: _actionButton(AppLocalizations.of(context)!.dispute,
                         Colors.grey[300]!,
-                        textColor: Colors.black)),
-                GestureDetector(
-                  onTap: () async {
-                    await Provider.of<BookingProvider>(context, listen: false)
-                        .updateBookingStatus(
-                            booking.id, BookingStatus.CANCELED.toString());
-                    await Provider.of<ProfilePageProvider>(context,
-                            listen: false)
-                        .fetchBookings();
-                  },
-                  child: _actionButton(
-                      AppLocalizations.of(context)!.cancel, Colors.grey[300]!,
-                      textColor: Colors.black),
-                )
-              ];
-            case 'ACCEPTED':
-              actions = [
-                GestureDetector(
-                  onTap: () async {
-                    await Provider.of<BookingProvider>(context, listen: false)
-                        .updateBookingStatus(
-                            booking.id, BookingStatus.STARTED.toString());
-                    await Provider.of<ProfilePageProvider>(context,
-                            listen: false)
-                        .fetchBookings();
-                  },
-                  child: _actionButton('Start', Colors.black),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/dispute',
-                        arguments: booking.id);
-                  },
-                  child: _actionButton(
-                      AppLocalizations.of(context)!.dispute, Colors.grey[300]!,
-                      textColor: Colors.black),
-                ),
-              ];
-              break;
-            case 'STARTED':
-              actions = [
-                GestureDetector(
-                  onTap: () async {
-                    await _showReviewDialog(context, booking);
-                    await Provider.of<BookingProvider>(context, listen: false)
-                        .updateBookingStatus(
-                            booking.id, BookingStatus.COMPLETED.toString());
-                    await Provider.of<ProfilePageProvider>(context,
-                            listen: false)
-                        .fetchBookings();
-                  },
-                  child: _actionButton(
-                      AppLocalizations.of(context)!.complete, Colors.black),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/dispute',
-                        arguments: booking.id);
-                  },
-                  child: _actionButton(
-                      AppLocalizations.of(context)!.dispute, Colors.grey[300]!,
-                      textColor: Colors.black),
-                ),
-              ];
-              break;
-            case 'COMPLETED':
-              additionalContent = booking.review != null
-                  ? _buildReviewDisplay(booking)
-                  : _buildReviewButton(booking, context);
-              break;
-            case 'DENIED':
-              // No additional actions for denied bookings
-              break;
-            default:
-              actions = [];
+                        textColor: Colors.black),
+                  ),
+                ];
+                break;
+              case 'STARTED':
+                actions = [
+                  GestureDetector(
+                    onTap: () async {
+                      await _showReviewDialog(context, booking);
+                      await Provider.of<BookingProvider>(context, listen: false)
+                          .updateBookingStatus(
+                              booking.id, BookingStatus.COMPLETED.toString());
+                      await Provider.of<ProfilePageProvider>(context,
+                              listen: false)
+                          .fetchBookings();
+                    },
+                    child: _actionButton(
+                        AppLocalizations.of(context)!.complete, Colors.black),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/dispute',
+                          arguments: booking.id);
+                    },
+                    child: _actionButton(AppLocalizations.of(context)!.dispute,
+                        Colors.grey[300]!,
+                        textColor: Colors.black),
+                  ),
+                ];
+                break;
+              case 'COMPLETED':
+                additionalContent = booking.review != null
+                    ? _buildReviewDisplay(booking)
+                    : _buildReviewButton(booking, context);
+                break;
+              case 'DENIED':
+                // No additional actions for denied bookings
+                break;
+              default:
+                actions = [];
+            }
           }
 
           return BookingCard(

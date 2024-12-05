@@ -112,7 +112,7 @@ class AuthenticationProvider with ChangeNotifier {
       if (response.data['user']['role'] == 'CUSTOMER') {
         await storage.write(
             key: "customer", value: jsonEncode(response.data['customer']));
-        Provider.of<UserProvider>(context, listen: false).loadUser();
+        await Provider.of<UserProvider>(context, listen: false).loadUser();
         if (fromAnotherPage) {
           Navigator.of(context).pop();
         } else {
@@ -123,7 +123,7 @@ class AuthenticationProvider with ChangeNotifier {
       } else if (response.data['user']['role'] == 'TECHNICIAN') {
         await storage.write(
             key: "technician", value: jsonEncode(response.data['technician']));
-        Provider.of<UserProvider>(context, listen: false).loadUser();
+        await Provider.of<UserProvider>(context, listen: false).loadUser();
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
                 builder: (context) => const TechnicianProfilePage()),
@@ -213,14 +213,14 @@ class AuthenticationProvider with ChangeNotifier {
           "operatingSystem": deviceInfo["operatingSystem"]
         },
       );
-
+      Logger().d(response.data);
       await storage.write(key: "jwt_token", value: response.data['token']);
       await storage.write(
           key: "user", value: jsonEncode(response.data['user']));
       if (response.data['user']['role'] == 'CUSTOMER') {
         await storage.write(
             key: "customer", value: jsonEncode(response.data['customer']));
-        Provider.of<UserProvider>(context, listen: false).loadUser();
+        await Provider.of<UserProvider>(context, listen: false).loadUser();
         if (fromAnotherPage) {
           Navigator.of(context).pop();
         } else {
@@ -231,11 +231,17 @@ class AuthenticationProvider with ChangeNotifier {
       } else if (response.data['user']['role'] == 'TECHNICIAN') {
         await storage.write(
             key: "technician", value: jsonEncode(response.data['technician']));
-        Provider.of<UserProvider>(context, listen: false).loadUser();
+        await Provider.of<UserProvider>(context, listen: false).loadUser();
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
                 builder: (context) => const TechnicianProfilePage()),
             (route) => false);
+      } else {
+        showTopMessage(
+            context, "${response.data['user']['role']} not supported",
+            isSuccess: false);
+        googleUser.clearAuthCache();
+        await GoogleSignIn().signOut();
       }
 
       Logger().d(response.data);

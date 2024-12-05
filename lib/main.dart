@@ -21,15 +21,16 @@ import 'package:home_service_app/services/notification_service.dart';
 import 'package:home_service_app/utils/functions.dart';
 import 'package:home_service_app/utils/route_generator.dart';
 import 'package:home_service_app/widgets/bottom_navigation.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:home_service_app/l10n/l10n.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await DynamicLinkHandler.instance.initialize();
   final locale = await const FlutterSecureStorage().read(key: 'locale');
   final defaultLocale = locale != null ? Locale(locale) : const Locale('en');
   runApp(
@@ -81,46 +82,59 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _locale = widget.defaultLocale;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (navigatorKey.currentContext != null) {
+        DynamicLinkHandler.instance.initialize(navigatorKey.currentContext!);
+        NotificationService().initialize(navigatorKey.currentContext!);
+      } else {
+        Logger()
+            .e("navigatorKey.currentContext is null, retrying initialization.");
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-      title: 'Home Service Platform',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue),
-      onGenerateRoute: RouteGenerator.generateRoute,
-      supportedLocales: L10n.all,
-      locale: _locale,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      home: FutureBuilder(
-        future: Future.wait([
-          NotificationService().initialize(),
-          Provider.of<UserProvider>(context, listen: false).loadUser(),
-          Provider.of<HomeServiceProvider>(context, listen: false)
-              .loadHome(widget.defaultLocale),
-        ]),
-        builder: (context, snapshot) {
-          final user = Provider.of<UserProvider>(context).user;
-          final status = Provider.of<UserProvider>(context).status;
-          if (user != null && user.role == "TECHNICIAN") {
-            return const TechnicianProfilePage();
-          } else if (status == UserStatus.TOKEN_ENTRY) {
-            return TokenEntryPage();
-          } else if (status == UserStatus.PROOF_ENTRY) {
-            return UploadProofPage();
-          } else if (status == UserStatus.WAITING_FOR_APPROVAL) {
-            return const WaitingForApprovalPage();
-          }
-          return const Navigation();
-        },
-      ),
-    );
+    return ScreenUtilInit(
+        designSize: const Size(500, 890), // Design size used in the UI design
+        minTextAdapt: true,
+        builder: (context, child) {
+          return MaterialApp(
+            navigatorKey: navigatorKey,
+            title: 'Home Service Platform',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(primarySwatch: Colors.blue),
+            onGenerateRoute: RouteGenerator.generateRoute,
+            supportedLocales: L10n.all,
+            locale: _locale,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            home: FutureBuilder(
+              future: Future.wait([
+                Provider.of<UserProvider>(context, listen: false).loadUser(),
+                Provider.of<HomeServiceProvider>(context, listen: false)
+                    .loadHome(widget.defaultLocale),
+              ]),
+              builder: (context, snapshot) {
+                final user = Provider.of<UserProvider>(context).user;
+                final status = Provider.of<UserProvider>(context).status;
+                if (user != null && user.role == "TECHNICIAN") {
+                  return const TechnicianProfilePage();
+                } else if (status == UserStatus.TOKEN_ENTRY) {
+                  return TokenEntryPage();
+                } else if (status == UserStatus.PROOF_ENTRY) {
+                  return UploadProofPage();
+                } else if (status == UserStatus.WAITING_FOR_APPROVAL) {
+                  return const WaitingForApprovalPage();
+                }
+                return const Navigation();
+              },
+            ),
+          );
+        });
   }
 }

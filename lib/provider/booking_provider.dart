@@ -73,6 +73,8 @@ class BookingProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } on DioException catch (dioError) {
+      _isLoading = false;
+      notifyListeners();
       Logger().e(dioError.response!.data['details']);
       if (dioError.response!.data['details'][0] ==
           "Insufficient coins for booking") {
@@ -83,11 +85,10 @@ class BookingProvider extends ChangeNotifier {
       showTopMessage(context, dioError.response!.data['details'].join(', '),
           isSuccess: false);
     } catch (e) {
-      // Handle other errors
+      _isLoading = false;
+      notifyListeners();
       print('Error: $e');
     }
-    _isLoading = false;
-    notifyListeners();
     return false;
   }
 
