@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/models/technician.dart';
 import 'package:home_service_app/provider/auth_provider.dart';
+import 'package:home_service_app/provider/booking_provider.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/booking/booking.dart';
@@ -11,8 +12,10 @@ import 'package:home_service_app/utils/route_generator.dart';
 import 'package:home_service_app/widgets/custom_button.dart';
 import 'package:home_service_app/widgets/custom_dropdown.dart';
 import 'package:home_service_app/widgets/pagination.dart';
+import 'package:logger/web.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TechnicianFilter extends StatefulWidget {
   final Service service;
@@ -46,12 +49,21 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
   @override
   void initState() {
     super.initState();
-    fetchTechnicians();
     _focusNode.addListener(() {
       print(_focusNode.hasFocus);
       setState(() {
         _isFocused = _focusNode.hasFocus;
       });
+    });
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Logger().d('Selected Date: ${widget.selectedDate}');
+      setState(() {
+        selectedSubCity = Provider.of<BookingProvider>(context, listen: false)
+            .selectedSubCity;
+        selectedWereda =
+            Provider.of<BookingProvider>(context, listen: false).selectedWereda;
+      });
+      fetchTechnicians();
     });
   }
 
@@ -87,27 +99,26 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const SizedBox(
-                height: 16,
+              SizedBox(
+                height: 16.h,
               ),
-
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                padding: const EdgeInsets.all(16),
+                margin: EdgeInsets.symmetric(horizontal: 16.w),
+                padding: EdgeInsets.all(16.w),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                         border: _isFocused
-                            ? Border.all(color: Colors.blue, width: 1.5)
+                            ? Border.all(color: Colors.blue, width: 1.5.w)
                             : Border.all(
                                 color:
                                     const Color.fromARGB(255, 228, 228, 228)),
@@ -120,7 +131,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                           alignLabelWithHint: true,
                           hintText: AppLocalizations.of(context)!.searchByName,
                           hintStyle:
-                              const TextStyle(color: Colors.grey, fontSize: 20),
+                              TextStyle(color: Colors.grey, fontSize: 20.sp),
                           border: InputBorder.none,
                           suffixIcon: IconButton(
                             onPressed: () {
@@ -132,8 +143,8 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 8,
+                    SizedBox(
+                      height: 8.h,
                     ),
                     CustomDropdown(
                       items: const ["Bole", "Akaki", "Nifas Silk"],
@@ -145,8 +156,8 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                         });
                       },
                     ),
-                    const SizedBox(
-                      height: 8,
+                    SizedBox(
+                      height: 8.h,
                     ),
                     CustomDropdown(
                       items: const ["01", "02", "03", "04", "05"],
@@ -158,7 +169,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                         });
                       },
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     CustomButton(
                       onLoad: () {},
                       text: AppLocalizations.of(context)!.applyFilters,
@@ -167,14 +178,13 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                   ],
                 ),
               ),
-
-              const SizedBox(
-                height: 32,
+              SizedBox(
+                height: 32.h,
               ),
               Text(
                 '${Provider.of<HomeServiceProvider>(context).totalElements} technicians found matching your specifications',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.w500,
                   color: Colors.grey[600],
                 ),
@@ -183,12 +193,13 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                 builder: (context, provider, child) {
                   const height = 270.0;
                   if (provider.isLoading) {
-                    return const SizedBox(
-                        height: 460,
-                        child: Center(child: CircularProgressIndicator()));
+                    return SizedBox(
+                        height: 460.h,
+                        child:
+                            const Center(child: CircularProgressIndicator()));
                   } else {
                     return SizedBox(
-                      height: (height + 16) * provider.technicians.length,
+                      height: (height + 16.h) * provider.technicians.length,
                       child: ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: provider.technicians.length,
@@ -212,6 +223,9 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                   });
                   fetchTechnicians();
                 },
+              ),
+              SizedBox(
+                height: 52.h,
               )
             ],
           ),
@@ -222,13 +236,13 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
 
   Widget _buildTechnicianCard(Technician tech, double height) {
     return Container(
-      width: 320,
-      height: height,
-      margin: const EdgeInsets.only(left: 16, top: 16, right: 16),
-      padding: const EdgeInsets.all(16),
+      width: 320.w,
+      height: height.h,
+      margin: EdgeInsets.only(left: 16.w, top: 16.h, right: 16.w),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(24.r),
           boxShadow: [
             BoxShadow(
                 color: Colors.grey[200]!,
@@ -241,54 +255,55 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
           Row(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(8.0.r),
                 child: Image.network(
                   '${ApiService.API_URL_FILE}${tech.profileImage}',
                   fit: BoxFit.cover,
-                  width: 72,
-                  height: 72,
+                  width: 72.w,
+                  height: 72.h,
                   errorBuilder: (context, error, stackTrace) {
                     return Image.asset(
                       'assets/images/profile.png',
-                      width: 72,
-                      height: 72,
+                      width: 72.w,
+                      height: 72.h,
                       fit: BoxFit.cover,
                     );
                   },
                 ),
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: 10.w),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     tech.name ?? 'No Name',
-                    style: const TextStyle(
-                      fontSize: 24,
+                    style: TextStyle(
+                      fontSize: 24.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  SizedBox(height: 5.h),
                   SizedBox(
-                    height: 30,
-                    width: MediaQuery.of(context).size.width - 150,
+                    height: 30.h,
+                    width: MediaQuery.of(context).size.width - 150.w,
                     child: ListView(
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
                       children: tech.services
                               .map((service) => Container(
-                                    margin: const EdgeInsets.only(right: 8),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 6),
+                                    margin: EdgeInsets.only(right: 8.w),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 12.w, vertical: 6.h),
                                     decoration: BoxDecoration(
                                       color: Colors.grey[200],
-                                      borderRadius: BorderRadius.circular(20),
+                                      borderRadius: BorderRadius.circular(20.r),
                                     ),
                                     child: Text(
                                       service.name,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                           color: Colors.black,
-                                          fontWeight: FontWeight.bold),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14.sp),
                                     ),
                                   ))
                               .toList() ??
@@ -299,11 +314,11 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6.h),
           Text(
             tech.bio ?? 'No bio available',
-            style: const TextStyle(
-              fontSize: 16,
+            style: TextStyle(
+              fontSize: 16.sp,
               color: Colors.grey,
             ),
             maxLines: 3,
@@ -319,22 +334,22 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                     Text(
                       AppLocalizations.of(context)!.location,
                       style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           color: Colors.grey[600],
                           fontWeight: FontWeight.w600),
                     ),
-                    const SizedBox(height: 5),
+                    SizedBox(height: 5.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         const Icon(Icons.location_on,
                             color: Colors.grey, size: 16),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
                           '${tech.subcity ?? ''}, ${tech.city ?? ''}',
                           style: TextStyle(
                             color: Colors.grey[800],
-                            fontSize: 18,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -342,27 +357,27 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                     ),
                   ],
                 ),
-              const SizedBox(width: 20),
+              SizedBox(width: 20.w),
               Column(
                 children: [
                   Text(
                     AppLocalizations.of(context)!.rating,
                     style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(height: 5),
+                  SizedBox(height: 5.h),
                   Row(
                     children: [
                       const Icon(Icons.star,
                           color: Color.fromARGB(255, 235, 173, 5), size: 16),
-                      const SizedBox(width: 5),
+                      SizedBox(width: 5.w),
                       Text(
                         '${tech.rating ?? 0}',
                         style: TextStyle(
                           color: Colors.grey[800],
-                          fontSize: 16,
+                          fontSize: 16.sp,
                         ),
                       ),
                     ],
@@ -371,7 +386,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -386,25 +401,24 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                 },
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+                      EdgeInsets.symmetric(vertical: 8.h, horizontal: 24.w),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey[400]!),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(16.r),
                   ),
                   child: Text(AppLocalizations.of(context)!.viewProfile,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w500,
-                          fontSize: 18)),
+                          fontSize: 18.sp)),
                 ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+                padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 12.w),
                 decoration: BoxDecoration(
                   color: Colors.blue,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(16.r),
                 ),
                 child: InkWell(
                   onTap: () async {
@@ -424,11 +438,10 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                   },
                   child: Padding(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                        EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
                     child: Text(AppLocalizations.of(context)!.selectAndContinue,
                         textAlign: TextAlign.center,
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 18)),
+                        style: TextStyle(color: Colors.white, fontSize: 18.sp)),
                   ),
                 ),
               ),

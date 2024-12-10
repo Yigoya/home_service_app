@@ -17,6 +17,8 @@ class BookingProvider extends ChangeNotifier {
   TimeOfDay? _selectedTime;
   DateTime? get selectedDate => _selectedDate;
   TimeOfDay? get selectedTime => _selectedTime;
+  String? selectedSubCity;
+  String? selectedWereda;
   Map<String, dynamic> bookingData = {};
   void setSelectedDate(DateTime date) {
     _selectedDate = date;
@@ -25,6 +27,16 @@ class BookingProvider extends ChangeNotifier {
 
   void setSelectedTime(TimeOfDay time) {
     _selectedTime = time;
+    notifyListeners();
+  }
+
+  void setSelectedSubCity(String? subCity) {
+    selectedSubCity = subCity;
+    notifyListeners();
+  }
+
+  void setSelectedWereda(String? wereda) {
+    selectedWereda = wereda;
     notifyListeners();
   }
 

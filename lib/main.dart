@@ -15,12 +15,12 @@ import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/auth/token_entery_page.dart';
 import 'package:home_service_app/screens/auth/upload_proof_page.dart';
 import 'package:home_service_app/screens/auth/waiting_for_approval_page.dart';
-import 'package:home_service_app/screens/profile/technician_profile_page.dart';
 import 'package:home_service_app/services/deepLink_handler.dart';
 import 'package:home_service_app/services/notification_service.dart';
 import 'package:home_service_app/utils/functions.dart';
 import 'package:home_service_app/utils/route_generator.dart';
 import 'package:home_service_app/widgets/bottom_navigation.dart';
+import 'package:home_service_app/widgets/technician_navigation.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -96,7 +96,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-        designSize: const Size(500, 890), // Design size used in the UI design
+        designSize: const Size(420, 890), // Design size used in the UI design
         minTextAdapt: true,
         builder: (context, child) {
           return MaterialApp(
@@ -123,7 +123,7 @@ class _MyAppState extends State<MyApp> {
                 final user = Provider.of<UserProvider>(context).user;
                 final status = Provider.of<UserProvider>(context).status;
                 if (user != null && user.role == "TECHNICIAN") {
-                  return const TechnicianProfilePage();
+                  return const TechnicianNavigation();
                 } else if (status == UserStatus.TOKEN_ENTRY) {
                   return TokenEntryPage();
                 } else if (status == UserStatus.PROOF_ENTRY) {

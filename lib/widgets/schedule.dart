@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_service_app/models/schedule.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ScheduleWidget extends StatefulWidget {
   final Schedule schedule;
@@ -77,7 +78,7 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(day,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
         TextButton(
           onPressed: () => _pickTime(day, true),
           child: Text(start.isEmpty ? "Start Time" : start),
@@ -93,7 +94,7 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(16.0.w),
       child: Column(
         children: [
           _buildDayScheduleRow("Monday", widget.schedule.mondayStart ?? "",

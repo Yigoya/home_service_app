@@ -6,10 +6,14 @@ import 'package:logger/logger.dart';
 class NotificationProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
   List<NotificationModel> _notifications = [];
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
 
   List<NotificationModel> get notifications => _notifications;
 
   void loadNotifications(int userId) async {
+    _isLoading = true;
+    notifyListeners();
     try {
       final response =
           await _apiService.getRequest('/notifications/unread/$userId');
@@ -20,6 +24,7 @@ class NotificationProvider with ChangeNotifier {
     } catch (e) {
       print('Failed to load notifications: $e');
     }
+    _isLoading = false;
   }
 
   void markAsRead(int id) async {

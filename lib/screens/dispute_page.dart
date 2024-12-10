@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_service_app/provider/form_provider.dart';
 import 'package:home_service_app/widgets/custom_textfield.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DisputePage extends StatefulWidget {
   final int bookingId;
@@ -19,28 +20,30 @@ class _DisputePageState extends State<DisputePage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Dispute')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text("Dispute",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
+            Text("Dispute",
+                style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold)),
+            SizedBox(height: 16.h),
             CustomTextField(
               label: "Reason",
               hint: "Enter your reason",
               controller: formProvider.reasonController,
+              errorMsg: "Please enter your reason",
             ),
             CustomTextField(
               label: "State your dispute",
               hint: "Describe your dispute",
               controller: formProvider.disputeDescriptionController,
+              errorMsg: "Please describe your issue your reason",
             ),
-            Provider.of<FormProvider>(context).isLoading
+            formProvider.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : ElevatedButton(
                     onPressed: () => {
-                      formProvider.submitDisputeForm(widget.bookingId),
+                      formProvider.submitDisputeForm(widget.bookingId, context),
                       Navigator.pop(context)
                     },
                     child: const Text("Submit"),

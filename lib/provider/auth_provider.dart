@@ -14,6 +14,7 @@ import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/utils/functions.dart';
 import 'package:home_service_app/utils/route_generator.dart';
 import 'package:home_service_app/widgets/bottom_navigation.dart';
+import 'package:home_service_app/widgets/technician_navigation.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
@@ -48,7 +49,7 @@ class AuthenticationProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.signup(
+      await _apiService.signup(
         name: name,
         email: email,
         phoneNumber: phoneNumber,
@@ -87,7 +88,7 @@ class AuthenticationProvider with ChangeNotifier {
           await _apiService.login(email: email, password: password);
       _isLoading = false;
       notifyListeners();
-      print(response.data);
+
       if (response.data['user']['status'] == 'INACTIVE' &&
           response.data['user']['role'] == 'CUSTOMER') {
         Navigator.of(context).pushNamedAndRemoveUntil(
@@ -109,6 +110,7 @@ class AuthenticationProvider with ChangeNotifier {
           ? const Locale('am')
           : const Locale('en');
       MyApp.setLocale(context, newLocale);
+      Provider.of<UserProvider>(context).setLocale(newLocale);
       if (response.data['user']['role'] == 'CUSTOMER') {
         await storage.write(
             key: "customer", value: jsonEncode(response.data['customer']));
@@ -126,7 +128,7 @@ class AuthenticationProvider with ChangeNotifier {
         await Provider.of<UserProvider>(context, listen: false).loadUser();
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
-                builder: (context) => const TechnicianProfilePage()),
+                builder: (context) => const TechnicianNavigation()),
             (route) => false);
       }
 
@@ -279,6 +281,72 @@ class AuthenticationProvider with ChangeNotifier {
           'Login failed';
       showTopMessage(context, _errorMessage ?? 'Error occured',
           isSuccess: false);
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      _errorMessage = e.toString();
+      showTopMessage(context, _errorMessage ?? 'Error occured',
+          isSuccess: false);
+      notifyListeners();
+    }
+  }
+
+  Future<bool> requestPasswordReset(String email, BuildContext context) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      final response = await _apiService
+          .postRequestWithoutToken('/auth/password-reset-request', {
+        "email": email,
+      });
+      _isLoading = false;
+      showTopMessage(context, response.data);
+      notifyListeners();
+      return true;
+    } on DioException catch (e) {
+      _isLoading = false;
+      _errorMessage = e.response?.data['details'].join(', ') ??
+          e.response?.data['message'] ??
+          'Request failed';
+      showTopMessage(context, _errorMessage ?? 'Error occured',
+          isSuccess: false);
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _isLoading = false;
+      _errorMessage = e.toString();
+      showTopMessage(context, _errorMessage ?? 'Error occured',
+          isSuccess: false);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<void> resetPassword(
+      String token, String newPassword, BuildContext context) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      final response =
+          await _apiService.postRequestWithoutToken('/auth/reset-password', {
+        "token": token,
+        "password": newPassword,
+      });
+      _isLoading = false;
+      showTopMessage(context, response.data);
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil(RouteGenerator.loginPage, (route) => false);
+      notifyListeners();
+    } on DioException catch (e) {
+      _isLoading = false;
+      _errorMessage = e.response?.data['details'].join(', ') ??
+          e.response?.data['message'] ??
+          'Request failed';
+      showTopMessage(context, _errorMessage ?? 'Error occured',
+          isSuccess: false);
+
       notifyListeners();
     } catch (e) {
       _isLoading = false;

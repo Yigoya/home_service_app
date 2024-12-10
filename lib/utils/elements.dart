@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class SimpleComponents {
   static Widget buildTextField(
       TextEditingController controller, String label, String hint,
@@ -14,24 +16,27 @@ class SimpleComponents {
         return Column(
           children: [
             Container(
-              margin: const EdgeInsets.only(bottom: 8),
+              margin: EdgeInsets.only(bottom: 8.h),
               child: Row(
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w500,
-                      fontSize: 16,
+                      fontSize: 16.sp,
                     ),
                   ),
                 ],
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 0.h),
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 235, 247, 250),
-                borderRadius: BorderRadius.circular(32),
+                borderRadius: BorderRadius.circular(16.r),
+                border: Border.all(
+                  color: const Color.fromARGB(100, 150, 150, 150),
+                ),
               ),
               child: TextFormField(
                 controller: controller,
@@ -45,14 +50,13 @@ class SimpleComponents {
                             : TextInputType.text)),
                 maxLines: isLongText ? null : 1,
                 minLines: isLongText ? 4 : 1,
-                style:
-                    const TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20.sp),
                 decoration: InputDecoration(
                   hintText: hint,
                   border: InputBorder.none,
-                  hintStyle: const TextStyle(
-                    color: Color.fromARGB(255, 150, 150, 150),
-                    fontSize: 16,
+                  hintStyle: TextStyle(
+                    color: const Color.fromARGB(255, 150, 150, 150),
+                    fontSize: 16.sp,
                   ),
                   suffixIcon: isPassword
                       ? IconButton(
@@ -100,8 +104,8 @@ class SimpleComponents {
       label: Text(text),
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
       ),
     );
   }
@@ -116,18 +120,18 @@ class SimpleComponents {
             onTap: onTap,
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: EdgeInsets.symmetric(vertical: 16.h),
               decoration: BoxDecoration(
                 color: Colors.blue,
-                borderRadius: BorderRadius.circular(32),
+                borderRadius: BorderRadius.circular(32.r),
               ),
               alignment: Alignment.center,
               child: Text(
                 buttonText,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
-                  fontSize: 20,
+                  fontSize: 20.sp,
                 ),
               ),
             ),

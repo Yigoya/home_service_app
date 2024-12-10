@@ -2,6 +2,9 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:logger/web.dart';
 
 Future<Map<String, String>> getDeviceInfo() async {
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -114,5 +117,70 @@ String formatNumber(int number) {
     return (number / 1000).toStringAsFixed(1) + 'k';
   } else {
     return number.toString();
+  }
+}
+
+/// A robust function to get the current location and address
+Future<Map<String, Object?>> getCurrentLocation() async {
+  try {
+    // Check if location services are enabled
+    if (!await Geolocator.isLocationServiceEnabled()) {
+      return {
+        "error":
+            "Location services are disabled. Please enable them in settings."
+      };
+    }
+
+    // Check and request location permissions
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return {
+          "error":
+              "Location permission denied. Please grant permission to access location."
+        };
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return {
+        "error":
+            "Location permission is permanently denied. Please enable it in settings."
+      };
+    }
+
+    // Fetch the current position
+    Position position = await Geolocator.getCurrentPosition(
+      locationSettings: LocationSettings(
+        accuracy: LocationAccuracy.high,
+      ),
+    );
+
+    // Convert coordinates to a human-readable address
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
+
+    if (placemarks.isNotEmpty) {
+      Placemark place = placemarks[0];
+      final location = {
+        "street": place.street,
+        "subcity": place.subLocality,
+        "city": place.locality,
+        "country": place.country,
+        "latitude": position.latitude,
+        "longitude": position.longitude,
+        "postalCode": place.postalCode,
+        "name": place.name,
+      };
+      return location;
+    } else {
+      return {"error": "Unable to fetch address for the current location."};
+    }
+  } catch (e) {
+    // Catch and return any errors
+    return {"error": "An error occurred while fetching the location: $e"};
   }
 }

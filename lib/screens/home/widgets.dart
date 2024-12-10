@@ -5,6 +5,7 @@ import 'package:home_service_app/models/technician.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TechniciansSection extends StatelessWidget {
   const TechniciansSection({super.key});
@@ -15,7 +16,7 @@ class TechniciansSection extends StatelessWidget {
         Provider.of<HomeServiceProvider>(context).topTechnicians;
 
     return SizedBox(
-      height: 200,
+      height: 200.h,
       child: ListView(
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
@@ -29,13 +30,13 @@ class TechniciansSection extends StatelessWidget {
 
   Widget _buildTechnicianCard(Technician tech) {
     return Container(
-      height: 200,
-      width: 200,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(8),
+      height: 200.h,
+      width: 200.w,
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      padding: EdgeInsets.all(8.w),
       decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10.r),
           boxShadow: [
             BoxShadow(
                 color: Colors.grey[200]!,
@@ -45,9 +46,9 @@ class TechniciansSection extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.r),
               color: Colors.grey[100],
             ),
             child: Column(
@@ -55,23 +56,23 @@ class TechniciansSection extends StatelessWidget {
                 CircleAvatar(
                   backgroundImage: NetworkImage(
                       '${ApiService.API_URL_FILE}${tech.profileImage}'),
-                  radius: 40,
+                  radius: 40.r,
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 Container(
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey[400]!),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: InkWell(
                     onTap: () {
                       // Navigate to technician profile page
                     },
-                    borderRadius: BorderRadius.circular(10),
-                    child: const Padding(
+                    borderRadius: BorderRadius.circular(10.r),
+                    child: Padding(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                      child: Text('View Profile',
+                          EdgeInsets.symmetric(horizontal: 24.w, vertical: 8.h),
+                      child: const Text('View Profile',
                           style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold)),
@@ -81,46 +82,47 @@ class TechniciansSection extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: 10.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(tech.name ?? 'No Name',
-                    style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 5),
+                    style: TextStyle(
+                        fontSize: 22.sp, fontWeight: FontWeight.bold)),
+                SizedBox(height: 5.h),
                 Row(
                   children: [
                     const Icon(Icons.star, color: Colors.yellow, size: 16),
-                    const SizedBox(width: 5),
+                    SizedBox(width: 5.w),
                     Text(
                         '${tech.rating ?? 0} (${tech.completedJobs ?? 0} Reviews)',
                         style: TextStyle(
                           color: Colors.grey[800],
-                          fontSize: 16,
+                          fontSize: 16.sp,
                         )),
                   ],
                 ),
-                const SizedBox(height: 5),
-                const SizedBox(height: 5),
+                SizedBox(height: 5.h),
+                SizedBox(height: 5.h),
                 Wrap(
-                  spacing: 8.0,
-                  runSpacing: 4.0,
+                  spacing: 8.0.w,
+                  runSpacing: 4.0.h,
                   children: tech.services
                           .map((service) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 6),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 12.w, vertical: 6.h),
                                 decoration: BoxDecoration(
                                   color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(20.r),
                                 ),
                                 child: Text(
                                   service.name,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       color: Colors.black,
-                                      fontWeight: FontWeight.bold),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14.sp),
                                 ),
                               ))
                           .toList() ??
@@ -145,10 +147,10 @@ class CustomerReviewsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.all(16.0),
+        Padding(
+          padding: EdgeInsets.all(16.0.w),
           child: Text("What the Customer Says",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold)),
         ),
         ...reviews.map((review) => _buildReviewCard(review)),
       ],
@@ -157,10 +159,10 @@ class CustomerReviewsSection extends StatelessWidget {
 
   Widget _buildReviewCard(Review review) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10.r),
           boxShadow: [
             BoxShadow(
                 color: Colors.grey[200]!,
@@ -168,13 +170,13 @@ class CustomerReviewsSection extends StatelessWidget {
                 blurRadius: 2)
           ]),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const SizedBox(width: 8),
+                SizedBox(width: 8.w),
                 const Icon(Icons.star, color: Colors.yellow, size: 16),
                 Row(
                   children: List.generate(
@@ -185,27 +187,27 @@ class CustomerReviewsSection extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24.h),
             Text(review.review,
-                style: const TextStyle(fontSize: 16, height: 1.5)),
-            const SizedBox(height: 24),
+                style: TextStyle(fontSize: 16.sp, height: 1.5.h)),
+            SizedBox(height: 24.h),
             Row(
               children: [
                 CircleAvatar(
                   backgroundImage: NetworkImage(
                       '${ApiService.API_URL_FILE}${review.customer.profileImage}'),
-                  radius: 20,
+                  radius: 20.r,
                 ),
-                const SizedBox(width: 10),
+                SizedBox(width: 10.w),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(review.customer.name,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
+                        style: TextStyle(
+                            fontSize: 16.sp, fontWeight: FontWeight.bold)),
                     Text(review.customer.email,
-                        style:
-                            TextStyle(fontSize: 14, color: Colors.grey[600])),
+                        style: TextStyle(
+                            fontSize: 14.sp, color: Colors.grey[600])),
                   ],
                 )
               ],
@@ -225,11 +227,11 @@ class FAQSection extends StatelessWidget {
     final provider = Provider.of<HomeServiceProvider>(context);
 
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16.0),
+      margin: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(16.0.w),
       decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10.r),
           boxShadow: [
             BoxShadow(
                 color: Colors.grey[200]!,
@@ -239,9 +241,9 @@ class FAQSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("FAQ",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 20),
+          Text("FAQ",
+              style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold)),
+          SizedBox(height: 20.h),
           ...provider.faqs.asMap().entries.map((entry) {
             int index = entry.key;
             FAQ faq = entry.value;
@@ -257,40 +259,32 @@ class FAQSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(8.w),
           decoration: BoxDecoration(
             color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(10.r),
             border: Border.all(color: Colors.grey[600]!),
           ),
           child: Center(
-            child: Icon(Icons.card_giftcard, color: Colors.grey[600], size: 26),
+            child:
+                Icon(Icons.card_giftcard, color: Colors.grey[600], size: 26.sp),
           ),
         ),
-        const SizedBox(width: 10),
+        SizedBox(width: 10.w),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(faq.question,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 18)),
-              const SizedBox(height: 5),
-              Text(faq.answer, style: const TextStyle(fontSize: 16)),
-              const SizedBox(height: 20),
+                  style:
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp)),
+              SizedBox(height: 5.h),
+              Text(faq.answer, style: TextStyle(fontSize: 16.sp)),
+              SizedBox(height: 20.h),
             ],
           ),
         ),
       ],
     );
-    // return ExpansionTile(
-    //   title: Text(faq.question,
-    //       style: const TextStyle(fontWeight: FontWeight.bold)),
-    //   initiallyExpanded: faq.isExpanded,
-    //   onExpansionChanged: (_) => provider.toggleFAQ(index),
-    //   children: [
-    //     Padding(padding: const EdgeInsets.all(16.0), child: Text(faq.answer))
-    //   ],
-    // );
   }
 }

@@ -5,6 +5,7 @@ import 'package:home_service_app/screens/profile/technician_schedule.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/widgets/language_selector.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class UserProfileComponent extends StatelessWidget {
   final User user;
@@ -21,11 +22,11 @@ class UserProfileComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.all(16.w),
+      margin: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24.r),
       ),
       child: Column(
         children: [
@@ -34,7 +35,7 @@ class UserProfileComponent extends StatelessWidget {
               Stack(
                 children: [
                   CircleAvatar(
-                    radius: 50,
+                    radius: 50.r,
                     backgroundImage: user.profileImage != null
                         ? NetworkImage(
                             '${ApiService.API_URL}/uploads/${user.profileImage}')
@@ -48,22 +49,22 @@ class UserProfileComponent extends StatelessWidget {
                       onTap: () {
                         onImagePick();
                       },
-                      child: const CircleAvatar(
-                        radius: 16,
+                      child: CircleAvatar(
+                        radius: 16.r,
                         backgroundColor: Colors.blue,
                         child: Icon(
                           Icons.camera_alt,
                           color: Colors.white,
-                          size: 16,
+                          size: 16.sp,
                         ),
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16.w),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0.w),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -72,30 +73,30 @@ class UserProfileComponent extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(user.name,
-                            style: const TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.bold)),
-                        const SizedBox(width: 8),
+                            style: TextStyle(
+                                fontSize: 22.sp, fontWeight: FontWeight.bold)),
+                        SizedBox(width: 8.w),
                         IconButton(
-                          icon: const Icon(Icons.edit, size: 20),
+                          icon: Icon(Icons.edit, size: 20.sp),
                           onPressed: () {
                             onEditName(context, user);
                           },
                         ),
                       ],
                     ),
-                    Text(user.email),
-                    Text(user.phoneNumber),
+                    Text(user.email, style: TextStyle(fontSize: 16.sp)),
+                    Text(user.phoneNumber, style: TextStyle(fontSize: 16.sp)),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          if (user.role == "TECHNICIAN")
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                const LanguageSelector(),
+          SizedBox(height: 16.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const LanguageSelector(),
+              if (user.role == "TECHNICIAN")
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -105,39 +106,39 @@ class UserProfileComponent extends StatelessWidget {
                     );
                   },
                   child: Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(8.w),
                     decoration: BoxDecoration(
                       color: Colors.blue[50],
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
-                    child: const Text('See my Schedule',
+                    child: Text('See my Schedule',
                         style: TextStyle(
-                          fontSize: 16,
-                          color: Color.fromARGB(255, 16, 77, 128),
+                          fontSize: 16.sp,
+                          color: const Color.fromARGB(255, 16, 77, 128),
                         )),
                   ),
                 ),
-                GestureDetector(
-                    onTap: () async {
-                      await Provider.of<UserProvider>(context, listen: false)
-                          .clearUser();
-                      Navigator.of(context, rootNavigator: true)
-                          .pushNamedAndRemoveUntil('/login', (route) => false);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.red[50],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Text('Logout',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Color.fromARGB(255, 92, 19, 14),
-                          )),
-                    )),
-              ],
-            ),
+              GestureDetector(
+                  onTap: () async {
+                    await Provider.of<UserProvider>(context, listen: false)
+                        .clearUser();
+                    Navigator.of(context, rootNavigator: true)
+                        .pushNamedAndRemoveUntil('/login', (route) => false);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8.w),
+                    decoration: BoxDecoration(
+                      color: Colors.red[50],
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    child: Text('Logout',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: const Color.fromARGB(255, 92, 19, 14),
+                        )),
+                  )),
+            ],
+          ),
         ],
       ),
     );

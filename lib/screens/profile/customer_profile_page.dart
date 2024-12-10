@@ -9,12 +9,14 @@ import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/booking/update_booking.dart';
 import 'package:home_service_app/screens/detail_booking.dart';
 import 'package:home_service_app/screens/dispute_page.dart';
+import 'package:home_service_app/screens/profile/user_profile_card.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/widgets/booking_card.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomerProfilePage extends StatefulWidget {
   const CustomerProfilePage({super.key});
@@ -54,78 +56,11 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
         body: SafeArea(
           child: Column(
             children: [
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Row(
-                  children: [
-                    Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundImage: user!.profileImage != null
-                              ? NetworkImage(
-                                  '${ApiService.API_URL}/uploads/${user.profileImage}')
-                              : const AssetImage('assets/images/profile.png')
-                                  as ImageProvider,
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: InkWell(
-                            onTap: () {
-                              _pickImage();
-                            },
-                            child: const CircleAvatar(
-                              radius: 16,
-                              backgroundColor: Colors.blue,
-                              child: Icon(
-                                Icons.camera_alt,
-                                color: Colors.white,
-                                size: 16,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(user.name,
-                                  style: const TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold)),
-                              const SizedBox(width: 8),
-                              IconButton(
-                                icon: const Icon(Icons.edit, size: 20),
-                                onPressed: () {
-                                  _showEditNameDialog(context, user);
-                                },
-                              ),
-                            ],
-                          ),
-                          Text(user.email),
-                          Text(user.phoneNumber),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Booking Tabs and List
+              UserProfileComponent(
+                  user: user!,
+                  onImagePick: _pickImage,
+                  onEditName: () => _showEditNameDialog(context, user)),
+              SizedBox(height: 16.h),
               Expanded(
                 child: Consumer<ProfilePageProvider>(
                   builder: (context, bookingProvider, child) {
@@ -141,7 +76,7 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
                         children: [
                           TabBar(
                             labelPadding:
-                                const EdgeInsets.only(left: 20, right: 20),
+                                EdgeInsets.only(left: 20.w, right: 20.w),
                             dividerColor: Colors.transparent,
                             splashFactory: NoSplash.splashFactory,
                             labelColor: Colors.white,
@@ -149,16 +84,16 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
                             isScrollable: true,
                             indicator: BoxDecoration(
                               color: Colors.black,
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(20.r),
                             ),
                             indicatorSize: TabBarIndicatorSize.tab,
-                            indicatorPadding: const EdgeInsets.symmetric(
-                                horizontal: 0, vertical: 6),
-                            labelStyle: const TextStyle(
-                                fontSize: 18.0,
+                            indicatorPadding: EdgeInsets.symmetric(
+                                horizontal: 0.w, vertical: 6.h),
+                            labelStyle: TextStyle(
+                                fontSize: 18.sp,
                                 fontWeight: FontWeight.w500), //For Selected tab
-                            unselectedLabelStyle: const TextStyle(
-                                fontSize: 16.0, fontWeight: FontWeight.w500),
+                            unselectedLabelStyle: TextStyle(
+                                fontSize: 16.sp, fontWeight: FontWeight.w500),
                             tabs: [
                               Tab(text: AppLocalizations.of(context)!.pending),
                               Tab(text: AppLocalizations.of(context)!.accepted),
@@ -169,7 +104,7 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
                               Tab(text: AppLocalizations.of(context)!.denied),
                             ],
                           ),
-                          const SizedBox(height: 4),
+                          SizedBox(height: 4.h),
                           Expanded(
                             child: TabBarView(
                               children: [

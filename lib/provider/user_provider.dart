@@ -27,8 +27,18 @@ class UserProvider with ChangeNotifier {
   UserCustomer? get customer => _customer;
   int coin = 0;
   Locale locale = const Locale('en');
+  Map<String, Object> location = {};
+  String get languageCode => locale.languageCode;
 
+  bool isLoading = false;
   // Load user data from secure storage
+
+  Future<void> setLocale(Locale newLocale) async {
+    locale = newLocale;
+    await storage.write(key: 'locale', value: newLocale.languageCode);
+    notifyListeners();
+  }
+
   Future<void> loadUser() async {
     String? status = await storage.read(key: 'user_status');
     if (status != null) {
@@ -36,6 +46,11 @@ class UserProvider with ChangeNotifier {
           .firstWhere((element) => element.name == status, orElse: () {
         return UserStatus.GUEST;
       });
+    }
+
+    final _location = await getCurrentLocation();
+    if (_location != null && _location['error'] == null) {
+      location = _location.cast<String, Object>();
     }
 
     final userData = await storage.read(key: "user");
@@ -46,6 +61,7 @@ class UserProvider with ChangeNotifier {
         if (customerData != null) {
           _customer = UserCustomer.fromJson(jsonDecode(customerData));
         }
+
         try {
           final response =
               await apiService.getRequest('/coins/balance/${_customer!.id}');
@@ -64,20 +80,27 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> fetchDispute() async {
-    // Load disputes from API
+    isLoading = true;
+    notifyListeners();
     try {
+      Logger().d(_customer!.id);
       final res =
           await apiService.getRequest('/disputes/customer/${_customer!.id}');
 
       final data = res.data;
       Logger().d(data);
-      _disputes = data.map<Dispute>((e) => Dispute.fromJson(e)).toList();
+      if (data.isNotEmpty) {
+        _disputes = data.map<Dispute>((e) => Dispute.fromJson(e)).toList();
+      }
       notifyListeners();
     } on DioException catch (e) {
       Logger().e(e.response!.data);
     } catch (e) {
       Logger().e(e);
     }
+
+    isLoading = false;
+    notifyListeners();
   }
 
   // Clear user data for logout
@@ -120,18 +143,21 @@ class UserProvider with ChangeNotifier {
     }
   }
 
-  Future<void> changeLanguage(BuildContext context, Locale locale) async {
+  Future<void> changeLanguage(BuildContext context, Locale newLocale) async {
     try {
-      MyApp.setLocale(context, locale);
-      await storage.write(key: 'locale', value: locale.languageCode);
-      final data = {
-        'customerId': _customer!.id,
-        'preferredLanguage':
-            locale.languageCode == 'am' ? "AMHARIC" : "ENGLISH",
-      };
+      MyApp.setLocale(context, newLocale);
+      await storage.write(key: 'locale', value: newLocale.languageCode);
 
-      final response = await apiService.patchRequest(
-          '/profile/${user!.id}/preferred-language', data);
+      if (user != null) {
+        final data = {
+          'preferredLanguage':
+              newLocale.languageCode == 'am' ? "AMHARIC" : "ENGLISH",
+        };
+        final response = await apiService.patchRequest(
+            '/profile/${user!.id}/preferred-language', data);
+      }
+      locale = newLocale;
+      notifyListeners();
     } on DioException catch (e) {
       Logger().e(e.response!.data);
     } catch (e) {

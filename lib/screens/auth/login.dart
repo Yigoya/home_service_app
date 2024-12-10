@@ -2,8 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:home_service_app/provider/auth_provider.dart';
 import 'package:home_service_app/utils/elements.dart';
+import 'package:home_service_app/utils/route_generator.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -59,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
         child: Center(
           child: SingleChildScrollView(
             child: Form(
@@ -67,22 +69,22 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(
-                    height: 46,
+                  SizedBox(
+                    height: 46.h,
                   ),
                   Text(AppLocalizations.of(context)!.welcomeBack,
                       style: TextStyle(
-                          fontSize: 32,
+                          fontSize: 32.sp,
                           fontWeight: FontWeight.bold,
                           color: Colors.blue)),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Text(AppLocalizations.of(context)!.loginToYourAccount,
-                      style: TextStyle(fontSize: 18, color: Colors.grey)),
-                  const SizedBox(height: 32),
+                      style: TextStyle(fontSize: 18.sp, color: Colors.grey)),
+                  SizedBox(height: 32.h),
                   SimpleComponents.buildTextField(_emailController, "Email",
                       AppLocalizations.of(context)!.enterYourEmail,
                       isEmail: true),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   SimpleComponents.buildTextField(
                       _passwordController,
                       "Password",
@@ -92,46 +94,49 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, RouteGenerator.forgotPasswordPage);
+                          },
                           child: Text(
                               AppLocalizations.of(context)!.forgotPassword,
-                              style:
-                                  TextStyle(color: Colors.blue, fontSize: 16))),
+                              style: TextStyle(
+                                  color: Colors.blue, fontSize: 16.sp))),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.h),
                   SimpleComponents.buildButton(
                       isLoading: provider.isLoading,
                       onTap: () => _login(context),
                       buttonText: 'Login'),
                   if (provider.errorMessage != null)
                     Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
+                      padding: EdgeInsets.only(top: 8.h),
                       child: Text(
                         provider.errorMessage!,
-                        style: const TextStyle(color: Colors.red),
+                        style: TextStyle(color: Colors.red, fontSize: 14.sp),
                       ),
                     ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   Row(
                     children: [
                       Expanded(
                           child: Divider(
-                        height: 2.5,
+                        height: 2.5.h,
                         color: Colors.grey,
                       )),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
                         child: Text(AppLocalizations.of(context)!.orSignInWith,
                             style: TextStyle(
                                 color: Colors.grey,
-                                fontSize: 16,
+                                fontSize: 16.sp,
                                 fontWeight: FontWeight.w500)),
                       ),
                       Expanded(child: Divider()),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -151,27 +156,27 @@ class _LoginPageState extends State<LoginPage> {
                               }
                             : null,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 32, vertical: 16),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 32.w, vertical: 16.h),
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey[400]!),
-                            borderRadius: BorderRadius.circular(32),
+                            borderRadius: BorderRadius.circular(32.r),
                           ),
                           child: !_authenticating
                               ? Row(
                                   children: [
                                     Image.asset(
                                       'assets/images/google.png',
-                                      width: 20,
-                                      height: 20,
+                                      width: 20.w,
+                                      height: 20.h,
                                     ),
-                                    const SizedBox(width: 12),
-                                    const Text(
+                                    SizedBox(width: 12.w),
+                                    Text(
                                       "Google",
                                       style: TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 16),
+                                          fontSize: 16.sp),
                                     ),
                                   ],
                                 )
@@ -181,26 +186,26 @@ class _LoginPageState extends State<LoginPage> {
                       GestureDetector(
                         onTap: () {},
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 32, vertical: 16),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 32.w, vertical: 16.h),
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey[400]!),
-                            borderRadius: BorderRadius.circular(32),
+                            borderRadius: BorderRadius.circular(32.r),
                           ),
                           child: Row(
                             children: [
                               Image.asset(
                                 'assets/images/facebook.png',
-                                width: 20,
-                                height: 20,
+                                width: 20.w,
+                                height: 20.h,
                               ),
-                              const SizedBox(width: 8),
-                              const Text(
+                              SizedBox(width: 8.w),
+                              Text(
                                 "Facebook",
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16),
+                                    fontSize: 16.sp),
                               ),
                             ],
                           ),
@@ -208,7 +213,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 64),
+                  SizedBox(height: 64.h),
                   GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(
@@ -217,16 +222,18 @@ class _LoginPageState extends State<LoginPage> {
                     child: RichText(
                       text: TextSpan(
                           text: AppLocalizations.of(context)!.dontHaveAccount,
-                          style: TextStyle(color: Colors.grey[600]),
-                          children: const [
+                          style: TextStyle(
+                              color: Colors.grey[600], fontSize: 14.sp),
+                          children: [
                             TextSpan(
                               text: "Sign Up",
-                              style: TextStyle(color: Colors.blue),
+                              style: TextStyle(
+                                  color: Colors.blue, fontSize: 14.sp),
                             ),
                           ]),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(context,
@@ -234,11 +241,11 @@ class _LoginPageState extends State<LoginPage> {
                     },
                     child: Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 16),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 16.w, vertical: 16.h),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey[400]!),
-                        borderRadius: BorderRadius.circular(32),
+                        borderRadius: BorderRadius.circular(32.r),
                       ),
                       child: Text(
                         AppLocalizations.of(context)!.registerAsTechnician,
@@ -246,7 +253,7 @@ class _LoginPageState extends State<LoginPage> {
                         style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.w500,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                         ),
                       ),
                     ),

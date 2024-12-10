@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_service_app/provider/notification_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});
@@ -11,13 +12,33 @@ class NotificationsPage extends StatelessWidget {
       appBar: AppBar(title: const Text('Notifications')),
       body: Consumer<NotificationProvider>(
         builder: (context, notificationProvider, child) {
+          if (notificationProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (notificationProvider.notifications.isEmpty) {
+            return Center(
+              child: Text(
+                'You have no notifications',
+                style: TextStyle(
+                  fontSize: 24.sp, // Using flutter_screenutil for font size
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            );
+          }
           return ListView.builder(
             itemCount: notificationProvider.notifications.length,
             itemBuilder: (context, index) {
               final notification = notificationProvider.notifications[index];
               return ListTile(
-                title: Text(notification.title),
-                subtitle: Text(notification.message),
+                title: Text(notification.title,
+                    style: TextStyle(
+                        fontSize:
+                            18.sp)), // Using flutter_screenutil for font size
+                subtitle: Text(notification.message,
+                    style: TextStyle(
+                        fontSize:
+                            14.sp)), // Using flutter_screenutil for font size
                 trailing: notification.readStatus
                     ? const Icon(Icons.check_circle, color: Colors.green)
                     : const Icon(Icons.circle, color: Colors.red),

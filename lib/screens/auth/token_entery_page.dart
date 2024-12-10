@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_service_app/screens/auth/upload_proof_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TokenEntryPage extends StatelessWidget {
   TokenEntryPage({super.key});
@@ -13,31 +14,31 @@ class TokenEntryPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.token,
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.sp),
         ),
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             Text(
               AppLocalizations.of(context)!.enterToken,
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 18.sp,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             TextFormField(
               controller: _tokenController,
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.tokenPlaceholder,
                 labelText: AppLocalizations.of(context)!.token,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
                 prefixIcon: const Icon(Icons.vpn_key),
               ),
@@ -52,7 +53,7 @@ class TokenEntryPage extends StatelessWidget {
                 return null;
               },
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             ElevatedButton(
               onPressed: () {
                 final token = _tokenController.text.trim();
@@ -75,18 +76,18 @@ class TokenEntryPage extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 15),
+                padding: EdgeInsets.symmetric(vertical: 15.h),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.check_circle_outline),
-                  SizedBox(width: 10),
+                  Icon(Icons.check_circle_outline, size: 24.sp),
+                  SizedBox(width: 10.w),
                   Text(
                     AppLocalizations.of(context)!.submit,
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16.sp),
                   ),
                 ],
               ),

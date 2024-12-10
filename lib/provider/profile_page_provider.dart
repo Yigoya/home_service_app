@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:home_service_app/models/booking.dart';
 import 'package:home_service_app/models/schedule.dart';
+import 'package:home_service_app/models/techinician_detail.dart';
 import 'package:home_service_app/models/user.dart';
 import 'package:home_service_app/models/user_customer.dart';
 import 'package:home_service_app/models/user_technician.dart';
@@ -33,6 +34,7 @@ class ProfilePageProvider with ChangeNotifier {
   Schedule get schedule => _schedule;
 
   List<Map<String, dynamic>>? calender;
+  Map<String, dynamic> techinicianDetail = {};
 
   Future<void> fetchBookings() async {
     try {
@@ -171,6 +173,7 @@ class ProfilePageProvider with ChangeNotifier {
           .getRequest('/profile/technician/${_technician!.id}');
       final data = response.data;
       Logger().d(data);
+      techinicianDetail = data as Map<String, dynamic>;
       if (data['weeklySchedule'] != null) {
         _schedule = Schedule.fromJson(data['weeklySchedule']);
       }

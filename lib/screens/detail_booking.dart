@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_service_app/provider/booking_provider.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BookingDetailsPage extends StatelessWidget {
   const BookingDetailsPage({super.key});
@@ -23,7 +24,7 @@ class BookingDetailsPage extends StatelessWidget {
           final serviceLocation = bookingData['serviceLocation'];
           final questions = bookingData['questions'];
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.0.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -33,7 +34,7 @@ class BookingDetailsPage extends StatelessWidget {
                 _buildInfoRow('Technician', bookingData['technicianName']),
 
                 // Service Details
-                const SizedBox(height: 16.0),
+                SizedBox(height: 16.0.h),
                 _buildSectionTitle('Service Information'),
                 _buildInfoRow('Service Name', bookingData['serviceName']),
                 _buildInfoRow('Description', bookingData['serviceDescription']),
@@ -44,7 +45,7 @@ class BookingDetailsPage extends StatelessWidget {
                     bookingData['totalCost']?.toString() ?? 'N/A'),
 
                 // Location Details
-                const SizedBox(height: 16.0),
+                SizedBox(height: 16.0.h),
                 _buildSectionTitle('Service Location'),
                 _buildInfoRow('Street', serviceLocation['street'] ?? 'Not set'),
                 _buildInfoRow('City', serviceLocation['city'] ?? 'Not set'),
@@ -66,7 +67,7 @@ class BookingDetailsPage extends StatelessWidget {
                         : 'Not set'),
 
                 // Questions and Answers
-                const SizedBox(height: 16.0),
+                SizedBox(height: 16.0.h),
                 _buildSectionTitle('Questions and Answers'),
                 ...questions
                     .map<Widget>((question) => _buildQuestionCard(question))
@@ -80,13 +81,13 @@ class BookingDetailsPage extends StatelessWidget {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
     );
   }
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: EdgeInsets.symmetric(vertical: 4.0.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -94,12 +95,15 @@ class BookingDetailsPage extends StatelessWidget {
             flex: 2,
             child: Text(
               '$label:',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp),
             ),
           ),
           Expanded(
             flex: 3,
-            child: Text(value),
+            child: Text(
+              value,
+              style: TextStyle(fontSize: 14.sp),
+            ),
           ),
         ],
       ),
@@ -111,37 +115,48 @@ class BookingDetailsPage extends StatelessWidget {
     final options = question['options'] as List<dynamic>;
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      margin: EdgeInsets.symmetric(vertical: 8.0.h),
       elevation: 3,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: EdgeInsets.all(12.0.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               question['text'],
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8.0),
+            SizedBox(height: 8.0.h),
             if (question['type'] == 'MULTIPLE_CHOICE')
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Options:'),
+                  Text(
+                    'Options:',
+                    style: TextStyle(fontSize: 14.sp),
+                  ),
                   ...options.map((option) {
-                    return Text('- ${option['optionText']}');
+                    return Text(
+                      '- ${option['optionText']}',
+                      style: TextStyle(fontSize: 14.sp),
+                    );
                   }),
                 ],
               ),
-            const SizedBox(height: 8.0),
+            SizedBox(height: 8.0.h),
             if (answers.isNotEmpty)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Answers:'),
+                  Text(
+                    'Answers:',
+                    style: TextStyle(fontSize: 14.sp),
+                  ),
                   ...answers.map((answer) {
                     return Text(
-                        '- ${answer['response']} (by ${answer['customerName']})');
+                      '- ${answer['response']} (by ${answer['customerName']})',
+                      style: TextStyle(fontSize: 14.sp),
+                    );
                   }),
                 ],
               ),

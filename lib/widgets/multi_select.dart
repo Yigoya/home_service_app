@@ -3,6 +3,7 @@ import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MultiSelectComponent extends StatefulWidget {
   final ValueChanged<List<int>> onSelectionChanged;
@@ -40,11 +41,12 @@ class _MultiSelectComponentState extends State<MultiSelectComponent> {
       buttonText: Text("Select Services",
           style: TextStyle(
               fontWeight: FontWeight.w500,
-              fontSize: 16,
+              fontSize: 16.sp, // Use flutter_screenutil for font size
               color: Colors.grey[600]!)),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey[300]!),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(
+            12.r), // Use flutter_screenutil for border radius
       ),
       onConfirm: (List<Service> selectedItems) {
         selectedIds = selectedItems.map((item) => item.id).toList();

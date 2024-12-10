@@ -3,6 +3,7 @@ import 'package:home_service_app/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class UploadProofPagee extends StatelessWidget {
   final picker = ImagePicker();
@@ -23,22 +24,22 @@ class UploadProofPagee extends StatelessWidget {
       appBar: AppBar(title: const Text('Registration Fee Transfer')),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.w),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
+              Text(
                 'For registration fee transfer\n500 birr',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 20.sp),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               ElevatedButton.icon(
                 onPressed: () => _pickImage(context),
                 icon: const Icon(Icons.upload_file),
                 label: const Text('Upload image'),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               Consumer<AuthenticationProvider>(
                 builder: (context, provider, child) {
                   return ElevatedButton(

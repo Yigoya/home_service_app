@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BuyCoinsPage extends StatelessWidget {
   const BuyCoinsPage({super.key});
@@ -43,15 +44,15 @@ class BuyCoinsPage extends StatelessWidget {
       backgroundColor: const Color.fromARGB(255, 182, 230, 227),
       body: Center(
         child: Container(
-          padding: EdgeInsets.all(16),
-          margin: EdgeInsets.all(16),
+          padding: EdgeInsets.all(16.w),
+          margin: EdgeInsets.all(16.w),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16.r),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey[300]!,
-                blurRadius: 10,
+                blurRadius: 10.r,
                 offset: const Offset(0, 5),
               ),
             ],
@@ -61,37 +62,37 @@ class BuyCoinsPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
-                height: 12,
+                height: 12.h,
               ),
-              const Text(
+              Text(
                 "Choose a Coin Package",
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
               SizedBox(
-                height: 450,
+                height: 450.h,
                 child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10.w,
+                    mainAxisSpacing: 10.h,
                     childAspectRatio: 1,
                   ),
                   itemCount: coinPackages.length,
                   itemBuilder: (context, index) {
                     final package = coinPackages[index];
                     return Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.all(8.w),
                       decoration: BoxDecoration(
                         color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey[300]!,
-                            blurRadius: 5,
+                            blurRadius: 5.r,
                             offset: const Offset(0, 3),
                           ),
                         ],
@@ -101,13 +102,13 @@ class BuyCoinsPage extends StatelessWidget {
                         children: [
                           Image.asset(
                             package['icon'] as String,
-                            width: 60,
-                            height: 60,
+                            width: 60.w,
+                            height: 60.h,
                           ),
                           Text(
                             "${package['coins']} Coins",
-                            style: const TextStyle(
-                              fontSize: 18,
+                            style: TextStyle(
+                              fontSize: 18.sp,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -133,20 +134,20 @@ class BuyCoinsPage extends StatelessWidget {
                             },
                             child: Container(
                               width: double.infinity,
-                              padding: EdgeInsets.symmetric(vertical: 8),
+                              padding: EdgeInsets.symmetric(vertical: 8.h),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(colors: [
                                   const Color.fromARGB(255, 9, 222, 250),
                                   const Color.fromARGB(255, 9, 250, 190),
                                 ]),
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(16.r),
                               ),
                               child: Text(
                                 "\$${(package['price'] as double).toStringAsFixed(2)}",
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16,
+                                  fontSize: 16.sp,
                                 ),
                               ),
                             ),

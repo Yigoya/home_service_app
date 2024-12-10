@@ -8,6 +8,7 @@ import 'package:home_service_app/utils/functions.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Technician {
   final int id;
@@ -162,45 +163,45 @@ class _UploadProofPageState extends State<UploadProofPage> {
           : technician == null
               ? Center(child: Text(message ?? 'Error loading data.'))
               : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.0.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Center(
                         child: CircleAvatar(
-                          radius: 60,
+                          radius: 60.r,
                           backgroundImage: NetworkImage(
                               '${ApiService.API_URL_FILE}${technician!.profileImage}'),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16.h),
                       Text(
                         technician!.name,
-                        style: const TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 24.sp, fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
                       Text('Email: ${technician!.email}'),
                       Text('Phone: ${technician!.phoneNumber}'),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
                       Text('Bio: ${technician!.bio}'),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
                       if (technician!.availability != null)
                         Text('Availability: ${technician!.availability}'),
                       if (technician!.rating != null)
                         Text(
                             'Rating: ${technician!.rating?.toStringAsFixed(1)}'),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16.h),
                       ElevatedButton.icon(
                         onPressed: pickImage,
                         icon: const Icon(Icons.upload_file),
                         label: const Text('Upload Ticket'),
                       ),
                       if (uploadedFile != null) ...[
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8.h),
                         Text(
                             'Selected file: ${uploadedFile!.path.split('/').last}'),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8.h),
                         ElevatedButton(
                           onPressed: uploadImage,
                           child: const Text('Submit Ticket'),

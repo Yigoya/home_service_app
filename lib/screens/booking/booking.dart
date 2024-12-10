@@ -11,6 +11,7 @@ import 'package:home_service_app/widgets/custom_dropdown.dart';
 import 'package:provider/provider.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BookingPage extends StatefulWidget {
   final Technician technician;
@@ -85,46 +86,46 @@ class _BookingPageState extends State<BookingPage> {
         child: Stack(
           children: [
             Container(
-              margin: const EdgeInsets.only(top: 48, left: 16, right: 16),
-              padding: const EdgeInsets.all(16.0),
+              margin: EdgeInsets.only(top: 48.h, left: 16.w, right: 16.w),
+              padding: EdgeInsets.all(16.0.w),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.r),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const SizedBox(
-                    height: 20,
+                  SizedBox(
+                    height: 20.h,
                   ),
                   CircleAvatar(
-                    radius: 50,
+                    radius: 50.r,
                     backgroundImage: NetworkImage(
                         '${ApiService.API_URL_FILE}${widget.technician.profileImage}'), // replace with actual image source
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
                   Text(
                     widget.technician.name,
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
+                    style:
+                        TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 5),
+                  SizedBox(height: 5.h),
                   Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.r),
                     ),
                     child: Text(
                       widget.service.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 20.h),
+                  SizedBox(height: 10.h),
                   // Address Selector
                   CustomDropdown(
                     items: const ["Bole", "Akaki", "Nifas Silk"],
@@ -136,8 +137,8 @@ class _BookingPageState extends State<BookingPage> {
                       });
                     },
                   ),
-                  const SizedBox(
-                    height: 16,
+                  SizedBox(
+                    height: 16.h,
                   ),
                   CustomDropdown(
                     items: const ["01", "02", "03", "04", "05"],
@@ -150,13 +151,13 @@ class _BookingPageState extends State<BookingPage> {
                     },
                   ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
 
                   // Job Description
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey[300]!),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: TextField(
                       controller: jobDescriptionController,
@@ -166,12 +167,12 @@ class _BookingPageState extends State<BookingPage> {
                             .describeJobTask, // 'Describe Job Task',
 
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.all(12),
+                        contentPadding: EdgeInsets.all(12.w),
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 24,
+                  SizedBox(
+                    height: 24.h,
                   ),
 
                   CustomButton(
@@ -185,13 +186,13 @@ class _BookingPageState extends State<BookingPage> {
               ),
             ),
             Positioned(
-                right: 16,
-                top: 48,
+                right: 16.w,
+                top: 48.h,
                 child: IconButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: const Icon(Icons.close)))
+                    icon: Icon(Icons.close, size: 24.sp)))
           ],
         ),
       ),
@@ -205,18 +206,19 @@ class _BookingPageState extends State<BookingPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
           title: Row(
             children: [
-              const Icon(Icons.check_circle, color: Colors.green),
-              const SizedBox(width: 10),
+              Icon(Icons.check_circle, color: Colors.green, size: 24.sp),
+              SizedBox(width: 10.w),
               Text(AppLocalizations.of(context)!.bookingConfirmed),
             ],
           ),
           content: Text(AppLocalizations.of(context)!.bookingSuccess),
           actions: <Widget>[
             TextButton(
-              child: const Text('OK', style: TextStyle(color: Colors.green)),
+              child: Text('OK',
+                  style: TextStyle(color: Colors.green, fontSize: 14.sp)),
               onPressed: () {
                 Navigator.pushNamed(context, RouteGenerator.homePage);
               },

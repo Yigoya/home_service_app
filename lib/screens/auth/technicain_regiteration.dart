@@ -7,6 +7,7 @@ import 'package:home_service_app/widgets/multi_select.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TechnicianRegistrationPage extends StatefulWidget {
   const TechnicianRegistrationPage({super.key});
@@ -57,7 +58,7 @@ class _TechnicianRegistrationPageState
         'phoneNumber': _phoneController.text,
         'bio': _bioController.text,
         'services': _services.join(','),
-        'subCity': _subCity ?? '',
+        'subcity': _subCity ?? '',
         'wereda': _wereda ?? '',
         'password': _passwordController.text,
         if (_documentsPath != null)
@@ -96,56 +97,56 @@ class _TechnicianRegistrationPageState
   Widget _buildFormPage1() {
     return Column(
       children: [
-        const SizedBox(height: 36),
+        SizedBox(height: 36.h),
         Center(
           child: Text(
             AppLocalizations.of(context)!.technicianRegistration,
             style: TextStyle(
-              fontSize: 32,
+              fontSize: 32.sp,
               fontWeight: FontWeight.bold,
               color: Colors.blue,
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         Center(
           child: Text(
             AppLocalizations.of(context)!.fillDetailsToRegister,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 16.sp,
               color: Colors.grey[600],
             ),
             textAlign: TextAlign.center,
           ),
         ),
-        const SizedBox(height: 36),
+        SizedBox(height: 36.h),
         SimpleComponents.buildTextField(
           _nameController,
           'Name',
           AppLocalizations.of(context)!.enterYourName,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         SimpleComponents.buildTextField(
           _emailController,
           'Email',
           AppLocalizations.of(context)!.enterYourEmail,
           isEmail: true,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         SimpleComponents.buildTextField(
           _phoneController,
           'Phone Number',
           AppLocalizations.of(context)!.enterYourPhoneNumber,
           isPhone: true,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         SimpleComponents.buildTextField(
           _bioController,
           'Bio',
           AppLocalizations.of(context)!.enterYourBio,
           isLongText: true,
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         _buildNextButton(),
       ],
     );
@@ -155,7 +156,7 @@ class _TechnicianRegistrationPageState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 36),
+        SizedBox(height: 36.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -168,7 +169,7 @@ class _TechnicianRegistrationPageState
               child: Row(
                 children: [
                   Icon(Icons.arrow_back, color: Colors.blue),
-                  SizedBox(width: 4),
+                  SizedBox(width: 4.w),
                   Text(
                     AppLocalizations.of(context)!.back,
                     style: TextStyle(
@@ -182,34 +183,34 @@ class _TechnicianRegistrationPageState
             Text(
               AppLocalizations.of(context)!.almostThere,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.bold,
                 color: Colors.blue,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
         Text(
           AppLocalizations.of(context)!.services,
           textAlign: TextAlign.left,
           style: TextStyle(
             fontWeight: FontWeight.w500,
-            fontSize: 16,
+            fontSize: 16.sp,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         MultiSelectComponent(
           onSelectionChanged: handleSelectionChanged,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         CustomDropdown(
           items: const ["Bole", "Akaki", "Nifas Silk"],
           hint: AppLocalizations.of(context)!.selectYourSubCity,
           selectedValue: _subCity,
           onChanged: (value) => setState(() => _subCity = value),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         CustomDropdown(
           items: const ["01", "02", "03", "04", "05"],
           hint: AppLocalizations.of(context)!.selectYourWereda,
@@ -222,7 +223,7 @@ class _TechnicianRegistrationPageState
             _idCardPath, () => _pickFile('idCard')),
         _buildFileUploadButton('Profile Image', _profileImagePath,
             () => _pickFile('profileImage')),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         SimpleComponents.buildTextField(
           _passwordController,
           'Password',
@@ -235,7 +236,7 @@ class _TechnicianRegistrationPageState
           AppLocalizations.of(context)!.confirmPassword,
           isPassword: true,
         ),
-        const SizedBox(height: 36),
+        SizedBox(height: 36.h),
         SimpleComponents.buildButton(
           isLoading: Provider.of<AuthenticationProvider>(context).isLoading,
           onTap: _submitForm,
@@ -250,7 +251,7 @@ class _TechnicianRegistrationPageState
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.w),
         child: Form(
           key: _formKey,
           child: ListView(
@@ -271,11 +272,11 @@ class _TechnicianRegistrationPageState
         GestureDetector(
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            margin: const EdgeInsets.only(top: 16),
+            padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
+            margin: EdgeInsets.only(top: 16.h),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey[300]!),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.r),
             ),
             child: Text(
               path != null

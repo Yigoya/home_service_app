@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_service_app/models/booking.dart';
 import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/models/technician.dart';
+import 'package:home_service_app/screens/auth/forget_password_page.dart';
 import 'package:home_service_app/screens/auth/login.dart';
 import 'package:home_service_app/screens/auth/signup.dart';
 import 'package:home_service_app/screens/auth/technicain_regiteration.dart';
@@ -41,8 +42,8 @@ class RouteGenerator {
   static const String questionairePage = '/questionaire';
   static const String notificationPage = '/notification';
   static const String detailBookingPage = '/detail_booking';
+  static const String forgotPasswordPage = '/forgot_password';
 
-  // static const String forgotPasswordPage = '/forgot_password';
   // static const String resetPasswordPage = '/reset_password';
   // static const String settingsPage = '/settings';
   // static const String aboutPage = '/about';
@@ -123,6 +124,10 @@ class RouteGenerator {
       case detailBookingPage:
         return MaterialPageRoute(
           builder: (_) => const BookingDetailsPage(),
+        );
+      case forgotPasswordPage:
+        return MaterialPageRoute(
+          builder: (_) => ForgotPasswordPage(),
         );
       default:
         return _errorRoute();

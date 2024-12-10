@@ -3,6 +3,7 @@ import 'package:home_service_app/provider/auth_provider.dart';
 import 'package:home_service_app/utils/elements.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -49,17 +50,17 @@ class _SignupPageState extends State<SignupPage> {
       backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.w),
           child: Form(
             key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
+                SizedBox(height: 40.h),
                 Text(
                   AppLocalizations.of(context)!.createAccount,
                   style: TextStyle(
-                      fontSize: 32,
+                      fontSize: 32.sp,
                       fontWeight: FontWeight.w600,
                       color: Colors.blue),
                 ),
@@ -103,15 +104,18 @@ class _SignupPageState extends State<SignupPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Have an account? "),
+                    Text("Have an account? ",
+                        style: TextStyle(fontSize: 14.sp)),
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(context, '/login');
                       },
-                      child: const Text(
+                      child: Text(
                         "Log in",
                         style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14.sp),
                       ),
                     ),
                   ],

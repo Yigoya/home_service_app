@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
@@ -39,17 +40,17 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.email_outlined,
-              size: 100,
+              size: 100.sp,
               color: Colors.blueAccent,
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24.h),
             const Text(
               "Verify Your Email",
               style: TextStyle(
@@ -58,35 +59,34 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             Text(
               "To continue, please verify your email by clicking the link we sent to your inbox.",
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 16.sp,
                 color: Colors.grey[700],
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
             ElevatedButton(
               onPressed: openGmailApp,
               style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.open_in_new),
-                  SizedBox(width: 8),
-                  Text("Open Gmail"),
+                  Icon(Icons.open_in_new, size: 24.sp),
+                  SizedBox(width: 8.w),
+                  const Text("Open Gmail"),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             TextButton(
               onPressed: () {
                 // Include additional options if they didn’t receive an email

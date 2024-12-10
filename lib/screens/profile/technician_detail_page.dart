@@ -4,6 +4,7 @@ import 'package:home_service_app/models/techinician_detail.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TechncianDetailPage extends StatefulWidget {
   final int technicianId;
@@ -42,18 +43,18 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                   _buildTechnicianCard(techinicianDetail),
 
                   // Business Hours
-                  const Padding(
-                    padding: EdgeInsets.only(left: 16.0, top: 16),
+                  Padding(
+                    padding: EdgeInsets.only(left: 16.w, top: 16.h),
                     child: Text("Business Hour",
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
+                            fontSize: 18.sp, fontWeight: FontWeight.bold)),
                   ),
                   Container(
-                    margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.all(16),
+                    margin: EdgeInsets.all(16.w),
+                    padding: EdgeInsets.all(16.w),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(16.r),
                     ),
                     child: techinicianDetail.schedule != null
                         ? Column(
@@ -66,22 +67,22 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text("Monday",
+                                    Text("Monday",
                                         style: TextStyle(
-                                            fontSize: 18,
+                                            fontSize: 18.sp,
                                             fontWeight: FontWeight.w600)),
                                     Row(
                                       children: [
                                         Container(
-                                          margin: const EdgeInsets.only(
-                                              left: 8, bottom: 8),
-                                          padding: const EdgeInsets.all(8),
+                                          margin: EdgeInsets.only(
+                                              left: 8.w, bottom: 8.h),
+                                          padding: EdgeInsets.all(8.w),
                                           decoration: BoxDecoration(
                                             color: Colors.grey[100],
                                             border: Border.all(
                                                 color: Colors.grey[300]!),
                                             borderRadius:
-                                                BorderRadius.circular(12),
+                                                BorderRadius.circular(12.r),
                                           ),
                                           child: Text(
                                               '${techinicianDetail.schedule!.mondayStart} - ${techinicianDetail.schedule!.mondayEnd}'),
@@ -98,22 +99,22 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text("Tuesday",
+                                    Text("Tuesday",
                                         style: TextStyle(
-                                            fontSize: 18,
+                                            fontSize: 18.sp,
                                             fontWeight: FontWeight.w600)),
                                     Row(
                                       children: [
                                         Container(
-                                          margin: const EdgeInsets.only(
-                                              left: 8, bottom: 8),
-                                          padding: const EdgeInsets.all(8),
+                                          margin: EdgeInsets.only(
+                                              left: 8.w, bottom: 8.h),
+                                          padding: EdgeInsets.all(8.w),
                                           decoration: BoxDecoration(
                                             color: Colors.grey[100],
                                             border: Border.all(
                                                 color: Colors.grey[300]!),
                                             borderRadius:
-                                                BorderRadius.circular(12),
+                                                BorderRadius.circular(12.r),
                                           ),
                                           child: Text(
                                               '${techinicianDetail.schedule!.tuesdayStart} - ${techinicianDetail.schedule!.tuesdayEnd}'),
@@ -130,22 +131,22 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text("Wednesday",
+                                    Text("Wednesday",
                                         style: TextStyle(
-                                            fontSize: 18,
+                                            fontSize: 18.sp,
                                             fontWeight: FontWeight.w600)),
                                     Row(
                                       children: [
                                         Container(
-                                          margin: const EdgeInsets.only(
-                                              left: 8, bottom: 8),
-                                          padding: const EdgeInsets.all(8),
+                                          margin: EdgeInsets.only(
+                                              left: 8.w, bottom: 8.h),
+                                          padding: EdgeInsets.all(8.w),
                                           decoration: BoxDecoration(
                                             color: Colors.grey[100],
                                             border: Border.all(
                                                 color: Colors.grey[300]!),
                                             borderRadius:
-                                                BorderRadius.circular(12),
+                                                BorderRadius.circular(12.r),
                                           ),
                                           child: Text(
                                               '${techinicianDetail.schedule!.wednesdayStart} - ${techinicianDetail.schedule!.wednesdayEnd}'),
@@ -162,22 +163,22 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text("Thursday",
+                                    Text("Thursday",
                                         style: TextStyle(
-                                            fontSize: 18,
+                                            fontSize: 18.sp,
                                             fontWeight: FontWeight.w600)),
                                     Row(
                                       children: [
                                         Container(
-                                          margin: const EdgeInsets.only(
-                                              left: 8, bottom: 8),
-                                          padding: const EdgeInsets.all(8),
+                                          margin: EdgeInsets.only(
+                                              left: 8.w, bottom: 8.h),
+                                          padding: EdgeInsets.all(8.w),
                                           decoration: BoxDecoration(
                                             color: Colors.grey[100],
                                             border: Border.all(
                                                 color: Colors.grey[300]!),
                                             borderRadius:
-                                                BorderRadius.circular(12),
+                                                BorderRadius.circular(12.r),
                                           ),
                                           child: Text(
                                               '${techinicianDetail.schedule!.thursdayStart} - ${techinicianDetail.schedule!.thursdayEnd}'),
@@ -193,22 +194,22 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text("Friday",
+                                    Text("Friday",
                                         style: TextStyle(
-                                            fontSize: 18,
+                                            fontSize: 18.sp,
                                             fontWeight: FontWeight.w600)),
                                     Row(
                                       children: [
                                         Container(
-                                          margin: const EdgeInsets.only(
-                                              left: 8, bottom: 8),
-                                          padding: const EdgeInsets.all(8),
+                                          margin: EdgeInsets.only(
+                                              left: 8.w, bottom: 8.h),
+                                          padding: EdgeInsets.all(8.w),
                                           decoration: BoxDecoration(
                                             color: Colors.grey[100],
                                             border: Border.all(
                                                 color: Colors.grey[300]!),
                                             borderRadius:
-                                                BorderRadius.circular(12),
+                                                BorderRadius.circular(12.r),
                                           ),
                                           child: Text(
                                               '${techinicianDetail.schedule!.fridayStart} - ${techinicianDetail.schedule!.fridayEnd}'),
@@ -225,22 +226,22 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text("Saturday",
+                                    Text("Saturday",
                                         style: TextStyle(
-                                            fontSize: 18,
+                                            fontSize: 18.sp,
                                             fontWeight: FontWeight.w600)),
                                     Row(
                                       children: [
                                         Container(
-                                          margin: const EdgeInsets.only(
-                                              left: 8, bottom: 8),
-                                          padding: const EdgeInsets.all(8),
+                                          margin: EdgeInsets.only(
+                                              left: 8.w, bottom: 8.h),
+                                          padding: EdgeInsets.all(8.w),
                                           decoration: BoxDecoration(
                                             color: Colors.grey[100],
                                             border: Border.all(
                                                 color: Colors.grey[300]!),
                                             borderRadius:
-                                                BorderRadius.circular(12),
+                                                BorderRadius.circular(12.r),
                                           ),
                                           child: Text(
                                               '${techinicianDetail.schedule!.saturdayStart} - ${techinicianDetail.schedule!.saturdayEnd}'),
@@ -256,22 +257,22 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text("Sunday",
+                                    Text("Sunday",
                                         style: TextStyle(
-                                            fontSize: 18,
+                                            fontSize: 18.sp,
                                             fontWeight: FontWeight.w600)),
                                     Row(
                                       children: [
                                         Container(
-                                          margin: const EdgeInsets.only(
-                                              left: 8, bottom: 8),
-                                          padding: const EdgeInsets.all(8),
+                                          margin: EdgeInsets.only(
+                                              left: 8.w, bottom: 8.h),
+                                          padding: EdgeInsets.all(8.w),
                                           decoration: BoxDecoration(
                                             color: Colors.grey[100],
                                             border: Border.all(
                                                 color: Colors.grey[300]!),
                                             borderRadius:
-                                                BorderRadius.circular(12),
+                                                BorderRadius.circular(12.r),
                                           ),
                                           child: Text(
                                               '${techinicianDetail.schedule!.sundayStart} - ${techinicianDetail.schedule!.sundayEnd}'),
@@ -282,16 +283,17 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                 ),
                             ],
                           )
-                        : const Text('No schedule available',
-                            style: TextStyle(fontSize: 18, color: Colors.grey)),
+                        : Text('No schedule available',
+                            style:
+                                TextStyle(fontSize: 18.sp, color: Colors.grey)),
                   ),
 
                   // Ratings Section
                   Padding(
-                    padding: const EdgeInsets.only(left: 16),
+                    padding: EdgeInsets.only(left: 16.w),
                     child: Text("Ratings for ${techinicianDetail.name}",
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
+                        style: TextStyle(
+                            fontSize: 18.sp, fontWeight: FontWeight.bold)),
                   ),
                   techinicianDetail.reviews.isNotEmpty
                       ? Column(
@@ -300,15 +302,15 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                               .toList(),
                         )
                       : Container(
-                          padding: const EdgeInsets.all(16.0),
-                          margin: const EdgeInsets.all(16.0),
+                          padding: EdgeInsets.all(16.w),
+                          margin: EdgeInsets.all(16.w),
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(16.r),
                           ),
-                          child: const Text('No one has rated yet',
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.grey)),
+                          child: Text('No one has rated yet',
+                              style: TextStyle(
+                                  fontSize: 18.sp, color: Colors.grey)),
                         ),
                 ],
               ),
@@ -321,76 +323,81 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
 
   Widget _buildTechnicianCard(TechinicianDetail tech) {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(24.r),
           boxShadow: [
             BoxShadow(
                 color: Colors.grey[200]!,
-                offset: const Offset(0, 2),
-                blurRadius: 2)
+                offset: Offset(0, 2.h),
+                blurRadius: 2.r)
           ]),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(8.0.r),
                 child: Image.network(
                   '${ApiService.API_URL_FILE}${tech.profileImage}',
                   fit: BoxFit.cover,
-                  width: 72,
-                  height: 72,
+                  width: 72.w,
+                  height: 72.h,
                   errorBuilder: (context, error, stackTrace) {
                     return Image.asset(
                       'assets/images/profile.png',
-                      width: 72,
-                      height: 72,
+                      width: 72.w,
+                      height: 72.h,
                       fit: BoxFit.cover,
                     );
                   },
                 ),
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: 10.w),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     tech.name ?? 'No Name',
-                    style: const TextStyle(
-                      fontSize: 24,
+                    style: TextStyle(
+                      fontSize: 24.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 5),
-                  Wrap(
-                    spacing: 8.0,
-                    runSpacing: 4.0,
-                    children: tech.services
-                        .map((service) => Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                service.name,
-                                style: const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ))
-                        .toList(),
-                  )
+                  SizedBox(height: 5.h),
+                  SizedBox(
+                    width: 238.w,
+                    child: Wrap(
+                        spacing: 8.0.w,
+                        runSpacing: 4.0.h,
+                        children: tech.services
+                            .map((service) => Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 12.w, vertical: 6.h),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(20.r),
+                                  ),
+                                  child: Text(
+                                    service.name,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14.sp),
+                                  ),
+                                ))
+                            .toList()),
+                  ),
                 ],
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           Row(
             children: [
               Column(
@@ -399,22 +406,21 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                   Text(
                     "Location",
                     style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(height: 5),
+                  SizedBox(height: 5.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const Icon(Icons.location_on,
-                          color: Colors.grey, size: 16),
-                      const SizedBox(width: 5),
+                      Icon(Icons.location_on, color: Colors.grey, size: 16.sp),
+                      SizedBox(width: 5.w),
                       Text(
-                        '${tech.subcity ?? ''}, ${tech.city ?? ''}',
+                        '${tech.subcity ?? ' - '}, ${tech.city ?? '-'}',
                         style: TextStyle(
                           color: Colors.grey[800],
-                          fontSize: 18,
+                          fontSize: 18.sp,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -422,48 +428,48 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                   ),
                 ],
               ),
-              const SizedBox(width: 20),
+              SizedBox(width: 20.w),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Bookings',
                     style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(height: 5),
+                  SizedBox(height: 5.h),
                   Text(
                     '${tech.bookings ?? 0}',
                     style: TextStyle(
                         color: Colors.grey[800],
-                        fontSize: 20,
+                        fontSize: 20.sp,
                         fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
-              const SizedBox(width: 20),
+              SizedBox(width: 20.w),
               Column(
                 children: [
                   Text(
                     'Rating',
                     style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(height: 5),
+                  SizedBox(height: 5.h),
                   Row(
                     children: [
-                      const Icon(Icons.star,
-                          color: Color.fromARGB(255, 235, 173, 5), size: 16),
-                      const SizedBox(width: 5),
+                      Icon(Icons.star,
+                          color: Color.fromARGB(255, 235, 173, 5), size: 16.sp),
+                      SizedBox(width: 5.w),
                       Text(
                         '${tech.rating ?? 0}',
                         style: TextStyle(
                           color: Colors.grey[800],
-                          fontSize: 16,
+                          fontSize: 16.sp,
                         ),
                       ),
                     ],
@@ -472,21 +478,21 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           Text("More about ${tech.name}",
               style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 20.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.black.withOpacity(0.7))),
-          const SizedBox(height: 6),
+          SizedBox(height: 6.h),
           Text(
             tech.bio ?? 'No bio available',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 18.sp,
               color: Colors.grey[600],
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
         ],
       ),
     );
@@ -494,16 +500,16 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
 
   Widget _buildReviewCard(Review review) {
     return Container(
-      margin: const EdgeInsets.only(left: 16, top: 16, right: 16),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(left: 16.w, top: 16.h, right: 16.w),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10.r),
           boxShadow: [
             BoxShadow(
                 color: Colors.grey[200]!,
-                offset: const Offset(0, 2),
-                blurRadius: 2)
+                offset: Offset(0, 2.h),
+                blurRadius: 2.r)
           ]),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -511,86 +517,53 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
           Row(
             children: List.generate(
               review.rating,
-              (index) => const Icon(Icons.star, color: Colors.yellow, size: 16),
+              (index) => Icon(Icons.star, color: Colors.yellow, size: 16.sp),
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             review.review,
-            style: const TextStyle(fontSize: 16, height: 1.5),
+            style: TextStyle(fontSize: 16.sp, height: 1.5.h),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 8),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
+          SizedBox(height: 8.h),
           Row(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(8.0.r),
                 child: Image.network(
                   '${ApiService.API_URL_FILE}${review.customer.profileImage}',
                   fit: BoxFit.cover,
-                  width: 72,
-                  height: 72,
+                  width: 72.w,
+                  height: 72.h,
                   errorBuilder: (context, error, stackTrace) {
                     return Image.asset(
                       'assets/images/profile.png',
-                      width: 72,
-                      height: 72,
+                      width: 72.w,
+                      height: 72.h,
                       fit: BoxFit.cover,
                     );
                   },
                 ),
               ),
-              const SizedBox(width: 4),
+              SizedBox(width: 4.w),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(review.customer.name,
-                      style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold)),
+                      style: TextStyle(
+                          fontSize: 24.sp, fontWeight: FontWeight.bold)),
                   Text(review.customer.email,
-                      style: TextStyle(fontSize: 16, color: Colors.grey[600])),
+                      style:
+                          TextStyle(fontSize: 16.sp, color: Colors.grey[600])),
                 ],
               )
             ],
           )
         ],
       ),
-    );
-  }
-}
-
-class RatingTile extends StatelessWidget {
-  final Review rating;
-
-  const RatingTile({super.key, required this.rating});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ListTile(
-          leading: const CircleAvatar(
-            backgroundImage: NetworkImage(
-                'https://example.com/reviewer-image.jpg'), // Replace with actual reviewer image URL
-          ),
-          title: Text(rating.customer.name),
-          subtitle: Row(
-            children: List.generate(
-                rating.rating,
-                (index) =>
-                    const Icon(Icons.star, color: Colors.amber, size: 20)),
-          ),
-          trailing: Text(rating.rating.toString()),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 16.0, bottom: 8.0),
-          child: Text(rating.review),
-        ),
-        const Divider(),
-      ],
     );
   }
 }

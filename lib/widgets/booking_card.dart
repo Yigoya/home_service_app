@@ -11,17 +11,20 @@ import 'package:home_service_app/services/api_service.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BookingCard extends StatelessWidget {
   final Booking booking;
   final List<Widget> actions;
   final Widget? additionalContent;
+  final bool isTechnician;
 
   const BookingCard({
     super.key,
     required this.booking,
     required this.actions,
     this.additionalContent,
+    this.isTechnician = false,
   });
 
   @override
@@ -33,38 +36,48 @@ class BookingCard extends StatelessWidget {
         Navigator.pushNamed(context, '/detail_booking');
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(32.r),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(24.r),
                     child: Image.network(
-                      '${ApiService.API_URL_FILE}${booking.technicianProfileImage}',
-                      width: 100,
-                      height: 100,
+                      '${ApiService.API_URL_FILE}${isTechnician ? booking.customerProfileImage : booking.technicianProfileImage}',
+                      width: 80.w,
+                      height: 80.h,
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          'assets/images/profile.png',
+                          width: 80.w,
+                          height: 80.h,
+                          fit: BoxFit.cover,
+                        );
+                      },
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(booking.technicianName,
-                            style: const TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold)),
+                        Text(
+                            isTechnician
+                                ? booking.customerName
+                                : booking.technicianName,
+                            style: TextStyle(
+                                fontSize: 24.sp, fontWeight: FontWeight.bold)),
                         Text(booking.serviceName,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold)),
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                         Text(
                             'Location: ${booking.address.subcity}, ${booking.address.wereda}'),
                         Text(booking.scheduledDate),
@@ -73,15 +86,15 @@ class BookingCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               Text(booking.description ?? '',
-                  style: const TextStyle(
-                      fontSize: 16, height: 1.5, color: Colors.grey)),
+                  style: TextStyle(
+                      fontSize: 16.sp, height: 1.5, color: Colors.grey)),
               if (additionalContent != null) ...[
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 additionalContent!,
               ],
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: actions,
@@ -280,6 +293,7 @@ class _BookingListState extends State<BookingList> {
             booking: booking,
             actions: actions,
             additionalContent: additionalContent,
+            isTechnician: widget.isTechnician,
           );
         },
       ),
@@ -289,14 +303,14 @@ class _BookingListState extends State<BookingList> {
   Widget _actionButton(String label, Color color,
       {Color textColor = Colors.white}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
       ),
       child: Text(label,
           style: TextStyle(
-              color: textColor, fontSize: 16, fontWeight: FontWeight.w500)),
+              color: textColor, fontSize: 16.sp, fontWeight: FontWeight.w500)),
     );
   }
 
@@ -306,10 +320,9 @@ class _BookingListState extends State<BookingList> {
       children: [
         Text(
             '${AppLocalizations.of(context)!.yourRating}: ${booking.review!.rating}',
-            style: const TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 4),
-        Text(booking.review!.review ?? '',
-            style: const TextStyle(fontSize: 16)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp)),
+        SizedBox(height: 4.h),
+        Text(booking.review!.review ?? '', style: TextStyle(fontSize: 16.sp)),
       ],
     );
   }
@@ -339,7 +352,7 @@ class _BookingListState extends State<BookingList> {
                   rating = newRating;
                 },
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               TextField(
                 controller: reviewController,
                 decoration: InputDecoration(
@@ -399,8 +412,8 @@ class _BookingListState extends State<BookingList> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(AppLocalizations.of(context)!.rateAndReview,
-            style: const TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp)),
+        SizedBox(height: 8.h),
         RatingBar.builder(
           initialRating: rating,
           minRating: 1,
@@ -413,7 +426,7 @@ class _BookingListState extends State<BookingList> {
             rating = newRating;
           },
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         TextField(
           controller: reviewController,
           decoration: InputDecoration(
@@ -422,7 +435,7 @@ class _BookingListState extends State<BookingList> {
           ),
           maxLines: 3,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         ElevatedButton(
           onPressed: () async {
             if (rating > 0 && reviewController.text.isNotEmpty) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Pagination extends StatelessWidget {
   final int totalPage;
@@ -19,18 +20,18 @@ class Pagination extends StatelessWidget {
         GestureDetector(
           onTap: () => onPageChanged(i),
           child: Container(
-            width: 50,
-            height: 50,
-            margin: const EdgeInsets.only(right: 4),
+            width: 50.w,
+            height: 50.h,
+            margin: EdgeInsets.only(right: 4.w),
             decoration: BoxDecoration(
                 color: i == currentPage ? Colors.blue : Colors.white,
                 border: Border.all(color: Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12.r)),
             child: Center(
               child: Text(
                 '$i',
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 22.sp,
                   color: i == currentPage ? Colors.white : Colors.black,
                   fontWeight:
                       i == currentPage ? FontWeight.bold : FontWeight.normal,
@@ -47,7 +48,7 @@ class Pagination extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(16.0.w),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -55,13 +56,13 @@ class Pagination extends StatelessWidget {
             onTap:
                 currentPage > 1 ? () => onPageChanged(currentPage - 1) : null,
             child: Container(
-                width: 50,
-                height: 50,
-                margin: const EdgeInsets.only(right: 4),
+                width: 50.w,
+                height: 50.h,
+                margin: EdgeInsets.only(right: 4.w),
                 decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(color: Colors.grey[300]!),
-                    borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12.r)),
                 child: Icon(
                   Icons.chevron_left_rounded,
                   color: currentPage == 1 ? Colors.grey : Colors.black,
@@ -80,13 +81,13 @@ class Pagination extends StatelessWidget {
                 ? () => onPageChanged(currentPage + 1)
                 : null,
             child: Container(
-                width: 50,
-                height: 50,
-                margin: const EdgeInsets.only(right: 4),
+                width: 50.w,
+                height: 50.h,
+                margin: EdgeInsets.only(right: 4.w),
                 decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(color: Colors.grey[300]!),
-                    borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12.r)),
                 child: Icon(
                   Icons.chevron_right_rounded,
                   color: currentPage == totalPage ? Colors.grey : Colors.black,

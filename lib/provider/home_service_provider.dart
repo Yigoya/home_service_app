@@ -67,9 +67,21 @@ class HomeServiceProvider with ChangeNotifier {
       }
 
       try {
+        _categories = serviceCategories
+            .map<Category>((e) => Category.fromJson(e))
+            .toList();
+        selectedCategory = _categories.first.id;
+      } catch (e) {
+        Logger().e('Error mapping serviceCategories: $e');
+      }
+
+      try {
         _services = services.map<Service>((e) => Service.fromJson(e)).toList();
-        _fiterableByCatagory = _services;
-        _fiterableBySearch = _services;
+        _fiterableByCatagory = _services
+            .where((service) => service.categoryId == _categories.first.id)
+            .toList();
+        selectedCategory = _categories.first.id;
+        // _fiterableBySearch = _services;
       } catch (e) {
         Logger().e('Error mapping services: $e');
       }
@@ -79,15 +91,6 @@ class HomeServiceProvider with ChangeNotifier {
             topFiveReviews.map<Review>((e) => Review.fromJson(e)).toList();
       } catch (e) {
         Logger().e('Error mapping topFiveReviews: $e');
-      }
-
-      try {
-        _categories = serviceCategories
-            .map<Category>((e) => Category.fromJson(e))
-            .toList();
-        selectedCategory = _categories.first.id;
-      } catch (e) {
-        Logger().e('Error mapping serviceCategories: $e');
       }
 
       notifyListeners();
@@ -106,11 +109,20 @@ class HomeServiceProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void filterServicesBySearch(String search) {
-    _fiterableBySearch = _services
-        .where((service) =>
-            service.name.toLowerCase().contains(search.toLowerCase()))
-        .toList();
+  void filterServicesBySearch(
+      {bool isCategory = false, int? categoryId, String search = ''}) {
+    if (isCategory) {
+      _fiterableBySearch = _services
+          .where((service) => service.categoryId == categoryId)
+          .toList();
+    } else if (search.isNotEmpty) {
+      _fiterableBySearch = _services
+          .where((service) =>
+              service.name.toLowerCase().contains(search.toLowerCase()))
+          .toList();
+    } else {
+      _fiterableBySearch = [];
+    }
     notifyListeners();
   }
 

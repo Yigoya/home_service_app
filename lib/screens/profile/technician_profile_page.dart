@@ -13,6 +13,7 @@ import 'package:home_service_app/widgets/booking_card.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TechnicianProfilePage extends StatefulWidget {
   const TechnicianProfilePage({super.key});
@@ -43,130 +44,125 @@ class _TechnicianProfilePageState extends State<TechnicianProfilePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ProfilePageProvider>(context, listen: false).fetchBookings();
-      Provider.of<ProfilePageProvider>(context, listen: false)
-          .fetchTechnicianProfile();
+      init();
     });
   }
 
-  // void init() async {
-  //   await Provider.of<ProfilePageProvider>(context, listen: false)
-  //       .fetchBookings();
-  //   await Provider.of<ProfilePageProvider>(context, listen: false)
-  //       .fetchTechnicianProfile();
-  // }
+  void init() async {
+    await Provider.of<ProfilePageProvider>(context, listen: false)
+        .fetchBookings();
+    await Provider.of<ProfilePageProvider>(context, listen: false)
+        .fetchTechnicianProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context).user;
     return Scaffold(
-      key: scaffoldKey,
-      backgroundColor: Colors.grey[200],
-      drawer: const TechnicianDrawer(),
-      body: Consumer<ProfilePageProvider>(
-        builder: (context, bookingProvider, child) {
-          if (bookingProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final bookings = bookingProvider.bookings;
-
-          return ListView(
+        key: scaffoldKey,
+        backgroundColor: Colors.grey[200],
+        body: SafeArea(
+          child: Column(
             children: [
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               UserProfileComponent(
                   user: user!,
                   onImagePick: _pickImage,
                   onEditName: () => _showEditNameDialog(context, user)),
-              const SizedBox(height: 16),
-              SizedBox(
-                height: 800,
-                child: DefaultTabController(
-                  length: 5,
-                  child: Column(
-                    children: [
-                      TabBar(
-                        labelPadding:
-                            const EdgeInsets.only(left: 20, right: 20),
-                        dividerColor: Colors.transparent,
-                        splashFactory: NoSplash.splashFactory,
-                        labelColor: Colors.white,
-                        unselectedLabelColor: Colors.grey,
-                        isScrollable: true,
-                        indicator: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        indicatorPadding: const EdgeInsets.symmetric(
-                            horizontal: 0, vertical: 6),
-                        labelStyle: const TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w500), //For Selected tab
-                        unselectedLabelStyle: const TextStyle(
-                            fontSize: 16.0, fontWeight: FontWeight.w500),
-                        tabs: [
-                          Tab(text: AppLocalizations.of(context)!.pending),
-                          Tab(text: AppLocalizations.of(context)!.accepted),
-                          Tab(text: AppLocalizations.of(context)!.started),
-                          Tab(text: AppLocalizations.of(context)!.completed),
-                          Tab(text: AppLocalizations.of(context)!.declined),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 600,
-                        child: TabBarView(
-                          children: [
-                            BookingList(
-                                isTechnician: true,
-                                status: BookingStatus.PENDING.toString(),
-                                bookings: bookings
-                                    .where((b) =>
-                                        b.status ==
-                                        BookingStatus.PENDING.toString())
-                                    .toList()),
-                            BookingList(
-                                status: BookingStatus.ACCEPTED.toString(),
-                                bookings: bookings
-                                    .where((b) =>
-                                        b.status ==
-                                        BookingStatus.ACCEPTED.toString())
-                                    .toList()),
-                            BookingList(
-                                isTechnician: true,
-                                status: BookingStatus.STARTED.toString(),
-                                bookings: bookings
-                                    .where((b) =>
-                                        b.status ==
-                                        BookingStatus.STARTED.toString())
-                                    .toList()),
-                            BookingList(
-                                isTechnician: true,
-                                status: BookingStatus.COMPLETED.toString(),
-                                bookings: bookings
-                                    .where((b) =>
-                                        b.status ==
-                                        BookingStatus.COMPLETED.toString())
-                                    .toList()),
-                            BookingList(
-                                status: BookingStatus.DENIED.toString(),
-                                bookings: bookings
-                                    .where((b) =>
-                                        b.status ==
-                                        BookingStatus.DENIED.toString())
-                                    .toList()),
+              SizedBox(height: 16.h),
+              Expanded(
+                child: Consumer<ProfilePageProvider>(
+                    builder: (context, bookingProvider, child) {
+                  if (bookingProvider.isLoading ||
+                      Provider.of<BookingProvider>(context).isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  final bookings = bookingProvider.bookings;
+                  return DefaultTabController(
+                    length: 5,
+                    child: Column(
+                      children: [
+                        TabBar(
+                          labelPadding:
+                              EdgeInsets.only(left: 20.w, right: 20.w),
+                          dividerColor: Colors.transparent,
+                          splashFactory: NoSplash.splashFactory,
+                          labelColor: Colors.white,
+                          unselectedLabelColor: Colors.grey,
+                          isScrollable: true,
+                          indicator: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(20.r),
+                          ),
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          indicatorPadding: EdgeInsets.symmetric(
+                              horizontal: 0.w, vertical: 6.h),
+                          labelStyle: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w500), //For Selected tab
+                          unselectedLabelStyle: TextStyle(
+                              fontSize: 16.sp, fontWeight: FontWeight.w500),
+                          tabs: [
+                            Tab(text: AppLocalizations.of(context)!.pending),
+                            Tab(text: AppLocalizations.of(context)!.accepted),
+                            Tab(text: AppLocalizations.of(context)!.started),
+                            Tab(text: AppLocalizations.of(context)!.completed),
+                            Tab(text: AppLocalizations.of(context)!.declined),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                ),
+                        Expanded(
+                          child: TabBarView(
+                            children: [
+                              BookingList(
+                                  isTechnician: true,
+                                  status: BookingStatus.PENDING.toString(),
+                                  bookings: bookings
+                                      .where((b) =>
+                                          b.status ==
+                                          BookingStatus.PENDING.toString())
+                                      .toList()),
+                              BookingList(
+                                  status: BookingStatus.ACCEPTED.toString(),
+                                  bookings: bookings
+                                      .where((b) =>
+                                          b.status ==
+                                          BookingStatus.ACCEPTED.toString())
+                                      .toList()),
+                              BookingList(
+                                  isTechnician: true,
+                                  status: BookingStatus.STARTED.toString(),
+                                  bookings: bookings
+                                      .where((b) =>
+                                          b.status ==
+                                          BookingStatus.STARTED.toString())
+                                      .toList()),
+                              BookingList(
+                                  isTechnician: true,
+                                  status: BookingStatus.COMPLETED.toString(),
+                                  bookings: bookings
+                                      .where((b) =>
+                                          b.status ==
+                                          BookingStatus.COMPLETED.toString())
+                                      .toList()),
+                              BookingList(
+                                  status: BookingStatus.DENIED.toString(),
+                                  bookings: bookings
+                                      .where((b) =>
+                                          b.status ==
+                                          BookingStatus.DENIED.toString())
+                                      .toList()),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
               ),
             ],
-          );
-        },
-      ),
-    );
+          ),
+        ));
   }
 
   void _showEditNameDialog(BuildContext context, User user) {

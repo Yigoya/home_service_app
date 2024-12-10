@@ -4,8 +4,11 @@ import 'package:home_service_app/provider/booking_provider.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/screens/home/technician_filter.dart';
 import 'package:home_service_app/utils/functions.dart';
+import 'package:home_service_app/widgets/custom_dropdown.dart';
+import 'package:logger/web.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class QuestionnairePage extends StatefulWidget {
   final Service service;
@@ -21,25 +24,8 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
 
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
-
-  // final List<Map<String, dynamic>> _questions = [
-  //   {
-  //     "id": 1,
-  //     "text": "What is your preferred service time?",
-  //     "type": "MULTIPLE_CHOICE",
-  //     "options": [
-  //       {"optionId": 1, "optionText": "Morning"},
-  //       {"optionId": 2, "optionText": "Afternoon"},
-  //       {"optionId": 3, "optionText": "Evening"}
-  //     ],
-  //   },
-  //   {
-  //     "id": 2,
-  //     "text": "Tell About Yourself?",
-  //     "type": "INPUT",
-  //     "options": [],
-  //   },
-  // ];
+  String? selectedSubCity;
+  String? selectedWereda;
 
   void _nextPage() {
     if (_selectedDate == null || _selectedTime == null) {
@@ -51,8 +37,9 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
 
     if (_currentIndex <
         Provider.of<HomeServiceProvider>(context, listen: false)
-            .questions
-            .length) {
+                .questions
+                .length +
+            1) {
       setState(() {
         _currentIndex++;
       });
@@ -111,7 +98,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                 )));
   }
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate() async {
     final pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -128,7 +115,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
     }
   }
 
-  Future<void> _selectTime(BuildContext context) async {
+  Future<void> _selectTime() async {
     final pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -146,28 +133,30 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
   @override
   Widget build(BuildContext context) {
     final questions = Provider.of<HomeServiceProvider>(context).questions;
-    double height = 300;
+    double height = 300.h;
     if (_currentIndex == 0) {
-      height = 250;
-    } else if (questions[_currentIndex - 1]['type'] == 'INPUT') {
-      height = 200;
-    } else if (questions[_currentIndex - 1]['type'] == 'MULTIPLE_CHOICE') {
-      height = 300;
+      height = 250.h;
+    } else if (_currentIndex == 1) {
+      height = 250.h;
+    } else if (questions[_currentIndex - 2]['type'] == 'INPUT') {
+      height = 200.h;
+    } else if (questions[_currentIndex - 2]['type'] == 'MULTIPLE_CHOICE') {
+      height = 300.h;
     }
     return Scaffold(
       backgroundColor: Colors.grey[200],
       body: Center(
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-          padding: const EdgeInsets.all(16),
+          margin: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
+          padding: EdgeInsets.all(16.w),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(10.r),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey[300]!,
-                blurRadius: 10,
-                spreadRadius: 2,
+                blurRadius: 10.r,
+                spreadRadius: 2.r,
               ),
             ],
           ),
@@ -176,20 +165,19 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                height: 8,
+                height: 8.h,
                 decoration: BoxDecoration(
                   color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Container(
-                  height: 8,
+                  height: 8.h,
                   width: (MediaQuery.of(context).size.width /
                           (questions.length + 1)) *
                       _currentIndex,
-                  // width: (_questions.length + 1) / 5 * 20,
                   decoration: BoxDecoration(
                     color: Colors.blue,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
               ),
@@ -199,13 +187,17 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                   controller: _pageController,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount:
-                      questions.length + 1, // +1 for scheduling date/time page
+                      questions.length + 2, // +1 for scheduling date/time page
                   itemBuilder: (context, index) {
+                    Logger().d("Index: ${questions.length + 2}");
                     if (index == 0) {
                       return _buildSchedulingPage(context);
                     }
+                    if (index == 1) {
+                      return _buildLocationPage(context);
+                    }
                     final question =
-                        questions[index - 1]; // Adjust index for questions
+                        questions[index - 2]; // Adjust index for questions
                     return _buildQuestion(context, question);
                   },
                 ),
@@ -216,31 +208,32 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                   GestureDetector(
                       onTap: _previeusPage,
                       child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 48, vertical: 8),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 48.w, vertical: 8.h),
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.r),
                               color: Colors.white,
                               border: Border.all(color: Colors.grey[300]!)),
                           child: Text(AppLocalizations.of(context)!.back,
-                              style: const TextStyle(
+                              style: TextStyle(
                                   color: Colors.black,
-                                  fontSize: 16,
+                                  fontSize: 16.sp,
                                   fontWeight: FontWeight.w600)))),
                   GestureDetector(
                       onTap: _nextPage,
                       child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 48, vertical: 8),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 48.w, vertical: 8.h),
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.r),
                               border: Border.all(color: Colors.grey[300]!),
                               color: Colors.blue),
                           child: Text(
-                            _currentIndex == questions.length
+                            _currentIndex == questions.length + 1
                                 ? AppLocalizations.of(context)!.submit
                                 : AppLocalizations.of(context)!.next,
-                            style: const TextStyle(color: Colors.white, fontSize: 16),
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 16.sp),
                           ))),
                 ],
               ),
@@ -256,25 +249,24 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(
-          height: 36,
+        SizedBox(
+          height: 36.h,
         ),
         Text(
           AppLocalizations.of(context)!.selectSchedulingDateAndTime,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w500),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20.h),
         Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             GestureDetector(
-              onTap: () => _selectDate(context),
+              onTap: _selectDate,
               child: Container(
                 width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 64, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 64.w, vertical: 12.h),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(color: Colors.grey)),
                 child: Text(
                   _selectedDate != null
@@ -282,21 +274,20 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                       : AppLocalizations.of(context)!.chooseDate,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 18.sp,
                       color:
                           _selectedDate == null ? Colors.grey : Colors.black),
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12.h),
             GestureDetector(
-              onTap: () => _selectTime(context),
+              onTap: _selectTime,
               child: Container(
                 width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 64, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: 64.w, vertical: 12.h),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(color: Colors.grey)),
                 child: Text(
                   _selectedTime != null
@@ -304,7 +295,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                       : AppLocalizations.of(context)!.chooseTime,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 18.sp,
                       color:
                           _selectedDate == null ? Colors.grey : Colors.black),
                 ),
@@ -312,13 +303,62 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
             ),
           ],
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20.h),
         if (_selectedDate != null && _selectedTime != null)
           Text(
             "${AppLocalizations.of(context)!.selected}: ${_selectedDate!.toLocal().toString().split(' ')[0]} at ${_selectedTime!.format(context)}",
-            style: const TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: 16.sp),
             textAlign: TextAlign.center,
           ),
+      ],
+    );
+  }
+
+  Widget _buildLocationPage(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: 36.h,
+        ),
+        Text(
+          "Select your location",
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w500),
+        ),
+        SizedBox(height: 20.h),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CustomDropdown(
+              items: const ["Bole", "Akaki", "Nifas Silk"],
+              hint: AppLocalizations.of(context)!.selectYourSubCity,
+              selectedValue: selectedSubCity,
+              onChanged: (value) {
+                setState(() {
+                  selectedSubCity = value;
+                  Provider.of<BookingProvider>(context, listen: false)
+                      .setSelectedSubCity(value);
+                });
+              },
+            ),
+            SizedBox(
+              height: 8.h,
+            ),
+            CustomDropdown(
+              items: const ["01", "02", "03", "04", "05"],
+              hint: AppLocalizations.of(context)!.selectYourWereda,
+              selectedValue: selectedWereda,
+              onChanged: (value) {
+                setState(() {
+                  selectedWereda = value;
+                  Provider.of<BookingProvider>(context, listen: false)
+                      .setSelectedWereda(value);
+                });
+              },
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -338,14 +378,14 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(
-          height: 36,
+        SizedBox(
+          height: 36.h,
         ),
         Text(
           question['text'],
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20.h),
         TextField(
           onChanged: (value) {
             provider.updateAnswer(question['id'], value);
@@ -366,20 +406,20 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(
-          height: 36,
+        SizedBox(
+          height: 36.h,
         ),
         Text(
           question['text'],
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20.h),
         ...question['options'].map<Widget>((option) {
           return Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.only(left: 16),
+            margin: EdgeInsets.only(bottom: 16.h),
+            padding: EdgeInsets.only(left: 16.w),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8), border: Border.all()),
+                borderRadius: BorderRadius.circular(8.r), border: Border.all()),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

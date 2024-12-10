@@ -3,6 +3,7 @@ import 'package:home_service_app/models/booking.dart';
 import 'package:home_service_app/provider/booking_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class UpdateBookingPage extends StatefulWidget {
   final Booking booking;
@@ -103,14 +104,14 @@ class _UpdateBookingPageState extends State<UpdateBookingPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Edit Booking')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.w),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
               TextFormField(
                 controller: _dateController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Scheduled Date",
                   border: OutlineInputBorder(),
                 ),
@@ -123,56 +124,42 @@ class _UpdateBookingPageState extends State<UpdateBookingPage> {
                 },
                 readOnly: true,
               ),
-              // SizedBox(height: 16),
-              // TextFormField(
-              //   controller: _streetController,
-              //   decoration: InputDecoration(
-              //     labelText: "Street",
-              //     border: OutlineInputBorder(),
-              //   ),
-              //   validator: (value) {
-              //     if (value == null || value.isEmpty) {
-              //       return 'Please enter a street address';
-              //     }
-              //     return null;
-              //   },
-              // ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               TextFormField(
                 controller: _cityController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "City",
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               TextFormField(
                 controller: _subcityController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Subcity",
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               TextFormField(
                 controller: _weredaController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Wereda",
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               TextFormField(
                 controller: _stateController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "State",
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               TextFormField(
                 controller: _countryController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Country",
                   border: OutlineInputBorder(),
                 ),
@@ -183,15 +170,15 @@ class _UpdateBookingPageState extends State<UpdateBookingPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               TextFormField(
                 controller: _zipCodeController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Zip Code",
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               ElevatedButton(
                 onPressed: _saveBooking,
                 child: const Text('Save Booking'),

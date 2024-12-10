@@ -6,8 +6,8 @@ class TechinicianDetail {
   final int id;
   final String name;
   final String email;
-  final String city;
-  final String subcity; // Added subcity field
+  final String? city;
+  final String? subcity; // Added subcity field
   final String phoneNumber;
   final String profileImage;
   final String bio;

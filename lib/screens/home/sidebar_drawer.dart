@@ -43,31 +43,6 @@ class SideNavDrawer extends StatelessWidget {
               children: [
                 _buildNavItem(
                   context,
-                  icon: Icons.home,
-                  label: 'Home Service',
-                  onTap: () {
-                    // Handle navigation
-                    Navigator.pop(context); // Close the drawer
-                  },
-                ),
-                _buildNavItem(
-                  context,
-                  icon: Icons.engineering,
-                  label: 'Technicians',
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildNavItem(
-                  context,
-                  icon: Icons.build,
-                  label: 'Services',
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildNavItem(
-                  context,
                   icon: Icons.contact_mail,
                   label: 'Contact',
                   onTap: () {
