@@ -34,7 +34,7 @@ class LanguageSelector extends StatelessWidget {
                 locale.languageCode == 'en' ? 'English' : 'አማርኛ',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16.sp,
+                  fontSize: 14.sp,
                 ),
               ),
             );

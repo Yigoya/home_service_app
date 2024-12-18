@@ -41,7 +41,7 @@ class _MultiSelectComponentState extends State<MultiSelectComponent> {
       buttonText: Text("Select Services",
           style: TextStyle(
               fontWeight: FontWeight.w500,
-              fontSize: 16.sp, // Use flutter_screenutil for font size
+              fontSize: 14.sp, // Use flutter_screenutil for font size
               color: Colors.grey[600]!)),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey[300]!),

@@ -63,6 +63,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
         selectedWereda =
             Provider.of<BookingProvider>(context, listen: false).selectedWereda;
       });
+
       fetchTechnicians();
     });
   }
@@ -71,7 +72,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
     // Construct query parameters
     final queryParameters = {
       if (controller.text.isNotEmpty) 'name': controller.text,
-      if (selectedSubCity != null) 'subCity': selectedSubCity,
+      if (selectedSubCity != null) 'subcity': selectedSubCity,
       if (selectedWereda != null) 'wereda': selectedWereda,
       if (widget.selectedDate != null)
         'date':
@@ -88,7 +89,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
 
     // Fetch technicians
     await Provider.of<HomeServiceProvider>(context, listen: false)
-        .filterTechnician(queryParameters);
+        .filterTechnician(queryParameters, widget.service.id);
   }
 
   @override
@@ -116,12 +117,12 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(36.r),
                         border: _isFocused
                             ? Border.all(color: Colors.blue, width: 1.5.w)
                             : Border.all(
                                 color:
-                                    const Color.fromARGB(255, 228, 228, 228)),
+                                    const Color.fromARGB(255, 136, 136, 136)),
                       ),
                       child: TextField(
                         controller: controller,
@@ -131,7 +132,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                           alignLabelWithHint: true,
                           hintText: AppLocalizations.of(context)!.searchByName,
                           hintStyle:
-                              TextStyle(color: Colors.grey, fontSize: 20.sp),
+                              TextStyle(color: Colors.grey, fontSize: 18.sp),
                           border: InputBorder.none,
                           suffixIcon: IconButton(
                             onPressed: () {
@@ -147,7 +148,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                       height: 8.h,
                     ),
                     CustomDropdown(
-                      items: const ["Bole", "Akaki", "Nifas Silk"],
+                      items: Provider.of<HomeServiceProvider>(context).subCitys,
                       hint: AppLocalizations.of(context)!.selectYourSubCity,
                       selectedValue: selectedSubCity,
                       onChanged: (value) {
@@ -160,7 +161,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                       height: 8.h,
                     ),
                     CustomDropdown(
-                      items: const ["01", "02", "03", "04", "05"],
+                      items: Provider.of<HomeServiceProvider>(context).weredas,
                       hint: AppLocalizations.of(context)!.selectYourWereda,
                       selectedValue: selectedWereda,
                       onChanged: (value) {
@@ -179,19 +180,19 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                 ),
               ),
               SizedBox(
-                height: 32.h,
+                height: 16.h,
               ),
               Text(
                 '${Provider.of<HomeServiceProvider>(context).totalElements} technicians found matching your specifications',
                 style: TextStyle(
-                  fontSize: 18.sp,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.w500,
                   color: Colors.grey[600],
                 ),
               ),
               Consumer<HomeServiceProvider>(
                 builder: (context, provider, child) {
-                  const height = 270.0;
+                  final height = 270.h;
                   if (provider.isLoading) {
                     return SizedBox(
                         height: 460.h,
@@ -199,7 +200,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                             const Center(child: CircularProgressIndicator()));
                   } else {
                     return SizedBox(
-                      height: (height + 16.h) * provider.technicians.length,
+                      height: (height + 18.h) * provider.technicians.length,
                       child: ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: provider.technicians.length,
@@ -224,9 +225,6 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                   fetchTechnicians();
                 },
               ),
-              SizedBox(
-                height: 52.h,
-              )
             ],
           ),
         ),
@@ -276,9 +274,9 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    tech.name ?? 'No Name',
+                    tech.name,
                     style: TextStyle(
-                      fontSize: 24.sp,
+                      fontSize: 22.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -290,24 +288,23 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
                       children: tech.services
-                              .map((service) => Container(
-                                    margin: EdgeInsets.only(right: 8.w),
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 12.w, vertical: 6.h),
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[200],
-                                      borderRadius: BorderRadius.circular(20.r),
-                                    ),
-                                    child: Text(
-                                      service.name,
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14.sp),
-                                    ),
-                                  ))
-                              .toList() ??
-                          [],
+                          .map((service) => Container(
+                                margin: EdgeInsets.only(right: 8.w),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 12.w, vertical: 6.h),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(20.r),
+                                ),
+                                child: Text(
+                                  service.name,
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12.sp),
+                                ),
+                              ))
+                          .toList(),
                     ),
                   )
                 ],
@@ -316,9 +313,9 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
           ),
           SizedBox(height: 6.h),
           Text(
-            tech.bio ?? 'No bio available',
+            tech.bio,
             style: TextStyle(
-              fontSize: 16.sp,
+              fontSize: 14.sp,
               color: Colors.grey,
             ),
             maxLines: 3,
@@ -334,7 +331,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                     Text(
                       AppLocalizations.of(context)!.location,
                       style: TextStyle(
-                          fontSize: 16.sp,
+                          fontSize: 14.sp,
                           color: Colors.grey[600],
                           fontWeight: FontWeight.w600),
                     ),
@@ -349,7 +346,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                           '${tech.subcity ?? ''}, ${tech.city ?? ''}',
                           style: TextStyle(
                             color: Colors.grey[800],
-                            fontSize: 18.sp,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -363,7 +360,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                   Text(
                     AppLocalizations.of(context)!.rating,
                     style: TextStyle(
-                        fontSize: 16.sp,
+                        fontSize: 14.sp,
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w600),
                   ),
@@ -377,7 +374,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                         '${tech.rating ?? 0}',
                         style: TextStyle(
                           color: Colors.grey[800],
-                          fontSize: 16.sp,
+                          fontSize: 14.sp,
                         ),
                       ),
                     ],
@@ -411,7 +408,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w500,
-                          fontSize: 18.sp)),
+                          fontSize: 16.sp)),
                 ),
               ),
               Container(
@@ -438,10 +435,10 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                   },
                   child: Padding(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
-                    child: Text(AppLocalizations.of(context)!.selectAndContinue,
+                        EdgeInsets.symmetric(horizontal: 42.w, vertical: 6.h),
+                    child: Text("Book",
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white, fontSize: 18.sp)),
+                        style: TextStyle(color: Colors.white, fontSize: 16.sp)),
                   ),
                 ),
               ),

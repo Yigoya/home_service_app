@@ -102,7 +102,7 @@ class _TechnicianRegistrationPageState
           child: Text(
             AppLocalizations.of(context)!.technicianRegistration,
             style: TextStyle(
-              fontSize: 32.sp,
+              fontSize: 28.sp,
               fontWeight: FontWeight.bold,
               color: Colors.blue,
             ),
@@ -113,7 +113,7 @@ class _TechnicianRegistrationPageState
           child: Text(
             AppLocalizations.of(context)!.fillDetailsToRegister,
             style: TextStyle(
-              fontSize: 16.sp,
+              fontSize: 14.sp,
               color: Colors.grey[600],
             ),
             textAlign: TextAlign.center,
@@ -183,7 +183,7 @@ class _TechnicianRegistrationPageState
             Text(
               AppLocalizations.of(context)!.almostThere,
               style: TextStyle(
-                fontSize: 16.sp,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.bold,
                 color: Colors.blue,
               ),
@@ -196,7 +196,7 @@ class _TechnicianRegistrationPageState
           textAlign: TextAlign.left,
           style: TextStyle(
             fontWeight: FontWeight.w500,
-            fontSize: 16.sp,
+            fontSize: 14.sp,
           ),
         ),
         SizedBox(height: 8.h),

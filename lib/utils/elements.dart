@@ -23,7 +23,7 @@ class SimpleComponents {
                     label,
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
-                      fontSize: 16.sp,
+                      fontSize: 14.sp,
                     ),
                   ),
                 ],
@@ -32,10 +32,9 @@ class SimpleComponents {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 0.h),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 235, 247, 250),
-                borderRadius: BorderRadius.circular(16.r),
+                borderRadius: BorderRadius.circular(8.r),
                 border: Border.all(
-                  color: const Color.fromARGB(100, 150, 150, 150),
+                  color: Colors.blue[100]!,
                 ),
               ),
               child: TextFormField(
@@ -50,13 +49,13 @@ class SimpleComponents {
                             : TextInputType.text)),
                 maxLines: isLongText ? null : 1,
                 minLines: isLongText ? 4 : 1,
-                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20.sp),
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18.sp),
                 decoration: InputDecoration(
                   hintText: hint,
                   border: InputBorder.none,
                   hintStyle: TextStyle(
-                    color: const Color.fromARGB(255, 150, 150, 150),
-                    fontSize: 16.sp,
+                    color: Colors.grey[600],
+                    fontSize: 14.sp,
                   ),
                   suffixIcon: isPassword
                       ? IconButton(
@@ -120,7 +119,7 @@ class SimpleComponents {
             onTap: onTap,
             child: Container(
               width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 16.h),
+              padding: EdgeInsets.symmetric(vertical: 12.h),
               decoration: BoxDecoration(
                 color: Colors.blue,
                 borderRadius: BorderRadius.circular(32.r),
@@ -131,7 +130,7 @@ class SimpleComponents {
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
-                  fontSize: 20.sp,
+                  fontSize: 18.sp,
                 ),
               ),
             ),

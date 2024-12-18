@@ -5,6 +5,7 @@ import 'package:home_service_app/screens/chat/chat.dart';
 import 'package:home_service_app/screens/contact_page.dart';
 import 'package:home_service_app/screens/disputelist_page.dart';
 import 'package:home_service_app/screens/home/home.dart';
+import 'package:home_service_app/screens/home/more_page.dart';
 import 'package:home_service_app/screens/notification.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
@@ -24,37 +25,25 @@ class _NavigationState extends State<Navigation> {
   List<Widget> _buildScreens() {
     return [
       const HomePage(),
-      const ContactPage(),
-      const DisputeListPage(),
-      const NotificationsPage(),
+      const MorePage(),
+      // const DisputeListPage(),
+      // const NotificationsPage(),
     ];
   }
 
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
       PersistentBottomNavBarItem(
-        icon: const Icon(Icons.home),
-        title: ("Home"),
+        icon: const Icon(Icons.construction, size: 24),
+        title: ("Services"),
         activeColorPrimary: Colors.blue,
-        inactiveColorPrimary: Colors.grey[200],
+        inactiveColorPrimary: Colors.grey[800],
       ),
       PersistentBottomNavBarItem(
-        icon: const Icon(Icons.perm_contact_cal_rounded),
-        title: ("Contact"),
+        icon: const Icon(Icons.more_horiz, size: 24),
+        title: ("More"),
         activeColorPrimary: Colors.blue,
-        inactiveColorPrimary: Colors.grey[200],
-      ),
-      PersistentBottomNavBarItem(
-        icon: const Icon(Icons.report),
-        title: ("Dispute"),
-        activeColorPrimary: Colors.blue,
-        inactiveColorPrimary: Colors.grey[200],
-      ),
-      PersistentBottomNavBarItem(
-        icon: const Icon(Icons.notifications),
-        title: ("Notify"),
-        activeColorPrimary: Colors.blue,
-        inactiveColorPrimary: Colors.grey[200],
+        inactiveColorPrimary: Colors.grey[800],
       ),
     ];
   }
@@ -84,12 +73,7 @@ class _NavigationState extends State<Navigation> {
       padding: EdgeInsets.symmetric(
         vertical: 8.h,
       ),
-      margin: EdgeInsets.all(8.w),
-      backgroundColor: Color(0xFF222222),
-      decoration: NavBarDecoration(
-        borderRadius: BorderRadius.circular(16.0.r),
-        colorBehindNavBar: Colors.white,
-      ),
+      backgroundColor: Colors.white,
       isVisible: true,
       animationSettings: const NavBarAnimationSettings(
         navBarItemAnimation: ItemAnimationSettings(
@@ -104,7 +88,7 @@ class _NavigationState extends State<Navigation> {
       ),
       confineToSafeArea: true,
       navBarHeight: kBottomNavigationBarHeight.h,
-      navBarStyle: NavBarStyle.style1,
+      navBarStyle: NavBarStyle.style6,
     );
   }
 }

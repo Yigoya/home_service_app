@@ -6,8 +6,10 @@ import 'package:home_service_app/provider/booking_provider.dart';
 import 'package:home_service_app/provider/profile_page_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/booking/update_booking.dart';
+import 'package:home_service_app/screens/detail_booking.dart';
 import 'package:home_service_app/screens/dispute_page.dart';
 import 'package:home_service_app/services/api_service.dart';
+import 'package:home_service_app/utils/functions.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -33,74 +35,89 @@ class BookingCard extends StatelessWidget {
       onTap: () {
         Provider.of<BookingProvider>(context, listen: false)
             .fetchSingleBooking(booking.id);
-        Navigator.pushNamed(context, '/detail_booking');
+        Navigator.push(context,
+            MaterialPageRoute(builder: (_) => const BookingDetailsPage()));
       },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(32.r),
+          borderRadius: BorderRadius.circular(12.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey[300]!,
+              blurRadius: 10.r,
+              offset: const Offset(0, 5),
+            ),
+          ],
+          border: Border.all(color: Colors.grey[300]!, width: 1.w),
         ),
-        child: Padding(
-          padding: EdgeInsets.all(16.0.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(24.r),
-                    child: Image.network(
-                      '${ApiService.API_URL_FILE}${isTechnician ? booking.customerProfileImage : booking.technicianProfileImage}',
-                      width: 80.w,
-                      height: 80.h,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.asset(
-                          'assets/images/profile.png',
-                          width: 80.w,
-                          height: 80.h,
-                          fit: BoxFit.cover,
-                        );
-                      },
-                    ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16.r),
+                  child: Image.network(
+                    '${ApiService.API_URL_FILE}${isTechnician ? booking.customerProfileImage : booking.technicianProfileImage}',
+                    width: 80.w,
+                    height: 80.h,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/images/profile.png',
+                        width: 80.w,
+                        height: 80.h,
+                        fit: BoxFit.cover,
+                      );
+                    },
                   ),
-                  SizedBox(width: 16.w),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                            isTechnician
-                                ? booking.customerName
-                                : booking.technicianName,
-                            style: TextStyle(
-                                fontSize: 24.sp, fontWeight: FontWeight.bold)),
-                        Text(booking.serviceName,
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text(
-                            'Location: ${booking.address.subcity}, ${booking.address.wereda}'),
-                        Text(booking.scheduledDate),
-                      ],
-                    ),
+                ),
+                SizedBox(width: 16.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          isTechnician
+                              ? booking.customerName
+                              : booking.technicianName,
+                          style: TextStyle(
+                              fontSize: 20.sp, fontWeight: FontWeight.bold)),
+                      Text(booking.serviceName,
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                          'Location: ${booking.address.subcity}, ${booking.address.wereda}',
+                          style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500)),
+                      Text(timeRemaining(booking.scheduledDate),
+                          style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.blue[900],
+                              fontWeight: FontWeight.w500)),
+                    ],
                   ),
-                ],
-              ),
-              SizedBox(height: 16.h),
-              Text(booking.description ?? '',
-                  style: TextStyle(
-                      fontSize: 16.sp, height: 1.5, color: Colors.grey)),
-              if (additionalContent != null) ...[
-                SizedBox(height: 16.h),
-                additionalContent!,
+                ),
               ],
+            ),
+            SizedBox(height: 16.h),
+            Text(booking.description ?? '',
+                style: TextStyle(
+                    fontSize: 14.sp, height: 1.5, color: Colors.grey)),
+            if (additionalContent != null) ...[
               SizedBox(height: 16.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: actions,
-              ),
+              additionalContent!,
             ],
-          ),
+            SizedBox(height: 16.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: actions,
+            ),
+          ],
         ),
       ),
     );
@@ -310,7 +327,7 @@ class _BookingListState extends State<BookingList> {
       ),
       child: Text(label,
           style: TextStyle(
-              color: textColor, fontSize: 16.sp, fontWeight: FontWeight.w500)),
+              color: textColor, fontSize: 14.sp, fontWeight: FontWeight.w500)),
     );
   }
 
@@ -320,9 +337,9 @@ class _BookingListState extends State<BookingList> {
       children: [
         Text(
             '${AppLocalizations.of(context)!.yourRating}: ${booking.review!.rating}',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp)),
         SizedBox(height: 4.h),
-        Text(booking.review!.review ?? '', style: TextStyle(fontSize: 16.sp)),
+        Text(booking.review!.review ?? '', style: TextStyle(fontSize: 14.sp)),
       ],
     );
   }
@@ -335,59 +352,128 @@ class _BookingListState extends State<BookingList> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)!.rateAndReview),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              RatingBar.builder(
-                initialRating: rating,
-                minRating: 1,
-                direction: Axis.horizontal,
-                allowHalfRating: true,
-                itemCount: 5,
-                itemBuilder: (context, _) =>
-                    const Icon(Icons.star, color: Colors.amber),
-                onRatingUpdate: (newRating) {
-                  rating = newRating;
-                },
-              ),
-              SizedBox(height: 8.h),
-              TextField(
-                controller: reviewController,
-                decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context)!.writeYourReview,
-                  border: const OutlineInputBorder(),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          title: Text(
+            AppLocalizations.of(context)!.rateAndReview,
+            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Rating Bar Section
+                Text(
+                  'Rating',
+                  style:
+                      TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
                 ),
-                maxLines: 3,
-              ),
-            ],
+                SizedBox(height: 8.h),
+                Center(
+                  child: RatingBar.builder(
+                    initialRating: rating,
+                    minRating: 1,
+                    direction: Axis.horizontal,
+                    allowHalfRating: true,
+                    itemCount: 5,
+                    itemBuilder: (context, _) => const Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                      size: 10,
+                    ),
+                    onRatingUpdate: (newRating) {
+                      rating = newRating;
+                    },
+                  ),
+                ),
+                SizedBox(height: 16.h),
+
+                // Review TextField Section
+                Text(
+                  AppLocalizations.of(context)!.writeYourReview,
+                  style:
+                      TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
+                ),
+                SizedBox(height: 8.h),
+                TextField(
+                  controller: reviewController,
+                  decoration: InputDecoration(
+                    hintText: AppLocalizations.of(context)!.writeYourReview,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  maxLines: 4,
+                  style: TextStyle(fontSize: 12.sp),
+                ),
+              ],
+            ),
           ),
           actions: [
+            // Cancel Button
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.red,
+                textStyle:
+                    TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
+              ),
               child: Text(AppLocalizations.of(context)!.cancel),
             ),
+
+            // Submit Button
             ElevatedButton(
               onPressed: () async {
                 if (rating > 0 && reviewController.text.isNotEmpty) {
                   await Provider.of<BookingProvider>(context, listen: false)
                       .submitReview(
                           booking.id, rating.toInt(), reviewController.text);
+
                   Provider.of<ProfilePageProvider>(context, listen: false)
                       .fetchBookings();
                   Navigator.of(context).pop();
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(AppLocalizations.of(context)!
-                            .pleaseProvideRatingAndReview)),
+                  // Show error inline if inputs are missing
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        content: Text(
+                          AppLocalizations.of(context)!
+                              .pleaseProvideRatingAndReview,
+                        ),
+                        actions: [
+                          TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(
+                                "OK",
+                                style: TextStyle(
+                                  color: Colors.teal,
+                                  fontSize: 14.sp,
+                                ),
+                              )),
+                        ],
+                      );
+                    },
                   );
                 }
               },
-              child: const Text('Submit Review'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white,
+                textStyle:
+                    TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              child: Text(AppLocalizations.of(context)!.submit),
             ),
           ],
         );
@@ -412,7 +498,7 @@ class _BookingListState extends State<BookingList> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(AppLocalizations.of(context)!.rateAndReview,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp)),
         SizedBox(height: 8.h),
         RatingBar.builder(
           initialRating: rating,

@@ -31,7 +31,7 @@ class Pagination extends StatelessWidget {
               child: Text(
                 '$i',
                 style: TextStyle(
-                  fontSize: 22.sp,
+                  fontSize: 20.sp,
                   color: i == currentPage ? Colors.white : Colors.black,
                   fontWeight:
                       i == currentPage ? FontWeight.bold : FontWeight.normal,

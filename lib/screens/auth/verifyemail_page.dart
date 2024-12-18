@@ -54,7 +54,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             const Text(
               "Verify Your Email",
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
@@ -63,7 +63,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             Text(
               "To continue, please verify your email by clicking the link we sent to your inbox.",
               style: TextStyle(
-                fontSize: 16.sp,
+                fontSize: 14.sp,
                 color: Colors.grey[700],
               ),
               textAlign: TextAlign.center,

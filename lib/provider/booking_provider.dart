@@ -50,7 +50,7 @@ class BookingProvider extends ChangeNotifier {
       Map<String, dynamic> data, BuildContext context) async {
     _isLoading = true;
     notifyListeners();
-    Logger().d(DateFormat('yyyy-MM-dd').format(_selectedDate!));
+    Logger().d(_selectedDate);
     try {
       data['scheduledDate'] = _selectedDate != null && _selectedTime != null
           ? DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(DateTime(
@@ -59,7 +59,11 @@ class BookingProvider extends ChangeNotifier {
               _selectedDate!.day,
               _selectedTime!.hour,
               _selectedTime!.minute))
-          : null;
+          : DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(DateTime.now());
+      data['subcity'] = selectedSubCity;
+      data['wereda'] = selectedWereda;
+      data['city'] = 'Addis Ababa';
+
       Logger().d(data);
       final response = await _apiService.postRequest('/booking/request', data);
       Logger().d(response.data);

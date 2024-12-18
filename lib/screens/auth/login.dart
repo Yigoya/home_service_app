@@ -61,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.w),
+        padding: EdgeInsets.symmetric(horizontal: 32.w),
         child: Center(
           child: SingleChildScrollView(
             child: Form(
@@ -74,12 +74,12 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   Text(AppLocalizations.of(context)!.welcomeBack,
                       style: TextStyle(
-                          fontSize: 32.sp,
+                          fontSize: 28.sp,
                           fontWeight: FontWeight.bold,
                           color: Colors.blue)),
                   SizedBox(height: 8.h),
                   Text(AppLocalizations.of(context)!.loginToYourAccount,
-                      style: TextStyle(fontSize: 18.sp, color: Colors.grey)),
+                      style: TextStyle(fontSize: 16.sp, color: Colors.grey)),
                   SizedBox(height: 32.h),
                   SimpleComponents.buildTextField(_emailController, "Email",
                       AppLocalizations.of(context)!.enterYourEmail,
@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: Text(
                               AppLocalizations.of(context)!.forgotPassword,
                               style: TextStyle(
-                                  color: Colors.blue, fontSize: 16.sp))),
+                                  color: Colors.blue, fontSize: 14.sp))),
                     ],
                   ),
                   SizedBox(height: 20.h),
@@ -114,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                       padding: EdgeInsets.only(top: 8.h),
                       child: Text(
                         provider.errorMessage!,
-                        style: TextStyle(color: Colors.red, fontSize: 14.sp),
+                        style: TextStyle(color: Colors.red, fontSize: 12.sp),
                       ),
                     ),
                   SizedBox(height: 16.h),
@@ -130,88 +130,60 @@ class _LoginPageState extends State<LoginPage> {
                         child: Text(AppLocalizations.of(context)!.orSignInWith,
                             style: TextStyle(
                                 color: Colors.grey,
-                                fontSize: 16.sp,
+                                fontSize: 14.sp,
                                 fontWeight: FontWeight.w500)),
                       ),
                       Expanded(child: Divider()),
                     ],
                   ),
                   SizedBox(height: 16.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      GestureDetector(
-                        onTap: !_authenticating
-                            ? () async {
-                                setState(() {
-                                  _authenticating = true;
-                                });
-                                await Provider.of<AuthenticationProvider>(
-                                        context,
-                                        listen: false)
-                                    .handleGoogleSignIn(context);
-                                setState(() {
-                                  _authenticating = false;
-                                });
-                              }
-                            : null,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 32.w, vertical: 16.h),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[400]!),
-                            borderRadius: BorderRadius.circular(32.r),
-                          ),
-                          child: !_authenticating
-                              ? Row(
-                                  children: [
-                                    Image.asset(
-                                      'assets/images/google.png',
-                                      width: 20.w,
-                                      height: 20.h,
-                                    ),
-                                    SizedBox(width: 12.w),
-                                    Text(
-                                      "Google",
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16.sp),
-                                    ),
-                                  ],
-                                )
-                              : CircularProgressIndicator(),
-                        ),
+                  GestureDetector(
+                    onTap: !_authenticating
+                        ? () async {
+                            setState(() {
+                              _authenticating = true;
+                            });
+                            await Provider.of<AuthenticationProvider>(context,
+                                    listen: false)
+                                .handleGoogleSignIn(context);
+                            setState(() {
+                              _authenticating = false;
+                            });
+                          }
+                        : null,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 32.w, vertical: 16.h),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey[400]!),
+                        borderRadius: BorderRadius.circular(32.r),
                       ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 32.w, vertical: 16.h),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[400]!),
-                            borderRadius: BorderRadius.circular(32.r),
-                          ),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                'assets/images/facebook.png',
-                                width: 20.w,
-                                height: 20.h,
-                              ),
-                              SizedBox(width: 8.w),
-                              Text(
-                                "Facebook",
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.sp),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                      child: !_authenticating
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  'assets/images/google.png',
+                                  width: 20.w,
+                                  height: 20.h,
+                                ),
+                                SizedBox(width: 12.w),
+                                Text(
+                                  "Google",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14.sp),
+                                ),
+                              ],
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircularProgressIndicator(),
+                              ],
+                            ),
+                    ),
                   ),
                   SizedBox(height: 64.h),
                   GestureDetector(
@@ -223,12 +195,12 @@ class _LoginPageState extends State<LoginPage> {
                       text: TextSpan(
                           text: AppLocalizations.of(context)!.dontHaveAccount,
                           style: TextStyle(
-                              color: Colors.grey[600], fontSize: 14.sp),
+                              color: Colors.grey[600], fontSize: 12.sp),
                           children: [
                             TextSpan(
                               text: "Sign Up",
                               style: TextStyle(
-                                  color: Colors.blue, fontSize: 14.sp),
+                                  color: Colors.blue, fontSize: 12.sp),
                             ),
                           ]),
                     ),
@@ -253,7 +225,7 @@ class _LoginPageState extends State<LoginPage> {
                         style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.w500,
-                          fontSize: 16.sp,
+                          fontSize: 14.sp,
                         ),
                       ),
                     ),
@@ -266,6 +238,35 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+  // GestureDetector(
+  //                       onTap: () {},
+  //                       child: Container(
+  //                         padding: EdgeInsets.symmetric(
+  //                             horizontal: 32.w, vertical: 16.h),
+  //                         decoration: BoxDecoration(
+  //                           border: Border.all(color: Colors.grey[400]!),
+  //                           borderRadius: BorderRadius.circular(32.r),
+  //                         ),
+  //                         child: Row(
+  //                           children: [
+  //                             Image.asset(
+  //                               'assets/images/facebook.png',
+  //                               width: 20.w,
+  //                               height: 20.h,
+  //                             ),
+  //                             SizedBox(width: 8.w),
+  //                             Text(
+  //                               "Facebook",
+  //                               style: TextStyle(
+  //                                   color: Colors.black,
+  //                                   fontWeight: FontWeight.bold,
+  //                                   fontSize: 14.sp),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                       ),
+  //                     ),
 
   Future<Map<String, String?>> _collectUserDetails(
     BuildContext context, {

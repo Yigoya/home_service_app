@@ -41,18 +41,6 @@ class _BookingPageState extends State<BookingPage> {
   }
 
   void bookService() async {
-    if (selectedSubCity == null) {
-      showTopMessage(context, AppLocalizations.of(context)!.pleaseSelectSubCity,
-          isWaring: true);
-      return;
-    }
-
-    if (selectedWereda == null) {
-      showTopMessage(context, AppLocalizations.of(context)!.pleaseSelectWereda,
-          isWaring: true);
-      return;
-    }
-
     if (jobDescriptionController.text.isEmpty) {
       showTopMessage(context, AppLocalizations.of(context)!.pleaseDescribeJob,
           isWaring: true);
@@ -64,8 +52,6 @@ class _BookingPageState extends State<BookingPage> {
       'customerId': customerId,
       'technicianId': widget.technician.id,
       'serviceId': widget.service.id,
-      'subcity': selectedSubCity,
-      'wereda': selectedWereda,
       'city': 'Addis Ababa',
       'description': jobDescriptionController.text,
     };
@@ -108,7 +94,7 @@ class _BookingPageState extends State<BookingPage> {
                   Text(
                     widget.technician.name,
                     style:
-                        TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+                        TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 5.h),
                   Container(
@@ -124,34 +110,10 @@ class _BookingPageState extends State<BookingPage> {
                           color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  SizedBox(height: 20.h),
-                  SizedBox(height: 10.h),
-                  // Address Selector
-                  CustomDropdown(
-                    items: const ["Bole", "Akaki", "Nifas Silk"],
-                    hint: AppLocalizations.of(context)!.selectYourSubCity,
-                    selectedValue: selectedSubCity,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedSubCity = value;
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    height: 16.h,
-                  ),
-                  CustomDropdown(
-                    items: const ["01", "02", "03", "04", "05"],
-                    hint: AppLocalizations.of(context)!.selectYourWereda,
-                    selectedValue: selectedWereda,
-                    onChanged: (value) {
-                      setState(() {
-                        selectedWereda = value;
-                      });
-                    },
-                  ),
 
-                  SizedBox(height: 16.h),
+                  // Address Selector
+
+                  SizedBox(height: 36.h),
 
                   // Job Description
                   Container(
@@ -161,7 +123,7 @@ class _BookingPageState extends State<BookingPage> {
                     ),
                     child: TextField(
                       controller: jobDescriptionController,
-                      maxLines: 3,
+                      maxLines: 6,
                       decoration: InputDecoration(
                         labelText: AppLocalizations.of(context)!
                             .describeJobTask, // 'Describe Job Task',
@@ -218,7 +180,7 @@ class _BookingPageState extends State<BookingPage> {
           actions: <Widget>[
             TextButton(
               child: Text('OK',
-                  style: TextStyle(color: Colors.green, fontSize: 14.sp)),
+                  style: TextStyle(color: Colors.green, fontSize: 12.sp)),
               onPressed: () {
                 Navigator.pushNamed(context, RouteGenerator.homePage);
               },

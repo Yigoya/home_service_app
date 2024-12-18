@@ -14,7 +14,7 @@ class TokenEntryPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.token,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.sp),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
         ),
         centerTitle: true,
       ),
@@ -27,7 +27,7 @@ class TokenEntryPage extends StatelessWidget {
             Text(
               AppLocalizations.of(context)!.enterToken,
               style: TextStyle(
-                fontSize: 18.sp,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -87,7 +87,7 @@ class TokenEntryPage extends StatelessWidget {
                   SizedBox(width: 10.w),
                   Text(
                     AppLocalizations.of(context)!.submit,
-                    style: TextStyle(fontSize: 16.sp),
+                    style: TextStyle(fontSize: 14.sp),
                   ),
                 ],
               ),

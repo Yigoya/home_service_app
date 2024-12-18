@@ -8,6 +8,7 @@ import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/models/techinician_detail.dart';
 import 'package:home_service_app/models/technician.dart';
 import 'package:home_service_app/services/api_service.dart';
+import 'package:home_service_app/utils/functions.dart';
 import 'package:logger/web.dart';
 
 class HomeServiceProvider with ChangeNotifier {
@@ -18,6 +19,9 @@ class HomeServiceProvider with ChangeNotifier {
   ApiService apiService = ApiService();
 
   List<Category> _categories = [];
+  List<String> subCitys = ["Bole", "Akaki", "Nifas Silk"];
+  List<String> weredas = ["01", "02", "03", "04", "05"];
+  Map<String, Object> location = {};
 
   List<Service> _services = [];
   List<Service> _fiterableByCatagory = [];
@@ -42,13 +46,16 @@ class HomeServiceProvider with ChangeNotifier {
   List<FAQ> get faqs => _faqs;
   List<Service> get fiterableByCatagory => _fiterableByCatagory;
   List<Service> get fiterableBySearch => _fiterableBySearch;
-  int selectedCategory = 0;
+  int selectedCategoryId = 0;
+  Category? get selectedCategory =>
+      _categories.firstWhere((element) => element.id == selectedCategoryId);
   int totalPages = 1;
   int totalElements = 0;
   List<Map<String, dynamic>> questions = [];
   Locale locale = const Locale('en');
   Future<void> loadHome(Locale newLocate) async {
     locale = newLocate;
+
     try {
       final res = await apiService.getRequestByQueryWithoutToken('/home', {
         'lang': locale.languageCode == 'en' ? 'ENGLISH' : 'AMHARIC',
@@ -70,7 +77,7 @@ class HomeServiceProvider with ChangeNotifier {
         _categories = serviceCategories
             .map<Category>((e) => Category.fromJson(e))
             .toList();
-        selectedCategory = _categories.first.id;
+        selectedCategoryId = _categories.first.id;
       } catch (e) {
         Logger().e('Error mapping serviceCategories: $e');
       }
@@ -80,8 +87,8 @@ class HomeServiceProvider with ChangeNotifier {
         _fiterableByCatagory = _services
             .where((service) => service.categoryId == _categories.first.id)
             .toList();
-        selectedCategory = _categories.first.id;
-        // _fiterableBySearch = _services;
+        selectedCategoryId = _categories.first.id;
+        _fiterableBySearch = _services;
       } catch (e) {
         Logger().e('Error mapping services: $e');
       }
@@ -94,6 +101,14 @@ class HomeServiceProvider with ChangeNotifier {
       }
 
       notifyListeners();
+      final _location = await getCurrentLocation();
+      if (_location['error'] == null) {
+        location = _location.cast<String, Object>();
+        if (!subCitys.contains(location['subcity'] as String)) {
+          subCitys.add(location['subcity'] as String);
+        }
+      }
+      notifyListeners();
     } on DioException catch (e) {
       Logger().e(e.response!.data);
     } catch (e) {
@@ -105,7 +120,7 @@ class HomeServiceProvider with ChangeNotifier {
   void filterServicesByCategory(int categoryId) {
     _fiterableByCatagory =
         _services.where((service) => service.categoryId == categoryId).toList();
-    selectedCategory = categoryId;
+    selectedCategoryId = categoryId;
     notifyListeners();
   }
 
@@ -120,8 +135,6 @@ class HomeServiceProvider with ChangeNotifier {
           .where((service) =>
               service.name.toLowerCase().contains(search.toLowerCase()))
           .toList();
-    } else {
-      _fiterableBySearch = [];
     }
     notifyListeners();
   }
@@ -226,7 +239,8 @@ class HomeServiceProvider with ChangeNotifier {
     isLoading = false;
   }
 
-  Future<void> filterTechnician(Map<String, dynamic> query) async {
+  Future<void> filterTechnicianWithSchedule(
+      Map<String, dynamic> query, int serviceId) async {
     isLoading = true;
     try {
       Logger().d(query);
@@ -248,6 +262,32 @@ class HomeServiceProvider with ChangeNotifier {
       Logger().e(e);
     }
     isLoading = false;
+  }
+
+  Future<void> filterTechnician(
+      Map<String, dynamic> query, int serviceId) async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      Logger().d(query);
+      final res = await apiService.getRequestByQueryWithoutToken(
+          '/search/technicians/$serviceId', query);
+
+      totalPages = res.data["totalPages"];
+      totalElements = res.data['totalElements'];
+      Logger().d(res.data);
+      final data = res.data['content'];
+
+      _technicians =
+          data.map<Technician>((e) => Technician.fromJson(e)).toList();
+    } on DioException catch (e) {
+      Logger().e(e.response!.data);
+    } catch (e) {
+      print('error: $e');
+      Logger().e(e);
+    }
+    isLoading = false;
+    notifyListeners();
   }
 
   Future<void> loadCategories() async {

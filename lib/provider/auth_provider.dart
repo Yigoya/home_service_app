@@ -86,8 +86,6 @@ class AuthenticationProvider with ChangeNotifier {
     try {
       final response =
           await _apiService.login(email: email, password: password);
-      _isLoading = false;
-      notifyListeners();
 
       if (response.data['user']['status'] == 'INACTIVE' &&
           response.data['user']['role'] == 'CUSTOMER') {
@@ -110,7 +108,7 @@ class AuthenticationProvider with ChangeNotifier {
           ? const Locale('am')
           : const Locale('en');
       MyApp.setLocale(context, newLocale);
-      Provider.of<UserProvider>(context).setLocale(newLocale);
+      Provider.of<UserProvider>(context, listen: false).setLocale(newLocale);
       if (response.data['user']['role'] == 'CUSTOMER') {
         await storage.write(
             key: "customer", value: jsonEncode(response.data['customer']));
@@ -133,6 +131,8 @@ class AuthenticationProvider with ChangeNotifier {
       }
 
       showTopMessage(context, 'Logged in successfully');
+      _isLoading = false;
+      notifyListeners();
     } on DioException catch (e) {
       _isLoading = false;
       _errorMessage = e.response?.data['details'].join(', ') ??
@@ -176,21 +176,6 @@ class AuthenticationProvider with ChangeNotifier {
       String? email = user?.email;
       String? phoneNumber = user?.phoneNumber;
 
-      // // Step 6: Handle missing details dynamically
-      // if (name == null || email == null || phoneNumber == null) {
-      //   Map<String, String?> updatedDetails = await _collectUserDetails(
-      //     context,
-      //     missingName: name == null,
-      //     missingEmail: email == null,
-      //     missingPhoneNumber: phoneNumber == null,
-      //   );
-      //   name = updatedDetails['name'] ?? name;
-      //   email =
-      //       updatedDetails['email']!.isEmpty ? email : updatedDetails['email'];
-      //   phoneNumber = updatedDetails['phoneNumber'] ?? phoneNumber;
-      // }
-
-      // Step 7: Log the user details
       Logger().d({
         "User Name": name,
         "User Email": email,
@@ -236,7 +221,7 @@ class AuthenticationProvider with ChangeNotifier {
         await Provider.of<UserProvider>(context, listen: false).loadUser();
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
-                builder: (context) => const TechnicianProfilePage()),
+                builder: (context) => const TechnicianNavigation()),
             (route) => false);
       } else {
         showTopMessage(

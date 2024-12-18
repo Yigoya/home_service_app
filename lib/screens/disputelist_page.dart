@@ -20,7 +20,7 @@ class DisputeListPage extends StatelessWidget {
                   'You have not submitted any disputes.\n If you have any issues, please submit a dispute.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 24.sp,
+                    fontSize: 22.sp,
                     color: Colors.grey,
                     fontWeight: FontWeight.bold,
                   )),
@@ -43,11 +43,11 @@ class DisputeListPage extends StatelessWidget {
                         Text(
                           dispute.reason,
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16.sp),
+                              fontWeight: FontWeight.bold, fontSize: 14.sp),
                         ),
                         SizedBox(height: 5.h),
                         Text(dispute.description,
-                            style: TextStyle(fontSize: 14.sp)),
+                            style: TextStyle(fontSize: 12.sp)),
                         SizedBox(height: 10.h),
                         GestureDetector(
                           onTap: () {
@@ -56,7 +56,7 @@ class DisputeListPage extends StatelessWidget {
                           child: Text(
                             'close',
                             style:
-                                TextStyle(color: Colors.blue, fontSize: 14.sp),
+                                TextStyle(color: Colors.blue, fontSize: 12.sp),
                           ),
                         ),
                       ],

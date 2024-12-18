@@ -31,7 +31,7 @@ class UploadProofPagee extends StatelessWidget {
               Text(
                 'For registration fee transfer\n500 birr',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20.sp),
+                style: TextStyle(fontSize: 18.sp),
               ),
               SizedBox(height: 20.h),
               ElevatedButton.icon(

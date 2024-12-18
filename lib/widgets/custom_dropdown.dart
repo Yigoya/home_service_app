@@ -21,7 +21,7 @@ class CustomDropdown extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       width: double.infinity,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: Colors.grey[600]!),
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: DropdownButton<String>(

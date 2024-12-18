@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TechnicianAboutMe extends StatelessWidget {
-  TechnicianAboutMe();
+  const TechnicianAboutMe({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class TechnicianAboutMe extends StatelessWidget {
                       Text(
                         data['name'],
                         style: TextStyle(
-                          fontSize: 20.sp,
+                          fontSize: 18.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -67,17 +67,17 @@ class TechnicianAboutMe extends StatelessWidget {
                   Text(data['email'],
                       style: TextStyle(
                           color: Colors.grey,
-                          fontSize: 16.sp,
+                          fontSize: 14.sp,
                           fontWeight: FontWeight.bold)),
                   Text(data['phoneNumber'],
                       style: TextStyle(
                           color: Colors.grey,
-                          fontSize: 16.sp,
+                          fontSize: 14.sp,
                           fontWeight: FontWeight.bold)),
                   SizedBox(height: 10.h),
                   Text(
-                    data['bio'],
-                    style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                    data['bio'] ?? 'No bio available',
+                    style: TextStyle(fontSize: 14.sp, color: Colors.grey),
                   ),
                 ],
               ),
@@ -90,7 +90,7 @@ class TechnicianAboutMe extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
               child: Text(
                 "Services",
-                style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
               ),
             ),
             Wrap(
@@ -113,7 +113,7 @@ class TechnicianAboutMe extends StatelessWidget {
                           service['name'],
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 20.sp,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -140,20 +140,20 @@ class TechnicianAboutMe extends StatelessWidget {
                   Text(
                     "Weekly Schedule",
                     style:
-                        TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+                        TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                   ),
                   data['weeklySchedule'] != null
                       ? DataTable(
                           columns: [
                             DataColumn(
                                 label: Text('Day',
-                                    style: TextStyle(fontSize: 16.sp))),
+                                    style: TextStyle(fontSize: 14.sp))),
                             DataColumn(
                                 label: Text('Start',
-                                    style: TextStyle(fontSize: 16.sp))),
+                                    style: TextStyle(fontSize: 14.sp))),
                             DataColumn(
                                 label: Text('End',
-                                    style: TextStyle(fontSize: 16.sp))),
+                                    style: TextStyle(fontSize: 14.sp))),
                           ],
                           rows: [
                             ...[
@@ -172,18 +172,18 @@ class TechnicianAboutMe extends StatelessWidget {
                               return DataRow(
                                 cells: [
                                   DataCell(Text(day,
-                                      style: TextStyle(fontSize: 16.sp))),
+                                      style: TextStyle(fontSize: 14.sp))),
                                   DataCell(Text(start ?? '-',
-                                      style: TextStyle(fontSize: 16.sp))),
+                                      style: TextStyle(fontSize: 14.sp))),
                                   DataCell(Text(end ?? '-',
-                                      style: TextStyle(fontSize: 16.sp))),
+                                      style: TextStyle(fontSize: 14.sp))),
                                 ],
                               );
                             }),
                           ],
                         )
                       : Text("No schedule available",
-                          style: TextStyle(fontSize: 16.sp)),
+                          style: TextStyle(fontSize: 14.sp)),
                 ],
               ),
             ),
@@ -206,7 +206,7 @@ class TechnicianAboutMe extends StatelessWidget {
                       Text(
                         "Saved Address",
                         style: TextStyle(
-                            fontSize: 18.sp, fontWeight: FontWeight.bold),
+                            fontSize: 16.sp, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -223,19 +223,19 @@ class TechnicianAboutMe extends StatelessWidget {
                           children: [
                             Text(
                               'Country : ${address['country'] ?? 'Ethiopia'}',
-                              style: TextStyle(fontSize: 16.sp),
+                              style: TextStyle(fontSize: 14.sp),
                             ),
                             Text(
                               'City : ${address['city'] ?? 'Addis Ababa'}',
-                              style: TextStyle(fontSize: 16.sp),
+                              style: TextStyle(fontSize: 14.sp),
                             ),
                             Text(
                               'Sub City : ${address['subcity'] ?? '-'}',
-                              style: TextStyle(fontSize: 16.sp),
+                              style: TextStyle(fontSize: 14.sp),
                             ),
                             Text(
                               'Wereda : ${address['wereda'] ?? '-'}',
-                              style: TextStyle(fontSize: 16.sp),
+                              style: TextStyle(fontSize: 14.sp),
                             ),
                           ],
                         ),

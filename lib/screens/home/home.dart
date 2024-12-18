@@ -5,7 +5,9 @@ import 'package:home_service_app/models/technician.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/booking/buy_coins_page.dart';
-import 'package:home_service_app/screens/booking/questionnaire_page.dart';
+import 'package:home_service_app/screens/home/questionnaire_page.dart';
+import 'package:home_service_app/screens/home/category_services.dart';
+import 'package:home_service_app/screens/home/select_location.dart';
 import 'package:home_service_app/screens/home/sidebar_drawer.dart';
 import 'package:home_service_app/screens/home/widgets.dart';
 import 'package:home_service_app/screens/profile/customer_profile_page.dart';
@@ -14,6 +16,7 @@ import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/utils/functions.dart';
 import 'package:home_service_app/utils/route_generator.dart';
 import 'package:home_service_app/widgets/language_selector.dart';
+import 'package:home_service_app/widgets/slide_show.dart';
 import 'package:logger/web.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -29,6 +32,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isFocused = false;
+  bool _showAllCategories = false;
 
   @override
   void initState() {
@@ -59,18 +63,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     Logger().d(Localizations.localeOf(context));
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.white,
       drawer: const SideNavDrawer(),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
             await Provider.of<UserProvider>(context, listen: false).loadUser();
+            await provider.loadHome(Localizations.localeOf(context));
           },
           child: ListView(
             children: [
               _buildBannerSection(provider),
               _buildServiceCategories(provider),
-              _buildservices(provider),
               _buildTechnicianListView(),
               _buildCustomerReviewsSection(),
               const FAQSection(),
@@ -81,12 +85,19 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
-  // New function to build the technician list view
   Widget _buildTechnicianListView() {
     final technicians =
         Provider.of<HomeServiceProvider>(context).topTechnicians;
     return Column(
       children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 48.w),
+          child: Divider(
+            color: Colors.grey[400],
+            thickness: 1.w,
+          ),
+        ),
+        SizedBox(height: 24.h),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
           child: Row(
@@ -94,7 +105,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               Text(
                 AppLocalizations.of(context)!.ourBestTechnicians,
                 style: TextStyle(
-                  fontSize: 24.sp,
+                  fontSize: 22.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -119,10 +130,19 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(height: 24.h),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 48.w),
+          child: Divider(
+            color: Colors.grey[400],
+            thickness: 1.w,
+          ),
+        ),
+        SizedBox(height: 24.h),
         Padding(
           padding: EdgeInsets.all(16.w),
           child: Text(AppLocalizations.of(context)!.whatTheCustomerSays,
-              style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold)),
+              style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold)),
         ),
         SizedBox(
           height: 200.h,
@@ -133,218 +153,133 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ],
           ),
         ),
+        SizedBox(height: 24.h),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 48.w),
+          child: Divider(
+            color: Colors.grey[400],
+            thickness: 1.w,
+          ),
+        ),
+        SizedBox(height: 24.h),
       ],
     );
   }
 
   Widget _buildBannerSection(HomeServiceProvider provider) {
-    final user = Provider.of<UserProvider>(context).user;
-    final coin = Provider.of<UserProvider>(context).coin;
-    final location = Provider.of<UserProvider>(context).location;
+    final location = Provider.of<HomeServiceProvider>(context).location;
     Logger().d(Localizations.localeOf(context));
     return Stack(
       children: [
-        Container(
-          height: Localizations.localeOf(context).languageCode == 'en'
-              ? 295.h
-              : 265.h,
-          decoration: const BoxDecoration(
-            color: Color(0xFF222222),
-          ),
-        ),
         Container(
           padding: EdgeInsets.all(16.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  user != null
-                      ? Expanded(
-                          child: Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) =>
-                                              const CustomerProfilePage()));
-                                },
-                                child: Row(
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 20.r,
-                                      backgroundImage: user.profileImage != null
-                                          ? NetworkImage(
-                                              '${ApiService.API_URL_FILE}${user.profileImage}')
-                                          : const AssetImage(
-                                                  'assets/images/profile.png')
-                                              as ImageProvider,
-                                    ),
-                                    SizedBox(
-                                      width: 8.w,
-                                    ),
-                                    Text(
-                                      'Hi, ${user.name.substring(0, 1).toUpperCase()}${user.name.substring(1).toLowerCase()}',
-                                      style: TextStyle(
-                                        fontSize: 28.sp,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w500,
-                                        fontFamily: 'Poppins',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : const SizedBox.shrink(),
-                  user != null
-                      ? GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (_) => const BuyCoinsPage()));
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(right: 4.w),
-                            padding: EdgeInsets.only(
-                                left: 4.w, right: 12.w, top: 4.h, bottom: 4.h),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(colors: [
-                                Color(0xaadb36a4),
-                                Color(0x99f7ff00),
-                              ]),
-                              borderRadius: BorderRadius.circular(25.r),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Image.asset(
-                                  'assets/images/coin.png',
-                                  width: 20.w,
-                                  height: 20.h,
-                                ),
-                                SizedBox(width: 8.w),
-                                Text(
-                                  formatNumber(coin),
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      : const SizedBox.shrink(),
-                  const LanguageSelector(),
-                  SizedBox(width: 4.w),
-                  user == null
-                      ? Expanded(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pushNamed(RouteGenerator
-                                          .technicianRegisterPage);
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 16.w, vertical: 8.h),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(25.r),
-                                    gradient: const LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        Color(0xFF642b73),
-                                        Color(0xFFc6426e),
-                                      ],
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Become a Technician',
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 8.w),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pushNamed(RouteGenerator.loginPage);
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 16.w, vertical: 8.h),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(25.r),
-                                    gradient: const LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        Color(0xFFFC466B),
-                                        Color(0xFF3F5EFB),
-                                      ],
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Login',
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : const SizedBox.shrink(),
-                ],
-              ),
-              SizedBox(height: 24.h),
-              Text("Current Location",
-                  style: TextStyle(
-                      fontSize: 22.sp,
-                      color: Colors.grey[200]!,
-                      fontWeight: FontWeight.w500)),
-              Row(
                 children: [
                   Icon(Icons.location_on_rounded,
-                      color: Colors.green[400], size: 16.sp),
+                      color: Colors.green, size: 24.sp),
+                  SizedBox(width: 5.w),
+                  Text("current location",
+                      style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.black.withOpacity(0.8),
+                          fontWeight: FontWeight.w500)),
+                  SizedBox(width: 5.w),
                   Text(
                       '${location['subcity'] ?? ''}, ${location['city'] ?? ''}',
                       style: TextStyle(
-                        fontSize: 18.sp,
-                        color: const Color.fromARGB(255, 6, 245, 245),
+                        fontSize: 16.sp,
+                        color: Colors.green,
+                        fontWeight: FontWeight.w700,
                       )),
                 ],
               ),
-              SizedBox(height: 36.h),
-              Text(
-                AppLocalizations.of(context)!.everythingAtYourFingertips,
-                style: TextStyle(
-                  fontSize: 32.sp,
-                  color: const Color.fromARGB(255, 123, 162, 194),
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Poppins',
-                ),
-              ),
-              SizedBox(height: 36.h),
+              SizedBox(height: 16.h),
               _buildSearchBar(provider),
+              SizedBox(height: 8.h),
+              SlideshowComponent(slides: [
+                {
+                  'image': 'assets/images/banner2.jpg',
+                  'title': 'Professional Home Services'
+                },
+                {
+                  'image': 'assets/images/banner3.jpg',
+                  'title': 'Reliable and Trusted Technicians'
+                },
+                {
+                  'image': 'assets/images/banner4.jpg',
+                  'title': 'Quality Service at Your Doorstep'
+                },
+              ]),
+              SizedBox(height: _isFocused ? 92.h : 16.h),
             ],
           ),
         ),
+        if (_isFocused)
+          Builder(
+            builder: (context) {
+              return Positioned(
+                top: 110.h,
+                height: 300.h,
+                width: MediaQuery.of(context).size.width,
+                child: Container(
+                  height: 300.h,
+                  margin: EdgeInsets.symmetric(horizontal: 16.w),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                        color: const Color.fromARGB(255, 3, 90, 29),
+                        width: 1.w),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey[400]!,
+                          offset: Offset(0, 2.h),
+                          blurRadius: 8.r)
+                    ],
+                  ),
+                  child: provider.fiterableBySearch.isNotEmpty
+                      ? ListView.builder(
+                          itemCount: provider.fiterableBySearch.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              onTap: () {
+                                // Provider.of<HomeServiceProvider>(context,
+                                //         listen: false)
+                                //     .fetchServiceQuestions(
+                                //         provider.services[index].id);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SelectLocation(
+                                            service: provider
+                                                .fiterableBySearch[index])));
+                              },
+                              title: Text(
+                                provider.fiterableBySearch[index].name,
+                                style: TextStyle(
+                                  fontSize: 18.sp,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      : Center(
+                          child: Text(
+                            "Service Not Found",
+                            style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 23.sp,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                ),
+              );
+            },
+          ),
       ],
     );
   }
@@ -353,143 +288,53 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(vertical: 2.h),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(12.r),
+            borderRadius: BorderRadius.circular(36.r),
             border: _isFocused
-                ? Border.all(color: Colors.blue, width: 1.5.w)
-                : null,
+                ? Border.all(
+                    color: const Color.fromARGB(255, 0, 88, 22), width: 2.w)
+                : Border.all(
+                    color: const Color.fromARGB(255, 3, 90, 29), width: 1.w),
           ),
-          child: TextField(
-            onChanged: (value) {
-              provider.filterServicesBySearch(search: value);
-            },
-            textAlignVertical: TextAlignVertical.center,
-            decoration: InputDecoration(
-              alignLabelWithHint: true,
-              hintText: AppLocalizations.of(context)!.searchForServices,
-              hintStyle: TextStyle(color: Colors.grey, fontSize: 20.sp),
-              border: InputBorder.none,
-              prefixIcon: IconButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/search');
-                },
-                icon: Icon(Icons.search, color: Colors.black.withOpacity(0.5)),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: TextField(
+                  onChanged: (value) {
+                    provider.filterServicesBySearch(search: value);
+                  },
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16.w),
+                    alignLabelWithHint: true,
+                    hintText: AppLocalizations.of(context)!.searchForServices,
+                    hintStyle: TextStyle(color: Colors.grey, fontSize: 18.sp),
+                    border: InputBorder.none,
+                  ),
+                ),
               ),
-            ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 0, 88, 22),
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(36),
+                      bottomRight: Radius.circular(36)),
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    provider.filterServicesBySearch(search: '');
+                  },
+                  icon: Icon(Icons.search, color: Colors.grey[200]),
+                ),
+              ),
+            ],
           ),
         ),
         SizedBox(
           height: 4.h,
         ),
-        if (_isFocused)
-          Container(
-            height: 300.h,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(
-                  color: const Color.fromARGB(69, 33, 149, 243), width: 1.5.w),
-            ),
-            child: ListView.builder(
-              itemCount: provider.categories.length,
-              itemBuilder: (context, index) {
-                print(provider.categories[index].categoryName);
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        provider.filterServicesBySearch(
-                            isCategory: true,
-                            categoryId: provider.categories[index].id);
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 16.h, left: 16.w),
-                        child: Text(
-                          provider.categories[index].categoryName,
-                          style: TextStyle(
-                            fontSize: 20.sp,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ),
-                    provider.fiterableBySearch
-                                .where((service) =>
-                                    service.categoryId ==
-                                    provider.categories[index].id)
-                                .length !=
-                            0
-                        ? SizedBox(
-                            height: 50.h,
-                            child: ListView(
-                                scrollDirection: Axis.horizontal,
-                                children: [
-                                  SizedBox(
-                                    width: 16.w,
-                                  ),
-                                  ...provider.fiterableBySearch
-                                      .where((service) =>
-                                          service.categoryId ==
-                                          provider.categories[index].id)
-                                      .map((service) => Row(
-                                            children: [
-                                              GestureDetector(
-                                                onTap: () {
-                                                  Provider.of<HomeServiceProvider>(
-                                                          context,
-                                                          listen: false)
-                                                      .fetchServiceQuestions(
-                                                          provider
-                                                              .fiterableBySearch[
-                                                                  index]
-                                                              .id);
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              QuestionnairePage(
-                                                                  service: provider
-                                                                          .fiterableBySearch[
-                                                                      index])));
-                                                },
-                                                child: Container(
-                                                  margin: EdgeInsets.only(
-                                                    left: 8.w,
-                                                  ),
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal: 32.w,
-                                                      vertical: 8.h),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            32.r),
-                                                    border: Border.all(
-                                                        color: Colors.blue),
-                                                  ),
-                                                  child: Text(
-                                                    service.name,
-                                                    style: TextStyle(
-                                                      fontSize: 16.sp,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ))
-                                      .toList(),
-                                ]),
-                          )
-                        : SizedBox.shrink()
-                  ],
-                );
-              },
-            ),
-          ),
       ],
     );
   }
@@ -497,74 +342,292 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Widget _buildServiceCategories(HomeServiceProvider provider) {
     return Column(
       children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: Row(
-            children: [
-              Text(
-                "Services ",
-                style: TextStyle(
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.all(16.w),
-          padding: EdgeInsets.all(4.w),
-          height: 50.h,
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(25.r),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(25.r),
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: provider.categories.map((category) {
+        SizedBox(
+          height: (138 *
+                  (provider.categories.length > 6 && !_showAllCategories
+                          ? 6
+                          : provider.categories.length)
+                      .h) +
+              80.h,
+          child: ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: provider.categories.length > 6 && !_showAllCategories
+                ? 7
+                : provider.categories.length + 1,
+            itemBuilder: (context, index) {
+              if (index ==
+                  (provider.categories.length > 6 && !_showAllCategories
+                      ? 6
+                      : provider.categories.length)) {
                 return GestureDetector(
-                    onTap: () {
-                      provider.filterServicesByCategory(category.id);
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(right: 8.w),
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      decoration: BoxDecoration(
-                        color: provider.selectedCategory == category.id
-                            ? Colors.white
-                            : null,
-                        borderRadius: BorderRadius.circular(25.r),
+                  onTap: () {
+                    setState(() {
+                      _showAllCategories = !_showAllCategories;
+                    });
+                  },
+                  child: Container(
+                    height: 40.h,
+                    margin:
+                        EdgeInsets.only(right: 16.w, left: 16.w, bottom: 8.h),
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8.r),
+                      border: Border.all(color: Colors.grey[200]!, width: 1.w),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.grey[400]!,
+                            offset: Offset(0, 2.h),
+                            blurRadius: 4.r)
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        _showAllCategories ? 'See Less' : 'See More',
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 0, 88, 22),
+                          fontWeight: FontWeight.w400,
+                          fontSize: 20.sp,
+                        ),
                       ),
-                      child: Center(
-                          child: Text(category.categoryName,
-                              style: TextStyle(
-                                  color: provider.selectedCategory ==
-                                          category.id
-                                      ? Colors.black
-                                      : const Color.fromARGB(255, 55, 84, 122),
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 18.sp))),
-                    ));
-              }).toList(),
-            ),
+                    ),
+                  ),
+                );
+              }
+              final category = provider.categories[index];
+              return GestureDetector(
+                onTap: () {
+                  provider.filterServicesByCategory(category.id);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const CategoryServices()));
+                },
+                child: Container(
+                  height: 120.h,
+                  margin: EdgeInsets.only(right: 16.w, left: 16.w, bottom: 8.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 32.h),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4.r),
+                    border: Border.all(
+                        color: provider.selectedCategoryId == category.id
+                            ? const Color.fromARGB(255, 0, 88, 22)
+                            : Colors.grey[200]!,
+                        width: 1.w),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey[400]!,
+                          offset: Offset(0, 2.h),
+                          blurRadius: 2.r)
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            [
+                              Icons.home_repair_service,
+                              Icons.cleaning_services,
+                              Icons.electrical_services,
+                              Icons.plumbing,
+                              Icons.construction,
+                              Icons.door_back_door_outlined
+                            ].elementAt(index % 6),
+                            size: 32.sp,
+                            color: const Color.fromARGB(255, 0, 88, 22),
+                          ),
+                          SizedBox(width: 8.w),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(category.categoryName,
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 22.sp)),
+                              SizedBox(
+                                width:
+                                    MediaQuery.of(context).size.width - 130.w,
+                                child: Text(
+                                  category.description ?? '',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontSize: 20.sp,
+                                      color: Colors.grey[600],
+                                      height: 1.5),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Icon(Icons.arrow_forward_ios,
+                          color: Colors.grey[600], size: 22.sp),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
         ),
+
+        // provider.fiterableBySearch
+        //                     .where((service) =>
+        //                         service.categoryId ==
+        //                         provider.categories[index].id)
+        //                     .isNotEmpty
+        //                 ? Column(
+        //                     children: [
+        //                       Padding(
+        //                         padding: const EdgeInsets.symmetric(
+        //                             horizontal: 32.0),
+        //                         child: Divider(
+        //                           thickness: 1.5.w,
+        //                           color: Colors.black.withOpacity(0.1),
+        //                         ),
+        //                       ),
+        //                       SizedBox(
+        //                         height: 50.h,
+        //                         child: ListView(
+        //                             scrollDirection: Axis.horizontal,
+        //                             children: [
+        //                               SizedBox(
+        //                                 width: 16.w,
+        //                               ),
+        //                               ...provider.fiterableBySearch
+        //                                   .where((service) =>
+        //                                       service.categoryId ==
+        //                                       provider.categories[index].id)
+        //                                   .map((service) => Row(
+        //                                         children: [
+        //                                           GestureDetector(
+        //                                             onTap: () {
+        //                                               Provider.of<HomeServiceProvider>(
+        //                                                       context,
+        //                                                       listen: false)
+        //                                                   .fetchServiceQuestions(
+        //                                                       provider
+        //                                                           .fiterableBySearch[
+        //                                                               index]
+        //                                                           .id);
+        //                                               Navigator.push(
+        //                                                   context,
+        //                                                   MaterialPageRoute(
+        //                                                       builder: (context) =>
+        //                                                           QuestionnairePage(
+        //                                                               service: provider
+        //                                                                       .fiterableBySearch[
+        //                                                                   index])));
+        //                                             },
+        //                                             child: Container(
+        //                                               margin: EdgeInsets.only(
+        //                                                 left: 8.w,
+        //                                               ),
+        //                                               padding:
+        //                                                   EdgeInsets.symmetric(
+        //                                                       horizontal: 32.w,
+        //                                                       vertical: 8.h),
+        //                                               decoration: BoxDecoration(
+        //                                                 color: Colors.white,
+        //                                                 borderRadius:
+        //                                                     BorderRadius
+        //                                                         .circular(32.r),
+        //                                                 border: Border.all(
+        //                                                     color: Colors.blue),
+        //                                               ),
+        //                                               child: Text(
+        //                                                 service.name,
+        //                                                 style: TextStyle(
+        //                                                   fontSize: 14.sp,
+        //                                                   color: Colors.black,
+        //                                                 ),
+        //                                               ),
+        //                                             ),
+        //                                           ),
+        //                                         ],
+        //                                       ))
+        //                                   .toList(),
+        //                             ]),
+        //                       ),
+        //                     ],
+        //                   )
+        //                 : SizedBox.shrink()
+        // Padding(
+        //   padding: EdgeInsets.symmetric(horizontal: 16.w),
+        //   child: Row(
+        //     children: [
+        //       Text(
+        //         "Services ",
+        //         style: TextStyle(
+        //           fontSize: 22.sp,
+        //           fontWeight: FontWeight.bold,
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
+
+        // Container(
+        //   margin: EdgeInsets.all(16.w),
+        //   padding: EdgeInsets.all(4.w),
+        //   height: 50.h,
+        //   decoration: BoxDecoration(
+        //     color: Colors.grey[300],
+        //     borderRadius: BorderRadius.circular(25.r),
+        //   ),
+        //   child: ClipRRect(
+        //     borderRadius: BorderRadius.circular(25.r),
+        //     child: ListView(
+        //       scrollDirection: Axis.horizontal,
+        //       children: provider.categories.map((category) {
+        //         return GestureDetector(
+        //             onTap: () {
+        //               provider.filterServicesByCategory(category.id);
+        //             },
+        //             child: Container(
+        //               margin: EdgeInsets.only(right: 8.w),
+        //               padding: EdgeInsets.symmetric(horizontal: 16.w),
+        //               decoration: BoxDecoration(
+        //                 color: provider.selectedCategory == category.id
+        //                     ? Colors.white
+        //                     : null,
+        //                 borderRadius: BorderRadius.circular(25.r),
+        //               ),
+        //               child: Center(
+        //                   child: Text(category.categoryName,
+        //                       style: TextStyle(
+        //                           color: provider.selectedCategory ==
+        //                                   category.id
+        //                               ? Colors.black
+        //                               : const Color.fromARGB(255, 55, 84, 122),
+        //                           fontWeight: FontWeight.w600,
+        //                           fontSize: 16.sp))),
+        //             ));
+        //       }).toList(),
+        //     ),
+        // ),
+        // ),
       ],
     );
   }
 
   Widget _buildservices(HomeServiceProvider provider) {
-    return Container(
-        padding: EdgeInsets.all(4.w),
-        child: Wrap(
-          spacing: 5.w,
-          runSpacing: 6.h,
-          children: provider.fiterableByCatagory
-              .map((service) => _buildServiceCard(service))
-              .toList(),
-        ));
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.0.w),
+      child: Wrap(
+        spacing: 5.w,
+        runSpacing: 6.h,
+        children: provider.fiterableByCatagory
+            .map((service) => _buildServiceCard(service))
+            .toList(),
+      ),
+    );
   }
 
   Widget _buildServiceCard(Service service) {
@@ -578,7 +641,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 builder: (context) => QuestionnairePage(service: service)));
       },
       child: Container(
-        width: 12.w * service.name.length.toDouble(),
+        width: 180.w,
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         margin: EdgeInsets.only(left: 8.w),
         decoration: BoxDecoration(
@@ -602,18 +665,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   Widget _buildTechnicianCard(Technician tech) {
     return Container(
-      width: 320.w,
+      width: 324.w,
       margin: EdgeInsets.only(left: 16.w, top: 8.h),
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24.r),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.grey[200]!,
-                offset: Offset(0, 2.h),
-                blurRadius: 2.r)
-          ]),
+          border: Border.all(color: Colors.grey[300]!, width: 2.w)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -643,7 +701,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   Text(
                     tech.name,
                     style: TextStyle(
-                      fontSize: 24.sp,
+                      fontSize: 22.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -661,7 +719,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           } else if (index == 3) {
                             return Container(
                               padding: EdgeInsets.symmetric(
-                                  horizontal: 12.w, vertical: 6.h),
+                                  horizontal: 8.w, vertical: 2.h),
                               decoration: BoxDecoration(
                                 color: Colors.grey[200],
                                 borderRadius: BorderRadius.circular(20.r),
@@ -670,13 +728,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 '...',
                                 style: TextStyle(
                                     color: Colors.black,
-                                    fontWeight: FontWeight.bold),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14.sp),
                               ),
                             );
                           }
                           return Container(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 12.w, vertical: 6.h),
+                                horizontal: 8.w, vertical: 2.h),
                             decoration: BoxDecoration(
                               color: Colors.grey[200],
                               borderRadius: BorderRadius.circular(20.r),
@@ -685,7 +744,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               service.name,
                               style: TextStyle(
                                   color: Colors.black,
-                                  fontWeight: FontWeight.bold),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14.sp),
                             ),
                           );
                         }).toList()),
@@ -699,7 +759,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             tech.bio,
             style: TextStyle(
               fontSize: 16.sp,
-              color: Colors.grey,
+              color: Colors.grey[600],
             ),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
@@ -718,7 +778,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           color: Colors.grey[600],
                           fontWeight: FontWeight.w600),
                     ),
-                    SizedBox(height: 5.h),
+                    SizedBox(height: 2.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
@@ -729,7 +789,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           '${tech.subcity ?? ''}, ${tech.city ?? ''}',
                           style: TextStyle(
                             color: Colors.grey[800],
-                            fontSize: 18.sp,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -747,7 +807,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w600),
                   ),
-                  SizedBox(height: 5.h),
+                  SizedBox(height: 2.h),
                   Row(
                     children: [
                       Icon(Icons.star,
@@ -757,7 +817,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         '${tech.rating ?? 0}',
                         style: TextStyle(
                           color: Colors.grey[800],
-                          fontSize: 16.sp,
+                          fontSize: 14.sp,
                         ),
                       ),
                     ],
@@ -788,7 +848,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w500,
-                      fontSize: 18.sp)),
+                      fontSize: 16.sp)),
             ),
           ),
         ],
@@ -803,12 +863,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10.r),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.grey[200]!,
-                offset: Offset(0, 2.h),
-                blurRadius: 2.r)
-          ]),
+          border: Border.all(color: Colors.grey[300]!, width: 2.w)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -821,7 +876,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           SizedBox(height: 8.h),
           Text(
             review.review,
-            style: TextStyle(fontSize: 16.sp, height: 1.5.h),
+            style: TextStyle(fontSize: 14.sp, height: 1.5.h),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
@@ -852,10 +907,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 children: [
                   Text(review.customer.name,
                       style: TextStyle(
-                          fontSize: 24.sp, fontWeight: FontWeight.bold)),
+                          fontSize: 22.sp, fontWeight: FontWeight.bold)),
                   Text(review.customer.email,
                       style:
-                          TextStyle(fontSize: 16.sp, color: Colors.grey[600])),
+                          TextStyle(fontSize: 14.sp, color: Colors.grey[600])),
                 ],
               )
             ],

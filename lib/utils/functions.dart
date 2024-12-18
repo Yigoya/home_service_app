@@ -5,6 +5,46 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:logger/web.dart';
+import 'package:intl/intl.dart';
+
+String timeRemaining(String? dateTimeString) {
+  if (dateTimeString == null) {
+    return "No date provided.";
+  }
+
+  DateTime? targetDate;
+  try {
+    targetDate = DateTime.parse(dateTimeString);
+  } catch (e) {
+    return "Invalid date format.";
+  }
+
+  DateTime now = DateTime.now();
+  Duration difference = targetDate.difference(now);
+
+  if (difference.isNegative) {
+    return "The date has already passed.";
+  }
+
+  int days = difference.inDays;
+  int hours = difference.inHours % 24;
+  int minutes = difference.inMinutes % 60;
+
+  String remainingTime = '';
+  if (days > 0) {
+    remainingTime = '$days days ';
+  }
+  if (hours > 0) {
+    remainingTime = '$hours hours ';
+  }
+  if (minutes > 0) {
+    remainingTime = '$minutes minutes ';
+  }
+
+  return remainingTime.isEmpty
+      ? 'Less than a minute remaining'
+      : '$remainingTime remaining';
+}
 
 Future<Map<String, String>> getDeviceInfo() async {
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();

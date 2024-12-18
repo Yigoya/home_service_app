@@ -74,7 +74,7 @@ class UserProfileComponent extends StatelessWidget {
                       children: [
                         Text(user.name,
                             style: TextStyle(
-                                fontSize: 22.sp, fontWeight: FontWeight.bold)),
+                                fontSize: 20.sp, fontWeight: FontWeight.bold)),
                         SizedBox(width: 8.w),
                         IconButton(
                           icon: Icon(Icons.edit, size: 20.sp),
@@ -84,8 +84,8 @@ class UserProfileComponent extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Text(user.email, style: TextStyle(fontSize: 16.sp)),
-                    Text(user.phoneNumber, style: TextStyle(fontSize: 16.sp)),
+                    Text(user.email, style: TextStyle(fontSize: 14.sp)),
+                    Text(user.phoneNumber, style: TextStyle(fontSize: 14.sp)),
                   ],
                 ),
               ),
@@ -113,7 +113,7 @@ class UserProfileComponent extends StatelessWidget {
                     ),
                     child: Text('See my Schedule',
                         style: TextStyle(
-                          fontSize: 16.sp,
+                          fontSize: 14.sp,
                           color: const Color.fromARGB(255, 16, 77, 128),
                         )),
                   ),
@@ -133,7 +133,7 @@ class UserProfileComponent extends StatelessWidget {
                     ),
                     child: Text('Logout',
                         style: TextStyle(
-                          fontSize: 16.sp,
+                          fontSize: 14.sp,
                           color: const Color.fromARGB(255, 92, 19, 14),
                         )),
                   )),

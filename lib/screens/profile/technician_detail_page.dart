@@ -47,7 +47,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                     padding: EdgeInsets.only(left: 16.w, top: 16.h),
                     child: Text("Business Hour",
                         style: TextStyle(
-                            fontSize: 18.sp, fontWeight: FontWeight.bold)),
+                            fontSize: 16.sp, fontWeight: FontWeight.bold)),
                   ),
                   Container(
                     margin: EdgeInsets.all(16.w),
@@ -69,7 +69,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                   children: [
                                     Text("Monday",
                                         style: TextStyle(
-                                            fontSize: 18.sp,
+                                            fontSize: 16.sp,
                                             fontWeight: FontWeight.w600)),
                                     Row(
                                       children: [
@@ -101,7 +101,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                   children: [
                                     Text("Tuesday",
                                         style: TextStyle(
-                                            fontSize: 18.sp,
+                                            fontSize: 16.sp,
                                             fontWeight: FontWeight.w600)),
                                     Row(
                                       children: [
@@ -133,7 +133,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                   children: [
                                     Text("Wednesday",
                                         style: TextStyle(
-                                            fontSize: 18.sp,
+                                            fontSize: 16.sp,
                                             fontWeight: FontWeight.w600)),
                                     Row(
                                       children: [
@@ -165,7 +165,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                   children: [
                                     Text("Thursday",
                                         style: TextStyle(
-                                            fontSize: 18.sp,
+                                            fontSize: 16.sp,
                                             fontWeight: FontWeight.w600)),
                                     Row(
                                       children: [
@@ -196,7 +196,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                   children: [
                                     Text("Friday",
                                         style: TextStyle(
-                                            fontSize: 18.sp,
+                                            fontSize: 16.sp,
                                             fontWeight: FontWeight.w600)),
                                     Row(
                                       children: [
@@ -228,7 +228,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                   children: [
                                     Text("Saturday",
                                         style: TextStyle(
-                                            fontSize: 18.sp,
+                                            fontSize: 16.sp,
                                             fontWeight: FontWeight.w600)),
                                     Row(
                                       children: [
@@ -259,7 +259,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                   children: [
                                     Text("Sunday",
                                         style: TextStyle(
-                                            fontSize: 18.sp,
+                                            fontSize: 16.sp,
                                             fontWeight: FontWeight.w600)),
                                     Row(
                                       children: [
@@ -285,7 +285,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                           )
                         : Text('No schedule available',
                             style:
-                                TextStyle(fontSize: 18.sp, color: Colors.grey)),
+                                TextStyle(fontSize: 16.sp, color: Colors.grey)),
                   ),
 
                   // Ratings Section
@@ -293,7 +293,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                     padding: EdgeInsets.only(left: 16.w),
                     child: Text("Ratings for ${techinicianDetail.name}",
                         style: TextStyle(
-                            fontSize: 18.sp, fontWeight: FontWeight.bold)),
+                            fontSize: 16.sp, fontWeight: FontWeight.bold)),
                   ),
                   techinicianDetail.reviews.isNotEmpty
                       ? Column(
@@ -310,7 +310,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                           ),
                           child: Text('No one has rated yet',
                               style: TextStyle(
-                                  fontSize: 18.sp, color: Colors.grey)),
+                                  fontSize: 16.sp, color: Colors.grey)),
                         ),
                 ],
               ),
@@ -365,7 +365,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                   Text(
                     tech.name ?? 'No Name',
                     style: TextStyle(
-                      fontSize: 24.sp,
+                      fontSize: 22.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -388,7 +388,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                                     style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 14.sp),
+                                        fontSize: 12.sp),
                                   ),
                                 ))
                             .toList()),
@@ -406,7 +406,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                   Text(
                     "Location",
                     style: TextStyle(
-                        fontSize: 16.sp,
+                        fontSize: 14.sp,
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w600),
                   ),
@@ -420,7 +420,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                         '${tech.subcity ?? ' - '}, ${tech.city ?? '-'}',
                         style: TextStyle(
                           color: Colors.grey[800],
-                          fontSize: 18.sp,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -435,7 +435,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                   Text(
                     'Bookings',
                     style: TextStyle(
-                        fontSize: 16.sp,
+                        fontSize: 14.sp,
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w600),
                   ),
@@ -444,7 +444,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                     '${tech.bookings ?? 0}',
                     style: TextStyle(
                         color: Colors.grey[800],
-                        fontSize: 20.sp,
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.w600),
                   ),
                 ],
@@ -455,7 +455,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                   Text(
                     'Rating',
                     style: TextStyle(
-                        fontSize: 16.sp,
+                        fontSize: 14.sp,
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w600),
                   ),
@@ -469,7 +469,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                         '${tech.rating ?? 0}',
                         style: TextStyle(
                           color: Colors.grey[800],
-                          fontSize: 16.sp,
+                          fontSize: 14.sp,
                         ),
                       ),
                     ],
@@ -481,14 +481,14 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
           SizedBox(height: 12.h),
           Text("More about ${tech.name}",
               style: TextStyle(
-                  fontSize: 20.sp,
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.black.withOpacity(0.7))),
           SizedBox(height: 6.h),
           Text(
             tech.bio ?? 'No bio available',
             style: TextStyle(
-              fontSize: 18.sp,
+              fontSize: 16.sp,
               color: Colors.grey[600],
             ),
           ),
@@ -523,7 +523,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
           SizedBox(height: 8.h),
           Text(
             review.review,
-            style: TextStyle(fontSize: 16.sp, height: 1.5.h),
+            style: TextStyle(fontSize: 14.sp, height: 1.5.h),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
@@ -554,10 +554,10 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                 children: [
                   Text(review.customer.name,
                       style: TextStyle(
-                          fontSize: 24.sp, fontWeight: FontWeight.bold)),
+                          fontSize: 22.sp, fontWeight: FontWeight.bold)),
                   Text(review.customer.email,
                       style:
-                          TextStyle(fontSize: 16.sp, color: Colors.grey[600])),
+                          TextStyle(fontSize: 14.sp, color: Colors.grey[600])),
                 ],
               )
             ],

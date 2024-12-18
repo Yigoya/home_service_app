@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/provider/booking_provider.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
+import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/home/technician_filter.dart';
 import 'package:home_service_app/utils/functions.dart';
 import 'package:home_service_app/widgets/custom_dropdown.dart';
@@ -26,6 +27,19 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
   TimeOfDay? _selectedTime;
   String? selectedSubCity;
   String? selectedWereda;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final location =
+          Provider.of<HomeServiceProvider>(context, listen: false).location;
+
+      setState(() {
+        selectedSubCity = location['subcity'] as String? ?? '';
+      });
+    });
+  }
 
   void _nextPage() {
     if (_selectedDate == null || _selectedTime == null) {
@@ -217,7 +231,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                           child: Text(AppLocalizations.of(context)!.back,
                               style: TextStyle(
                                   color: Colors.black,
-                                  fontSize: 16.sp,
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.w600)))),
                   GestureDetector(
                       onTap: _nextPage,
@@ -233,7 +247,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                                 ? AppLocalizations.of(context)!.submit
                                 : AppLocalizations.of(context)!.next,
                             style:
-                                TextStyle(color: Colors.white, fontSize: 16.sp),
+                                TextStyle(color: Colors.white, fontSize: 14.sp),
                           ))),
                 ],
               ),
@@ -254,7 +268,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
         ),
         Text(
           AppLocalizations.of(context)!.selectSchedulingDateAndTime,
-          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
         ),
         SizedBox(height: 20.h),
         Column(
@@ -274,7 +288,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                       : AppLocalizations.of(context)!.chooseDate,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 18.sp,
+                      fontSize: 16.sp,
                       color:
                           _selectedDate == null ? Colors.grey : Colors.black),
                 ),
@@ -295,7 +309,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                       : AppLocalizations.of(context)!.chooseTime,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 18.sp,
+                      fontSize: 16.sp,
                       color:
                           _selectedDate == null ? Colors.grey : Colors.black),
                 ),
@@ -307,7 +321,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
         if (_selectedDate != null && _selectedTime != null)
           Text(
             "${AppLocalizations.of(context)!.selected}: ${_selectedDate!.toLocal().toString().split(' ')[0]} at ${_selectedTime!.format(context)}",
-            style: TextStyle(fontSize: 16.sp),
+            style: TextStyle(fontSize: 14.sp),
             textAlign: TextAlign.center,
           ),
       ],
@@ -324,14 +338,14 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
         ),
         Text(
           "Select your location",
-          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
         ),
         SizedBox(height: 20.h),
         Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             CustomDropdown(
-              items: const ["Bole", "Akaki", "Nifas Silk"],
+              items: Provider.of<HomeServiceProvider>(context).subCitys,
               hint: AppLocalizations.of(context)!.selectYourSubCity,
               selectedValue: selectedSubCity,
               onChanged: (value) {
@@ -346,7 +360,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
               height: 8.h,
             ),
             CustomDropdown(
-              items: const ["01", "02", "03", "04", "05"],
+              items: Provider.of<HomeServiceProvider>(context).weredas,
               hint: AppLocalizations.of(context)!.selectYourWereda,
               selectedValue: selectedWereda,
               onChanged: (value) {
@@ -383,7 +397,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
         ),
         Text(
           question['text'],
-          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 20.h),
         TextField(
@@ -411,7 +425,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
         ),
         Text(
           question['text'],
-          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 20.h),
         ...question['options'].map<Widget>((option) {

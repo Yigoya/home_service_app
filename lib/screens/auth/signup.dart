@@ -50,7 +50,7 @@ class _SignupPageState extends State<SignupPage> {
       backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(16.w),
+          padding: EdgeInsets.all(32.w),
           child: Form(
             key: _formKey,
             child: Column(
@@ -60,14 +60,14 @@ class _SignupPageState extends State<SignupPage> {
                 Text(
                   AppLocalizations.of(context)!.createAccount,
                   style: TextStyle(
-                      fontSize: 32.sp,
+                      fontSize: 28.sp,
                       fontWeight: FontWeight.w600,
                       color: Colors.blue),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   AppLocalizations.of(context)!.joinUs,
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
@@ -105,7 +105,7 @@ class _SignupPageState extends State<SignupPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("Have an account? ",
-                        style: TextStyle(fontSize: 14.sp)),
+                        style: TextStyle(fontSize: 12.sp)),
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(context, '/login');
@@ -115,7 +115,7 @@ class _SignupPageState extends State<SignupPage> {
                         style: TextStyle(
                             color: Colors.blue,
                             fontWeight: FontWeight.bold,
-                            fontSize: 14.sp),
+                            fontSize: 12.sp),
                       ),
                     ),
                   ],

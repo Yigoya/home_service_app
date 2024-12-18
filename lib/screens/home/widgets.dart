@@ -90,7 +90,7 @@ class TechniciansSection extends StatelessWidget {
               children: [
                 Text(tech.name ?? 'No Name',
                     style: TextStyle(
-                        fontSize: 22.sp, fontWeight: FontWeight.bold)),
+                        fontSize: 20.sp, fontWeight: FontWeight.bold)),
                 SizedBox(height: 5.h),
                 Row(
                   children: [
@@ -100,7 +100,7 @@ class TechniciansSection extends StatelessWidget {
                         '${tech.rating ?? 0} (${tech.completedJobs ?? 0} Reviews)',
                         style: TextStyle(
                           color: Colors.grey[800],
-                          fontSize: 16.sp,
+                          fontSize: 14.sp,
                         )),
                   ],
                 ),
@@ -122,7 +122,7 @@ class TechniciansSection extends StatelessWidget {
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 14.sp),
+                                      fontSize: 12.sp),
                                 ),
                               ))
                           .toList() ??
@@ -150,7 +150,7 @@ class CustomerReviewsSection extends StatelessWidget {
         Padding(
           padding: EdgeInsets.all(16.0.w),
           child: Text("What the Customer Says",
-              style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold)),
+              style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold)),
         ),
         ...reviews.map((review) => _buildReviewCard(review)),
       ],
@@ -189,7 +189,7 @@ class CustomerReviewsSection extends StatelessWidget {
             ),
             SizedBox(height: 24.h),
             Text(review.review,
-                style: TextStyle(fontSize: 16.sp, height: 1.5.h)),
+                style: TextStyle(fontSize: 14.sp, height: 1.5.h)),
             SizedBox(height: 24.h),
             Row(
               children: [
@@ -204,10 +204,10 @@ class CustomerReviewsSection extends StatelessWidget {
                   children: [
                     Text(review.customer.name,
                         style: TextStyle(
-                            fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                            fontSize: 14.sp, fontWeight: FontWeight.bold)),
                     Text(review.customer.email,
                         style: TextStyle(
-                            fontSize: 14.sp, color: Colors.grey[600])),
+                            fontSize: 12.sp, color: Colors.grey[600])),
                   ],
                 )
               ],
@@ -242,7 +242,7 @@ class FAQSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text("FAQ",
-              style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold)),
+              style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold)),
           SizedBox(height: 20.h),
           ...provider.faqs.asMap().entries.map((entry) {
             int index = entry.key;
@@ -277,9 +277,9 @@ class FAQSection extends StatelessWidget {
             children: [
               Text(faq.question,
                   style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp)),
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp)),
               SizedBox(height: 5.h),
-              Text(faq.answer, style: TextStyle(fontSize: 16.sp)),
+              Text(faq.answer, style: TextStyle(fontSize: 14.sp)),
               SizedBox(height: 20.h),
             ],
           ),

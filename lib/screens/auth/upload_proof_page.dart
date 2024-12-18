@@ -178,7 +178,7 @@ class _UploadProofPageState extends State<UploadProofPage> {
                       Text(
                         technician!.name,
                         style: TextStyle(
-                            fontSize: 24.sp, fontWeight: FontWeight.bold),
+                            fontSize: 22.sp, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 8.h),
                       Text('Email: ${technician!.email}'),

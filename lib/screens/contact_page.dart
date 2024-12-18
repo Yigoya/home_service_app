@@ -13,10 +13,10 @@ class ContactPage extends StatefulWidget {
 }
 
 class _ContactPageState extends State<ContactPage> {
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     final formProvider = Provider.of<FormProvider>(context);
-    final _formKey = GlobalKey<FormState>();
     return Scaffold(
       backgroundColor: Colors.grey[200],
       resizeToAvoidBottomInset: true,
@@ -36,7 +36,7 @@ class _ContactPageState extends State<ContactPage> {
                 SizedBox(height: 36.h),
                 Text("Contact us",
                     style: TextStyle(
-                        fontSize: 24.sp, fontWeight: FontWeight.bold)),
+                        fontSize: 22.sp, fontWeight: FontWeight.bold)),
                 SizedBox(height: 16.h),
                 CustomTextField(
                   label: "Name",
@@ -67,8 +67,8 @@ class _ContactPageState extends State<ContactPage> {
                 ),
                 ElevatedButton(
                   style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.blue),
-                      foregroundColor: MaterialStateProperty.all(Colors.white)),
+                      backgroundColor: WidgetStateProperty.all(Colors.blue),
+                      foregroundColor: WidgetStateProperty.all(Colors.white)),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       formProvider.submitContactForm(context);

@@ -6,7 +6,7 @@ import 'package:logger/web.dart';
 class ApiService {
   final Dio _dio = Dio();
   final storage = const FlutterSecureStorage();
-  static String API_URL = "http://192.168.12.1:5000";
+  static String API_URL = "http://10.2.79.109:5000";
   static String API_URL_FILE = "$API_URL/uploads/";
   ApiService() {
     _dio.options.baseUrl = API_URL; // Replace with actual URL
@@ -36,8 +36,8 @@ class ApiService {
   }
 
   Future<Response> deleteRequest(String endpoint) async {
-    String? token = await storage.read(key: "jwt_token");
-    _dio.options.headers['Authorization'] = 'Bearer $token';
+    // String? token = await storage.read(key: "jwt_token");
+    // _dio.options.headers['Authorization'] = 'Bearer $token';
     return await _dio.delete(endpoint);
   }
 

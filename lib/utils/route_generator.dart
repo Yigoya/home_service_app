@@ -10,7 +10,7 @@ import 'package:home_service_app/screens/auth/upload_proof.dart';
 import 'package:home_service_app/screens/auth/verification_wait_screen.dart';
 import 'package:home_service_app/screens/auth/verifyemail_page.dart';
 import 'package:home_service_app/screens/booking/booking.dart';
-import 'package:home_service_app/screens/booking/questionnaire_page.dart';
+import 'package:home_service_app/screens/home/questionnaire_page.dart';
 import 'package:home_service_app/screens/booking/update_booking.dart';
 import 'package:home_service_app/screens/contact_page.dart';
 import 'package:home_service_app/screens/detail_booking.dart';

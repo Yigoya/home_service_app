@@ -10,6 +10,7 @@ import 'package:home_service_app/models/user.dart';
 import 'package:home_service_app/models/user_customer.dart';
 import 'package:home_service_app/models/user_technician.dart';
 import 'package:home_service_app/services/api_service.dart';
+import 'package:home_service_app/utils/functions.dart';
 import 'package:logger/web.dart';
 
 class ProfilePageProvider with ChangeNotifier {
@@ -36,22 +37,37 @@ class ProfilePageProvider with ChangeNotifier {
   List<Map<String, dynamic>>? calender;
   Map<String, dynamic> techinicianDetail = {};
 
+  List<Address> _addresses = [];
+  List<Address> get addresses => _addresses;
+
+  Future<void> loadUserData() async {
+    final userData = await storage.read(key: "user");
+    if (userData != null) {
+      _user = User.fromJson(jsonDecode(userData));
+    }
+
+    if (_user!.role == "TECHNICIAN") {
+      final technicianData = await storage.read(key: "technician");
+      if (technicianData != null) {
+        Logger().d(technicianData);
+        _technician = UserTechnician.fromJson(jsonDecode(technicianData));
+      }
+    } else {
+      final customerData = await storage.read(key: "customer");
+      if (customerData != null) {
+        _customer = UserCustomer.fromJson(jsonDecode(customerData));
+      }
+    }
+  }
+
   Future<void> fetchBookings() async {
     try {
       _isLoading = true;
       notifyListeners();
 
-      final userData = await storage.read(key: "user");
-      if (userData != null) {
-        _user = User.fromJson(jsonDecode(userData));
-      }
+      await loadUserData();
 
       if (_user!.role == "TECHNICIAN") {
-        final technicianData = await storage.read(key: "technician");
-        if (technicianData != null) {
-          Logger().d(technicianData);
-          _technician = UserTechnician.fromJson(jsonDecode(technicianData));
-        }
         final technicianId = _technician!.id;
         final response =
             await _apiService.getRequest('/booking/technician/$technicianId');
@@ -62,10 +78,6 @@ class ProfilePageProvider with ChangeNotifier {
         _isLoading = false;
         notifyListeners();
       } else {
-        final customerData = await storage.read(key: "customer");
-        if (customerData != null) {
-          _customer = UserCustomer.fromJson(jsonDecode(customerData));
-        }
         final cusstomerId = _customer!.id;
         Logger().d(cusstomerId);
         final response =
@@ -85,7 +97,8 @@ class ProfilePageProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateProfile(Map<String, dynamic> data) async {
+  Future<void> updateProfile(
+      Map<String, dynamic> data, BuildContext context) async {
     try {
       _isLoading = true;
       notifyListeners();
@@ -99,6 +112,7 @@ class ProfilePageProvider with ChangeNotifier {
           name: data['name'],
         );
         await storage.write(key: "user", value: jsonEncode(newUser.toJson()));
+        showTopMessage(context, userData);
       } else {
         final response = await _apiService.putRequest(
             '/profile/customer/${_customer!.id}', data);
@@ -109,14 +123,22 @@ class ProfilePageProvider with ChangeNotifier {
           name: data['name'],
         );
         await storage.write(key: "user", value: jsonEncode(newUser.toJson()));
+        showTopMessage(context, userData);
       }
-      _isLoading = false;
-      notifyListeners();
     } on DioException catch (e) {
-      _isLoading = false;
-      notifyListeners();
-      Logger().e(e.response!.data);
+      if (e.response != null) {
+        Logger().e(e.response!.data);
+        showTopMessage(context, e.response!.data['detail'].join('\n'),
+            isSuccess: false);
+      } else {
+        Logger().e(e.message);
+        showTopMessage(context, e.message!, isSuccess: false);
+      }
+    } catch (e) {
+      Logger().e(e);
     }
+    _isLoading = false;
+    notifyListeners();
   }
 
   Future<void> uploadProfileImage(FormData data) async {
@@ -186,6 +208,71 @@ class ProfilePageProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       Logger().e(e);
+    }
+  }
+
+  Future<void> fetchCustomerAddresses() async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+      await loadUserData();
+      final response = await _apiService
+          .getRequest('/profile/customer/${_customer!.id}/addresses');
+      final data = response.data as List;
+      Logger().d(data);
+
+      _addresses =
+          data.map((addressJson) => Address.fromJson(addressJson)).toList();
+
+      _isLoading = false;
+      notifyListeners();
+    } on DioException catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      Logger().e(e.response!.data);
+    }
+  }
+
+  Future<void> fetchTechnicianAddresses() async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+      loadUserData();
+      final response = await _apiService
+          .getRequest('/profile/technician/${_technician!.id}/addresses');
+      final data = response.data as List;
+      Logger().d(data);
+
+      _addresses =
+          data.map((addressJson) => Address.fromJson(addressJson)).toList();
+
+      _isLoading = false;
+      notifyListeners();
+    } on DioException catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      Logger().e(e.response!.data);
+    }
+  }
+
+  Future<void> deleteCustomerAddress(int addressId) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+      await loadUserData();
+      final response = await _apiService.deleteRequest(
+          '/profile/customer/${_customer!.id}/address/$addressId');
+      Logger().d(response.data);
+
+      // Remove the address from the local list
+      _addresses.removeWhere((address) => address.id == addressId);
+
+      _isLoading = false;
+      notifyListeners();
+    } on DioException catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      Logger().e(e.response!.data);
     }
   }
 }

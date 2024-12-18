@@ -24,7 +24,7 @@ class CustomTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 16.sp)),
+        Text(label, style: TextStyle(fontSize: 14.sp)),
         SizedBox(height: 8.h),
         TextFormField(
           controller: controller,

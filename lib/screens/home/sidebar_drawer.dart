@@ -28,7 +28,7 @@ class SideNavDrawer extends StatelessWidget {
                   "Home Service",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -70,7 +70,7 @@ class SideNavDrawer extends StatelessWidget {
             title: Text(
               'Log Out',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 color: Colors.grey[800],
               ),
             ),
@@ -96,7 +96,7 @@ class SideNavDrawer extends StatelessWidget {
       title: Text(
         label,
         style: const TextStyle(
-          fontSize: 16,
+          fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
       ),

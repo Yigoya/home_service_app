@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_service_app/provider/notification_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
+import 'package:home_service_app/screens/home/more_page_technician.dart';
 import 'package:home_service_app/screens/notification.dart';
 import 'package:home_service_app/screens/profile/technician_about_me.dart';
 import 'package:home_service_app/screens/profile/technician_profile_page.dart';
@@ -23,37 +24,26 @@ class _TechnicianNavigationState extends State<TechnicianNavigation> {
   List<Widget> _buildScreens() {
     return [
       const TechnicianProfilePage(),
-      const TechnicianSchedule(),
-      const NotificationsPage(),
-      TechnicianAboutMe(),
+      const MorePageTechnician()
+      // const TechnicianSchedule(),
+      // const NotificationsPage(),
+      // TechnicianAboutMe(),
     ];
   }
 
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
       PersistentBottomNavBarItem(
-        icon: const Icon(Icons.home),
-        title: ("Home"),
+        icon: const Icon(Icons.construction, size: 24),
+        title: ("Services"),
         activeColorPrimary: Colors.blue,
-        inactiveColorPrimary: Colors.grey[200],
+        inactiveColorPrimary: Colors.grey[800],
       ),
       PersistentBottomNavBarItem(
-        icon: const Icon(Icons.schedule),
-        title: ("Schedule"),
+        icon: const Icon(Icons.more_horiz, size: 24),
+        title: ("More"),
         activeColorPrimary: Colors.blue,
-        inactiveColorPrimary: Colors.grey[200],
-      ),
-      PersistentBottomNavBarItem(
-        icon: const Icon(Icons.notifications_outlined),
-        title: ("Nofity"),
-        activeColorPrimary: Colors.blue,
-        inactiveColorPrimary: Colors.grey[200],
-      ),
-      PersistentBottomNavBarItem(
-        icon: const Icon(Icons.person),
-        title: ("About Me"),
-        activeColorPrimary: Colors.blue,
-        inactiveColorPrimary: Colors.grey[200],
+        inactiveColorPrimary: Colors.grey[800],
       ),
     ];
   }
@@ -82,12 +72,8 @@ class _TechnicianNavigationState extends State<TechnicianNavigation> {
       padding: EdgeInsets.symmetric(
         vertical: 8.h,
       ),
-      margin: EdgeInsets.all(8.w),
-      backgroundColor: Color(0xFF222222),
-      decoration: NavBarDecoration(
-        borderRadius: BorderRadius.circular(16.0.r),
-        colorBehindNavBar: Colors.white,
-      ),
+
+      backgroundColor: Colors.white,
       isVisible: true,
       animationSettings: const NavBarAnimationSettings(
         navBarItemAnimation: ItemAnimationSettings(
@@ -104,7 +90,7 @@ class _TechnicianNavigationState extends State<TechnicianNavigation> {
       ),
       confineToSafeArea: true,
       navBarHeight: kBottomNavigationBarHeight.h,
-      navBarStyle: NavBarStyle.style1,
+      navBarStyle: NavBarStyle.style6,
     );
   }
 }

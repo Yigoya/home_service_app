@@ -67,7 +67,7 @@ class BuyCoinsPage extends StatelessWidget {
               Text(
                 "Choose a Coin Package",
                 style: TextStyle(
-                  fontSize: 24.sp,
+                  fontSize: 22.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -108,7 +108,7 @@ class BuyCoinsPage extends StatelessWidget {
                           Text(
                             "${package['coins']} Coins",
                             style: TextStyle(
-                              fontSize: 18.sp,
+                              fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -147,7 +147,7 @@ class BuyCoinsPage extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16.sp,
+                                  fontSize: 14.sp,
                                 ),
                               ),
                             ),

@@ -219,14 +219,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           ),
           child: Provider.of<AuthenticationProvider>(context).isLoading
               ? CircularProgressIndicator()
-              : Text(buttonText, style: TextStyle(fontSize: 16.sp)),
+              : Text(buttonText, style: TextStyle(fontSize: 14.sp)),
         ),
         if (isBackVisible)
           TextButton(
             onPressed: _previousPage,
             child: Text(
               "Back",
-              style: TextStyle(color: Colors.blueAccent, fontSize: 14.sp),
+              style: TextStyle(color: Colors.blueAccent, fontSize: 12.sp),
             ),
           ),
       ],

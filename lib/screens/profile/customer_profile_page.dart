@@ -90,10 +90,10 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
                             indicatorPadding: EdgeInsets.symmetric(
                                 horizontal: 0.w, vertical: 6.h),
                             labelStyle: TextStyle(
-                                fontSize: 18.sp,
+                                fontSize: 16.sp,
                                 fontWeight: FontWeight.w500), //For Selected tab
                             unselectedLabelStyle: TextStyle(
-                                fontSize: 16.sp, fontWeight: FontWeight.w500),
+                                fontSize: 14.sp, fontWeight: FontWeight.w500),
                             tabs: [
                               Tab(text: AppLocalizations.of(context)!.pending),
                               Tab(text: AppLocalizations.of(context)!.accepted),
@@ -182,7 +182,7 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
               onPressed: () async {
                 if (nameController.text.isNotEmpty) {
                   await Provider.of<ProfilePageProvider>(context, listen: false)
-                      .updateProfile({'name': nameController.text});
+                      .updateProfile({'name': nameController.text}, context);
                   Provider.of<UserProvider>(context, listen: false).loadUser();
                   Navigator.of(context).pop();
                 }
@@ -259,7 +259,7 @@ class BookingAcceptedList extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(booking.technicianName,
-                      style: const TextStyle(fontSize: 16)),
+                      style: const TextStyle(fontSize: 14)),
                   Text(
                       'Location: ${booking.address.subcity}, ${booking.address.wereda}'),
                   Row(
@@ -329,7 +329,7 @@ class BookingStartedList extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(booking.technicianName,
-                      style: const TextStyle(fontSize: 16)),
+                      style: const TextStyle(fontSize: 14)),
                   Text(
                       'Location: ${booking.address.subcity}, ${booking.address.wereda}'),
                   Row(
@@ -402,7 +402,7 @@ class BookingCompletedList extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(booking.technicianName,
-                      style: const TextStyle(fontSize: 16)),
+                      style: const TextStyle(fontSize: 14)),
                   Text(
                       'Location: ${booking.address.subcity}, ${booking.address.wereda}'),
                   const SizedBox(height: 16),
@@ -426,7 +426,7 @@ class BookingCompletedList extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
         Text(booking.review!.review ?? '',
-            style: const TextStyle(fontSize: 16)),
+            style: const TextStyle(fontSize: 14)),
       ],
     );
   }
@@ -519,7 +519,7 @@ class BookingDeniedList extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(booking.technicianName,
-                      style: const TextStyle(fontSize: 16)),
+                      style: const TextStyle(fontSize: 14)),
                   Text(
                       'Location: ${booking.address.subcity}, ${booking.address.wereda}'),
                 ],
@@ -581,7 +581,7 @@ class BookingListt extends StatelessWidget {
                         children: [
                           Text(booking.technicianName,
                               style: const TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold)),
+                                  fontSize: 22, fontWeight: FontWeight.bold)),
                           Text(booking.serviceName,
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold)),
@@ -595,7 +595,7 @@ class BookingListt extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(booking.description ?? '',
                       style: const TextStyle(
-                          fontSize: 16, height: 1.5, color: Colors.grey)),
+                          fontSize: 14, height: 1.5, color: Colors.grey)),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -619,7 +619,7 @@ class BookingListt extends StatelessWidget {
                             child: const Text('Edit',
                                 style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w500))),
                       ),
                       GestureDetector(
@@ -640,7 +640,7 @@ class BookingListt extends StatelessWidget {
                             child: const Text('Dispute',
                                 style: TextStyle(
                                     color: Colors.black,
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w500)),
                           )),
                       GestureDetector(
@@ -662,7 +662,7 @@ class BookingListt extends StatelessWidget {
                           child: const Text('Cancel',
                               style: TextStyle(
                                   color: Colors.black,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w500)),
                         ),
                       ),

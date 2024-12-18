@@ -75,7 +75,7 @@ class _WaitingForApprovalPageState extends State<WaitingForApprovalPage> {
                     Text(
                       "Account Activated",
                       style: TextStyle(
-                        fontSize: 24.sp,
+                        fontSize: 22.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),
@@ -85,7 +85,7 @@ class _WaitingForApprovalPageState extends State<WaitingForApprovalPage> {
                     Text(
                       "Your account has been successfully activated. You can now log in and start using the app.",
                       style: TextStyle(
-                        fontSize: 16.sp,
+                        fontSize: 14.sp,
                         color: Colors.grey[600],
                       ),
                       textAlign: TextAlign.center,
@@ -105,7 +105,7 @@ class _WaitingForApprovalPageState extends State<WaitingForApprovalPage> {
                       ),
                       child: Text(
                         "Log In",
-                        style: TextStyle(fontSize: 16.sp, color: Colors.white),
+                        style: TextStyle(fontSize: 14.sp, color: Colors.white),
                       ),
                     ),
                   ],
@@ -122,7 +122,7 @@ class _WaitingForApprovalPageState extends State<WaitingForApprovalPage> {
                     Text(
                       "Waiting for Your Approval",
                       style: TextStyle(
-                        fontSize: 24.sp,
+                        fontSize: 22.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),
@@ -132,7 +132,7 @@ class _WaitingForApprovalPageState extends State<WaitingForApprovalPage> {
                     Text(
                       "Your request is being processed. You will be notified once it has been approved.",
                       style: TextStyle(
-                        fontSize: 16.sp,
+                        fontSize: 14.sp,
                         color: Colors.grey[600],
                       ),
                       textAlign: TextAlign.center,
@@ -152,7 +152,7 @@ class _WaitingForApprovalPageState extends State<WaitingForApprovalPage> {
                       ),
                       child: Text(
                         "Refresh Status",
-                        style: TextStyle(fontSize: 16.sp, color: Colors.white),
+                        style: TextStyle(fontSize: 14.sp, color: Colors.white),
                       ),
                     ),
                   ],

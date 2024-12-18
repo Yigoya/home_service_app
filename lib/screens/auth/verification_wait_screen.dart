@@ -19,7 +19,7 @@ class VerificationWaitPage extends StatelessWidget {
               Text(
                 'Verification in Progress',
                 style: TextStyle(
-                  fontSize: 24.sp,
+                  fontSize: 22.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
@@ -29,7 +29,7 @@ class VerificationWaitPage extends StatelessWidget {
                 'Thank you for your patience. We are currently verifying your account.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 16.sp,
+                  fontSize: 14.sp,
                   color: Colors.black54,
                 ),
               ),
@@ -38,7 +38,7 @@ class VerificationWaitPage extends StatelessWidget {
                 'We will contact you once your verification is complete.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 16.sp,
+                  fontSize: 14.sp,
                   color: Colors.black54,
                 ),
               ),

@@ -78,7 +78,7 @@ class _ScheduleWidgetState extends State<ScheduleWidget> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(day,
-            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
+            style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600)),
         TextButton(
           onPressed: () => _pickTime(day, true),
           child: Text(start.isEmpty ? "Start Time" : start),
