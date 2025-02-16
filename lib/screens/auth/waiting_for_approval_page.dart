@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class WaitingForApprovalPage extends StatefulWidget {
   const WaitingForApprovalPage({super.key});
@@ -51,7 +52,7 @@ class _WaitingForApprovalPageState extends State<WaitingForApprovalPage> {
       }
     } else {
       // Handle missing technicianId
-      print('Technician ID is missing');
+      print(AppLocalizations.of(context)!.technicianIdMissing);
     }
   }
 
@@ -69,7 +70,7 @@ class _WaitingForApprovalPageState extends State<WaitingForApprovalPage> {
                     Icon(
                       Icons.check_circle_outline,
                       size: 100.sp,
-                      color: Colors.green,
+                      color: Theme.of(context).primaryColor,
                     ),
                     SizedBox(height: 20.h),
                     Text(
@@ -83,7 +84,7 @@ class _WaitingForApprovalPageState extends State<WaitingForApprovalPage> {
                     ),
                     SizedBox(height: 10.h),
                     Text(
-                      "Your account has been successfully activated. You can now log in and start using the app.",
+                      AppLocalizations.of(context)!.accountActivatedMessage,
                       style: TextStyle(
                         fontSize: 14.sp,
                         color: Colors.grey[600],
@@ -96,7 +97,7 @@ class _WaitingForApprovalPageState extends State<WaitingForApprovalPage> {
                         Navigator.pushReplacementNamed(context, '/login');
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: Theme.of(context).primaryColor,
                         padding: EdgeInsets.symmetric(
                             horizontal: 24.w, vertical: 12.h),
                         shape: RoundedRectangleBorder(
@@ -104,7 +105,7 @@ class _WaitingForApprovalPageState extends State<WaitingForApprovalPage> {
                         ),
                       ),
                       child: Text(
-                        "Log In",
+                        AppLocalizations.of(context)!.logInPrompt,
                         style: TextStyle(fontSize: 14.sp, color: Colors.white),
                       ),
                     ),
@@ -120,7 +121,7 @@ class _WaitingForApprovalPageState extends State<WaitingForApprovalPage> {
                     ),
                     SizedBox(height: 20.h),
                     Text(
-                      "Waiting for Your Approval",
+                      AppLocalizations.of(context)!.waitingForYourApproval,
                       style: TextStyle(
                         fontSize: 22.sp,
                         fontWeight: FontWeight.bold,
@@ -130,7 +131,7 @@ class _WaitingForApprovalPageState extends State<WaitingForApprovalPage> {
                     ),
                     SizedBox(height: 10.h),
                     Text(
-                      "Your request is being processed. You will be notified once it has been approved.",
+                      AppLocalizations.of(context)!.requestBeingProcessed,
                       style: TextStyle(
                         fontSize: 14.sp,
                         color: Colors.grey[600],
@@ -151,7 +152,7 @@ class _WaitingForApprovalPageState extends State<WaitingForApprovalPage> {
                         ),
                       ),
                       child: Text(
-                        "Refresh Status",
+                        AppLocalizations.of(context)!.refreshStatus,
                         style: TextStyle(fontSize: 14.sp, color: Colors.white),
                       ),
                     ),

@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:home_service_app/provider/notification_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
-import 'package:home_service_app/screens/chat/chat.dart';
-import 'package:home_service_app/screens/contact_page.dart';
-import 'package:home_service_app/screens/disputelist_page.dart';
 import 'package:home_service_app/screens/home/home.dart';
 import 'package:home_service_app/screens/home/more_page.dart';
-import 'package:home_service_app/screens/notification.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -35,13 +32,13 @@ class _NavigationState extends State<Navigation> {
     return [
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.construction, size: 24),
-        title: ("Services"),
+        title: AppLocalizations.of(context)!.services,
         activeColorPrimary: Colors.blue,
         inactiveColorPrimary: Colors.grey[800],
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.more_horiz, size: 24),
-        title: ("More"),
+        title: AppLocalizations.of(context)!.seeMore,
         activeColorPrimary: Colors.blue,
         inactiveColorPrimary: Colors.grey[800],
       ),

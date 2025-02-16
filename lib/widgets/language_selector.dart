@@ -13,12 +13,12 @@ class LanguageSelector extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.r),
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF009fff),
-            const Color(0xFFec2f4b),
+            Color(0xFF009fff),
+            Color(0xFFec2f4b),
           ],
         ),
       ),

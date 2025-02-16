@@ -62,7 +62,7 @@ class TokenEntryPage extends StatelessWidget {
                     SnackBar(
                       content: Text(
                         AppLocalizations.of(context)!.invalidToken,
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                       backgroundColor: Colors.redAccent,
                     ),

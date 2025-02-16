@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:app_links/app_links.dart';
-import 'package:home_service_app/main.dart';
 import 'package:home_service_app/screens/auth/forget_password_page.dart';
 import 'package:home_service_app/screens/auth/upload_proof_page.dart';
 import 'package:home_service_app/screens/dispute_page.dart';
@@ -37,7 +36,7 @@ final class DynamicLinkHandler {
   /// Handles the link navigation Dynamic Links.
   void _handleLinkData(Uri data, BuildContext context) {
     final queryParams = data.queryParameters;
-    Logger().d(data.toString() + 'Dynamic Link Handler');
+    Logger().d('${data}Dynamic Link Handler');
     if (data.path == '/products') {
       final productId = queryParams['id'];
       final productTitle = queryParams['title'];

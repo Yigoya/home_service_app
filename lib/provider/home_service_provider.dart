@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:home_service_app/models/catagory.dart';
 import 'package:home_service_app/models/dispute.dart';
 import 'package:home_service_app/models/faq.dart';
+import 'package:home_service_app/models/location.dart';
 import 'package:home_service_app/models/rating.dart';
 import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/models/techinician_detail.dart';
@@ -19,11 +20,32 @@ class HomeServiceProvider with ChangeNotifier {
   ApiService apiService = ApiService();
 
   List<Category> _categories = [];
-  List<String> subCitys = ["Bole", "Akaki", "Nifas Silk"];
-  List<String> weredas = ["01", "02", "03", "04", "05"];
-  Map<String, Object> location = {};
+  Location? selectedLocation;
+  List<Location> locations = [
+    Location(
+      englishName: 'Addis Ababa',
+      amharicName: 'አዲስ አበባ',
+      oromoName: 'Finfinne',
+      numberOfWeredas: 10,
+    ),
+    Location(
+      englishName: 'Dire Dawa',
+      amharicName: 'ድሬ ዳዋ',
+      oromoName: 'Dirre Dhawaa',
+      numberOfWeredas: 5,
+    ),
+    Location(
+      englishName: 'Harar',
+      amharicName: 'ሐረር',
+      oromoName: 'Harar',
+      numberOfWeredas: 6,
+    ),
+  ];
 
   List<Service> _services = [];
+
+  List<Service> _selectedServices = [];
+
   List<Service> _fiterableByCatagory = [];
 
   List<Service> _fiterableBySearch = [];
@@ -53,12 +75,57 @@ class HomeServiceProvider with ChangeNotifier {
   int totalElements = 0;
   List<Map<String, dynamic>> questions = [];
   Locale locale = const Locale('en');
+
+  List<String> subCitys(Locale locale) {
+    switch (locale.languageCode) {
+      case 'am':
+        return locations.map((location) => location.amharicName).toList();
+      case 'om':
+        return locations.map((location) => location.oromoName).toList();
+      default:
+        return locations.map((location) => location.englishName).toList();
+    }
+  }
+
+  void selectLocation(Location location) {
+    selectedLocation = location;
+    notifyListeners();
+  }
+
+  String subCityNameInLanguage(Location? location, Locale locale) {
+    if (location == null) {
+      return '';
+    }
+    switch (locale.languageCode) {
+      case 'am':
+        return location.amharicName;
+      case 'om':
+        return location.oromoName;
+      default:
+        return location.englishName;
+    }
+  }
+
+  List<String> get weredas {
+    if (selectedLocation == null) {
+      return [];
+    }
+    return List<String>.generate(
+      selectedLocation!.numberOfWeredas,
+      (index) => (index + 1).toString().padLeft(2, '0'),
+    );
+  }
+
   Future<void> loadHome(Locale newLocate) async {
     locale = newLocate;
-
+    notifyListeners();
     try {
       final res = await apiService.getRequestByQueryWithoutToken('/home', {
-        'lang': locale.languageCode == 'en' ? 'ENGLISH' : 'AMHARIC',
+        'lang': locale.languageCode == 'om'
+            ? 'OROMO'
+            : locale.languageCode == 'am'
+                ? 'AMHARIC'
+                : 'ENGLISH',
       });
       final topFiveTechnicians = res.data['topFiveTechnicians'];
       final services = res.data['services'];
@@ -77,7 +144,7 @@ class HomeServiceProvider with ChangeNotifier {
         _categories = serviceCategories
             .map<Category>((e) => Category.fromJson(e))
             .toList();
-        selectedCategoryId = _categories.first.id;
+        _categories.sort((a, b) => a.id.compareTo(b.id));
       } catch (e) {
         Logger().e('Error mapping serviceCategories: $e');
       }
@@ -87,7 +154,6 @@ class HomeServiceProvider with ChangeNotifier {
         _fiterableByCatagory = _services
             .where((service) => service.categoryId == _categories.first.id)
             .toList();
-        selectedCategoryId = _categories.first.id;
         _fiterableBySearch = _services;
       } catch (e) {
         Logger().e('Error mapping services: $e');
@@ -100,26 +166,80 @@ class HomeServiceProvider with ChangeNotifier {
         Logger().e('Error mapping topFiveReviews: $e');
       }
 
-      notifyListeners();
-      final _location = await getCurrentLocation();
-      if (_location['error'] == null) {
-        location = _location.cast<String, Object>();
-        if (!subCitys.contains(location['subcity'] as String)) {
-          subCitys.add(location['subcity'] as String);
-        }
+      try {
+        locations = res.data['locations']
+            .map<Location>((e) => Location.fromJson(e))
+            .toList();
+      } catch (e) {
+        Logger().e('Error mapping locations: $e');
       }
+
+      await selectDefaultLocation();
       notifyListeners();
     } on DioException catch (e) {
-      Logger().e(e.response!.data);
+      if (e.response != null) {
+        Logger().e(e.response!.data);
+      } else {
+        Logger().e(e.message);
+      }
     } catch (e) {
-      print('error: $e');
       Logger().e(e);
+    }
+  }
+
+  int levenshteinDistance(String s, String t) {
+    if (s == t) return 0;
+    if (s.isEmpty) return t.length;
+    if (t.isEmpty) return s.length;
+
+    List<int> v0 = List<int>.generate(t.length + 1, (int i) => i);
+    List<int> v1 = List<int>.filled(t.length + 1, 0);
+
+    for (int i = 0; i < s.length; i++) {
+      v1[0] = i + 1;
+
+      for (int j = 0; j < t.length; j++) {
+        int cost = (s[i] == t[j]) ? 0 : 1;
+        v1[j + 1] = [v1[j] + 1, v0[j + 1] + 1, v0[j] + cost]
+            .reduce((a, b) => a < b ? a : b);
+      }
+
+      List<int> temp = v0;
+      v0 = v1;
+      v1 = temp;
+    }
+
+    return v0[t.length];
+  }
+
+  Future<void> selectDefaultLocation() async {
+    final _location = await getCurrentLocation();
+    if (_location != null) {
+      final subcity = _location["subcity"];
+      if (subcity != null) {
+        Location? bestMatch;
+        double minDistance = double.infinity;
+
+        for (var location in locations) {
+          int distance =
+              levenshteinDistance(location.englishName, subcity as String);
+          if (distance < minDistance) {
+            minDistance = distance.toDouble();
+            bestMatch = location;
+          }
+        }
+
+        selectedLocation = bestMatch ?? locations.first;
+      } else {
+        selectedLocation = locations.first;
+      }
     }
   }
 
   void filterServicesByCategory(int categoryId) {
     _fiterableByCatagory =
         _services.where((service) => service.categoryId == categoryId).toList();
+
     selectedCategoryId = categoryId;
     notifyListeners();
   }
@@ -179,7 +299,7 @@ class HomeServiceProvider with ChangeNotifier {
 
   Future<void> fetchTechnicianDetails(int id) async {
     isLoading = true;
-    // Load technician details from API
+    // Load AppLocalizations.of(context)!.technicianDetails from API
     try {
       final res = await apiService.getRequestWithoutToken('/technicians/$id');
 
@@ -331,5 +451,20 @@ class HomeServiceProvider with ChangeNotifier {
   void removeDispute(int index) {
     _disputes.removeAt(index);
     notifyListeners();
+  }
+
+  Future<List<Service>> loadSubServices(int serviceId) async {
+    List<Service> subServices = [];
+    try {
+      print(serviceId);
+      final res = await apiService
+          .getRequestWithoutToken('/services/$serviceId/subservices');
+      final data = res.data;
+      subServices = data.map<Service>((e) => Service.fromJson(e)).toList();
+    } catch (e) {
+      Logger().e(e);
+    }
+    isLoading = false;
+    return subServices;
   }
 }

@@ -2,20 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:home_service_app/models/rating.dart';
 import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/models/technician.dart';
+import 'package:home_service_app/models/tender.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
-import 'package:home_service_app/screens/booking/buy_coins_page.dart';
 import 'package:home_service_app/screens/home/questionnaire_page.dart';
 import 'package:home_service_app/screens/home/category_services.dart';
 import 'package:home_service_app/screens/home/select_location.dart';
-import 'package:home_service_app/screens/home/sidebar_drawer.dart';
-import 'package:home_service_app/screens/home/widgets.dart';
-import 'package:home_service_app/screens/profile/customer_profile_page.dart';
+import 'package:home_service_app/screens/home/tender_categorys.dart';
 import 'package:home_service_app/screens/profile/technician_detail_page.dart';
+import 'package:home_service_app/screens/tender/component/tender_card.dart';
 import 'package:home_service_app/services/api_service.dart';
-import 'package:home_service_app/utils/functions.dart';
-import 'package:home_service_app/utils/route_generator.dart';
-import 'package:home_service_app/widgets/language_selector.dart';
+import 'package:home_service_app/widgets/catagory_skeleton.dart';
 import 'package:home_service_app/widgets/slide_show.dart';
 import 'package:logger/web.dart';
 import 'package:provider/provider.dart';
@@ -31,8 +28,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   var scaffoldKey = GlobalKey<ScaffoldState>();
+  final FocusNode _focusNode = FocusNode();
   bool _isFocused = false;
-  bool _showAllCategories = false;
+  final bool _showAllCategories = false;
 
   @override
   void initState() {
@@ -42,17 +40,29 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _focusNode.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   FocusScope.of(context).unfocus();
+  // }
+
   @override
   void didChangeMetrics() {
     final bottomInset = View.of(context).viewInsets.bottom;
-    final newValue = bottomInset > 0.0;
-    if (newValue != _isFocused) {
+    Logger().d(bottomInset);
+
+    if (bottomInset > 0.0 && !_isFocused) {
       setState(() {
-        _isFocused = newValue;
+        _isFocused = true;
+      });
+    } else if (bottomInset == 0.0 && _isFocused) {
+      setState(() {
+        _isFocused = false;
       });
     }
   }
@@ -60,11 +70,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<HomeServiceProvider>(context);
-    Logger().d(Localizations.localeOf(context));
+
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Colors.white,
-      drawer: const SideNavDrawer(),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
@@ -75,9 +84,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             children: [
               _buildBannerSection(provider),
               _buildServiceCategories(provider),
-              _buildTechnicianListView(),
-              _buildCustomerReviewsSection(),
-              const FAQSection(),
+              // _buildTechnicianListView(),
+              // _buildCustomerReviewsSection(),
+              // const FAQSection(),
             ],
           ),
         ),
@@ -112,15 +121,26 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ],
           ),
         ),
-        SizedBox(
-          height: 280.h,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              ...technicians.map((tech) => _buildTechnicianCard(tech)),
-            ],
-          ),
-        ),
+        technicians.isNotEmpty
+            ? SizedBox(
+                height: 310.h,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    ...technicians.map((tech) => _buildTechnicianCard(tech)),
+                  ],
+                ),
+              )
+            : Padding(
+                padding: EdgeInsets.all(16.w),
+                child: Text(
+                  AppLocalizations.of(context)!.noTechniciansFound,
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ),
       ],
     );
   }
@@ -144,15 +164,26 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           child: Text(AppLocalizations.of(context)!.whatTheCustomerSays,
               style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold)),
         ),
-        SizedBox(
-          height: 200.h,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              ...reviews.map((review) => _buildReviewCard(review)),
-            ],
-          ),
-        ),
+        reviews.isNotEmpty
+            ? SizedBox(
+                height: 200.h,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    ...reviews.map((review) => _buildReviewCard(review)),
+                  ],
+                ),
+              )
+            : Padding(
+                padding: EdgeInsets.all(16.w),
+                child: Text(
+                  AppLocalizations.of(context)!.noReviewsYet,
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ),
         SizedBox(height: 24.h),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 48.w),
@@ -167,8 +198,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Widget _buildBannerSection(HomeServiceProvider provider) {
-    final location = Provider.of<HomeServiceProvider>(context).location;
-    Logger().d(Localizations.localeOf(context));
+    final location = Provider.of<HomeServiceProvider>(context).selectedLocation;
+
     return Stack(
       children: [
         Container(
@@ -179,19 +210,19 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               Row(
                 children: [
                   Icon(Icons.location_on_rounded,
-                      color: Colors.green, size: 24.sp),
+                      color: Theme.of(context).primaryColor, size: 24.sp),
                   SizedBox(width: 5.w),
-                  Text("current location",
+                  Text(AppLocalizations.of(context)!.currentLocation,
                       style: TextStyle(
                           fontSize: 16.sp,
                           color: Colors.black.withOpacity(0.8),
                           fontWeight: FontWeight.w500)),
                   SizedBox(width: 5.w),
                   Text(
-                      '${location['subcity'] ?? ''}, ${location['city'] ?? ''}',
+                      '${Provider.of<HomeServiceProvider>(context, listen: false).subCityNameInLanguage(location, Localizations.localeOf(context))}, ${AppLocalizations.of(context)!.addisAbaba}',
                       style: TextStyle(
                         fontSize: 16.sp,
-                        color: Colors.green,
+                        color: Theme.of(context).primaryColor,
                         fontWeight: FontWeight.w700,
                       )),
                 ],
@@ -202,18 +233,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               SlideshowComponent(slides: [
                 {
                   'image': 'assets/images/banner2.jpg',
-                  'title': 'Professional Home Services'
+                  'title': 'All in one at huluMoya'
                 },
-                {
-                  'image': 'assets/images/banner3.jpg',
-                  'title': 'Reliable and Trusted Technicians'
-                },
+                {'image': 'assets/images/banner3.jpg', 'title': 'ሁሉም ሞያ በአንድ'},
                 {
                   'image': 'assets/images/banner4.jpg',
-                  'title': 'Quality Service at Your Doorstep'
+                  'title': AppLocalizations.of(context)!.weAreHereToServeYou
                 },
               ]),
-              SizedBox(height: _isFocused ? 92.h : 16.h),
+              SizedBox(height: _isFocused ? 120.h : 16.h),
             ],
           ),
         ),
@@ -246,10 +274,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           itemBuilder: (context, index) {
                             return ListTile(
                               onTap: () {
-                                // Provider.of<HomeServiceProvider>(context,
-                                //         listen: false)
-                                //     .fetchServiceQuestions(
-                                //         provider.services[index].id);
+                                _focusNode.unfocus();
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -257,6 +282,27 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                             service: provider
                                                 .fiterableBySearch[index])));
                               },
+                              leading:
+                                  provider.fiterableBySearch[index].icon == null
+                                      ? Icon(
+                                          [
+                                            Icons.home_repair_service,
+                                            Icons.cleaning_services,
+                                            Icons.electrical_services,
+                                            Icons.plumbing,
+                                            Icons.construction,
+                                            Icons.door_back_door_outlined
+                                          ].elementAt(index % 6),
+                                          size: 30.sp,
+                                          color: Theme.of(context).primaryColor,
+                                        )
+                                      : Image.network(
+                                          '${ApiService.API_URL_FILE}${provider.fiterableBySearch[index].icon}',
+                                          width: 30.w,
+                                          height: 30.h,
+                                          fit: BoxFit.cover,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
                               title: Text(
                                 provider.fiterableBySearch[index].name,
                                 style: TextStyle(
@@ -269,7 +315,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         )
                       : Center(
                           child: Text(
-                            "Service Not Found",
+                            AppLocalizations.of(context)!.serviceNotFound,
                             style: TextStyle(
                                 color: Colors.grey[600],
                                 fontSize: 23.sp,
@@ -302,6 +348,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             children: [
               Expanded(
                 child: TextField(
+                  focusNode: _focusNode,
                   onChanged: (value) {
                     provider.filterServicesBySearch(search: value);
                   },
@@ -343,79 +390,89 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return Column(
       children: [
         SizedBox(
-          height: (138 *
-                  (provider.categories.length > 6 && !_showAllCategories
-                          ? 6
-                          : provider.categories.length)
-                      .h) +
-              80.h,
+          height: 118.h * 4,
+          // (provider.categories.length > 6 && !_showAllCategories
+          //         ? 6
+          //         : provider.categories.length)
+          //     .h),
           child: ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: provider.categories.length > 6 && !_showAllCategories
-                ? 7
-                : provider.categories.length + 1,
+            itemCount: provider.categories.length,
+            // itemCount: provider.categories.length > 6 && !_showAllCategories
+            //     ? 7
+            //     : provider.categories.length > 6
+            //         ? provider.categories.length + 1
+            //         : provider.categories.length,
             itemBuilder: (context, index) {
-              if (index ==
-                  (provider.categories.length > 6 && !_showAllCategories
-                      ? 6
-                      : provider.categories.length)) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _showAllCategories = !_showAllCategories;
-                    });
-                  },
-                  child: Container(
-                    height: 40.h,
-                    margin:
-                        EdgeInsets.only(right: 16.w, left: 16.w, bottom: 8.h),
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8.r),
-                      border: Border.all(color: Colors.grey[200]!, width: 1.w),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.grey[400]!,
-                            offset: Offset(0, 2.h),
-                            blurRadius: 4.r)
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        _showAllCategories ? 'See Less' : 'See More',
-                        style: TextStyle(
-                          color: const Color.fromARGB(255, 0, 88, 22),
-                          fontWeight: FontWeight.w400,
-                          fontSize: 20.sp,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
+              // if (index ==
+              //         (provider.categories.length > 6 && !_showAllCategories
+              //             ? 6
+              //             : provider.categories.length) &&
+              //     provider.categories.length > 6) {
+              //   return GestureDetector(
+              //     onTap: () {
+              //       setState(() {
+              //         _showAllCategories = !_showAllCategories;
+              //       });
+              //     },
+              //     child: Container(
+              //       height: 40.h,
+              //       margin:
+              //           EdgeInsets.only(right: 16.w, left: 16.w, bottom: 8.h),
+              //       padding: EdgeInsets.symmetric(horizontal: 16.w),
+              //       decoration: BoxDecoration(
+              //         color: Colors.white,
+              //         borderRadius: BorderRadius.circular(8.r),
+              //         border: Border.all(color: Colors.grey[200]!, width: 1.w),
+              //         boxShadow: [
+              //           BoxShadow(
+              //               color: Colors.grey[400]!,
+              //               offset: Offset(0, 2.h),
+              //               blurRadius: 4.r)
+              //         ],
+              //       ),
+              //       child: Center(
+              //         child: Text(
+              //           _showAllCategories ? 'See Less' : 'See More',
+              //           style: TextStyle(
+              //             color: const Color.fromARGB(255, 0, 88, 22),
+              //             fontWeight: FontWeight.w400,
+              //             fontSize: 20.sp,
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //   );
+              // }
+
+              if (provider.categories.isEmpty) {
+                return const SkeletonListTile();
               }
               final category = provider.categories[index];
+
               return GestureDetector(
                 onTap: () {
                   provider.filterServicesByCategory(category.id);
+                  _focusNode.unfocus();
+                  if (category.id == 3) {
+                    Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                            builder: (context) => const TenderCategorys()));
+                    return;
+                  }
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (_) => const CategoryServices()));
                 },
                 child: Container(
-                  height: 120.h,
+                  height: 110.h,
                   margin: EdgeInsets.only(right: 16.w, left: 16.w, bottom: 8.h),
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 32.h),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(4.r),
-                    border: Border.all(
-                        color: provider.selectedCategoryId == category.id
-                            ? const Color.fromARGB(255, 0, 88, 22)
-                            : Colors.grey[200]!,
-                        width: 1.w),
+                    border: Border.all(color: Colors.grey[200]!, width: 1.w),
                     boxShadow: [
                       BoxShadow(
                           color: Colors.grey[400]!,
@@ -423,53 +480,76 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           blurRadius: 2.r)
                     ],
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(
-                            [
-                              Icons.home_repair_service,
-                              Icons.cleaning_services,
-                              Icons.electrical_services,
-                              Icons.plumbing,
-                              Icons.construction,
-                              Icons.door_back_door_outlined
-                            ].elementAt(index % 6),
-                            size: 32.sp,
-                            color: const Color.fromARGB(255, 0, 88, 22),
-                          ),
-                          SizedBox(width: 8.w),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(category.categoryName,
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 22.sp)),
-                              SizedBox(
-                                width:
-                                    MediaQuery.of(context).size.width - 130.w,
-                                child: Text(
-                                  category.description ?? '',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: 20.sp,
-                                      color: Colors.grey[600],
-                                      height: 1.5),
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            category.icon == null
+                                ? Icon(
+                                    [
+                                      Icons.home_repair_service,
+                                      Icons.cleaning_services,
+                                      Icons.electrical_services,
+                                      Icons.plumbing,
+                                      Icons.construction,
+                                      Icons.door_back_door_outlined
+                                    ].elementAt(index),
+                                    size: 30.sp,
+                                    color: const Color.fromARGB(255, 0, 88, 22),
+                                  )
+                                : Image.network(
+                                    '${ApiService.API_URL_FILE}${category.icon}',
+                                    width: 30.w,
+                                    height: 30.h,
+                                    fit: BoxFit.cover,
+                                    color: const Color.fromARGB(255, 0, 88, 22),
+                                  ),
+                            SizedBox(width: 16.w),
+                            Row(
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width -
+                                          134.w,
+                                      child: Text(category.categoryName,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18.sp)),
+                                    ),
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width -
+                                          134.w,
+                                      child: Text(
+                                        category.description ?? '',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            color: Colors.grey[500],
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Icon(Icons.arrow_forward_ios,
-                          color: Colors.grey[600], size: 22.sp),
-                    ],
+                                Icon(Icons.arrow_forward_ios,
+                                    color: Colors.grey[600], size: 22.sp),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -634,7 +714,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return GestureDetector(
       onTap: () {
         Provider.of<HomeServiceProvider>(context, listen: false)
-            .fetchServiceQuestions(service.id);
+            .fetchServiceQuestions(service.categoryId);
+        _focusNode.unfocus();
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -715,7 +796,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           int index = entry.key;
                           var service = entry.value;
                           if (index > 3) {
-                            return SizedBox.shrink();
+                            return const SizedBox.shrink();
                           } else if (index == 3) {
                             return Container(
                               padding: EdgeInsets.symmetric(
@@ -758,13 +839,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           Text(
             tech.bio,
             style: TextStyle(
-              fontSize: 16.sp,
+              fontSize: 14.sp,
               color: Colors.grey[600],
             ),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
-          Spacer(),
+          const Spacer(),
           Row(
             children: [
               if (tech.subcity != null || tech.city != null)
@@ -811,7 +892,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   Row(
                     children: [
                       Icon(Icons.star,
-                          color: Color.fromARGB(255, 235, 173, 5), size: 16.sp),
+                          color: const Color.fromARGB(255, 235, 173, 5),
+                          size: 16.sp),
                       SizedBox(width: 5.w),
                       Text(
                         '${tech.rating ?? 0}',
@@ -829,6 +911,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           SizedBox(height: 10.h),
           GestureDetector(
             onTap: () {
+              _focusNode.unfocus();
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -881,7 +964,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: 8.h),
-          Spacer(),
+          const Spacer(),
           Row(
             children: [
               ClipRRect(

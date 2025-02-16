@@ -44,10 +44,12 @@ class NotificationProvider with ChangeNotifier {
   void markAllAsRead(int userId) async {
     try {
       final response = await _apiService
-          .putRequest('/notifications/mark-all-as-read/${userId}', {});
+          .putRequest('/notifications/mark-all-as-read/$userId', {});
       Logger().d(response.data);
 
-      _notifications.forEach((n) => n.readStatus = true);
+      for (var n in _notifications) {
+        n.readStatus = true;
+      }
       notifyListeners();
     } catch (e) {
       print('Failed to load notifications: $e');

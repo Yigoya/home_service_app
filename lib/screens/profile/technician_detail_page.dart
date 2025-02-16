@@ -5,6 +5,7 @@ import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TechncianDetailPage extends StatefulWidget {
   final int technicianId;
@@ -404,7 +405,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Location",
+                    AppLocalizations.of(context)!.whatTheCustomerSays,
                     style: TextStyle(
                         fontSize: 14.sp,
                         color: Colors.grey[600],
@@ -463,7 +464,8 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                   Row(
                     children: [
                       Icon(Icons.star,
-                          color: Color.fromARGB(255, 235, 173, 5), size: 16.sp),
+                          color: const Color.fromARGB(255, 235, 173, 5),
+                          size: 16.sp),
                       SizedBox(width: 5.w),
                       Text(
                         '${tech.rating ?? 0}',
@@ -486,7 +488,7 @@ class _TechncianDetailPageState extends State<TechncianDetailPage> {
                   color: Colors.black.withOpacity(0.7))),
           SizedBox(height: 6.h),
           Text(
-            tech.bio ?? 'No bio available',
+            tech.bio ?? AppLocalizations.of(context)!.noBioAvailable,
             style: TextStyle(
               fontSize: 16.sp,
               color: Colors.grey[600],

@@ -1,0 +1,165 @@
+import 'package:flutter/material.dart';
+import 'package:home_service_app/models/service.dart';
+import 'package:home_service_app/provider/tender_provider.dart';
+import 'package:home_service_app/screens/tender/component/tender_card.dart';
+import 'package:home_service_app/screens/tender/component/search_drawer.dart';
+import 'package:provider/provider.dart';
+
+class TenderListPage extends StatefulWidget {
+  final int serviceId;
+  const TenderListPage({Key? key, required this.serviceId}) : super(key: key);
+
+  @override
+  State<TenderListPage> createState() => _TenderListPageState();
+}
+
+class _TenderListPageState extends State<TenderListPage> {
+  final TextEditingController _searchController = TextEditingController();
+  String _selectedLocation = 'All Locations';
+  final List<String> _locations = [
+    'All Locations',
+    'Addis Ababa',
+    'Nairobi',
+    'Kampala'
+  ];
+  bool _showSearchInterface = false;
+  List<Service> _subServices = [];
+  List<Service> _filteredSubServices = [];
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() => Provider.of<TenderProvider>(context, listen: false)
+        .fetchTenders(widget.serviceId));
+  }
+
+  void _loadSubServices() async {
+    final subServices =
+        await Provider.of<TenderProvider>(context, listen: false)
+            .loadSubServices(widget.serviceId);
+    setState(() {
+      _subServices = subServices;
+      _filteredSubServices = subServices;
+    });
+  }
+
+  void _filterSubServices(String query) {
+    setState(() {
+      _filteredSubServices = _subServices
+          .where((service) =>
+              service.name.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      drawer: SearchDrawer(
+        searchController: _searchController,
+        selectedLocation: _selectedLocation,
+        locations: _locations,
+        filteredSubServices: _filteredSubServices,
+        serviceId: widget.serviceId,
+        onSearchChanged: (value) {
+          Provider.of<TenderProvider>(context, listen: false)
+              .searchTenders(value);
+        },
+        onLocationChanged: (value) {
+          setState(() => _selectedLocation = value);
+          if (value == "All Locations") {
+            Provider.of<TenderProvider>(context, listen: false)
+                .fetchTenders(widget.serviceId);
+          } else {
+            Provider.of<TenderProvider>(context, listen: false)
+                .filterByLocation(value, widget.serviceId);
+          }
+        },
+        onCategorySelected: (id) {
+          Provider.of<TenderProvider>(context, listen: false).fetchTenders(id);
+        },
+      ),
+      body: Consumer<TenderProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (provider.errorMessage.isNotEmpty) {
+            return Center(child: Text(provider.errorMessage));
+          }
+
+          return SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    _loadSubServices();
+                    Scaffold.of(context).openDrawer();
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 12.0),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(24.0),
+                      border: Border.all(
+                        color: Colors.grey,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.search, color: Colors.grey[600]),
+                        const SizedBox(width: 8.0),
+                        Text(
+                          "Search by name, location or category ",
+                          style: TextStyle(
+                              color: Theme.of(context).secondaryHeaderColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    "showing ${provider.tenders.length} tenders from ${provider.totalTenders} tenders",
+                    style: TextStyle(
+                      color: Theme.of(context).secondaryHeaderColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 8.0),
+                provider.tenders.isNotEmpty
+                    ? Expanded(
+                        child: ListView.builder(
+                          itemCount: provider.tenders.length,
+                          itemBuilder: (context, index) {
+                            return TenderCard(
+                              tender: provider.tenders[index],
+                              isLast: provider.tenders.length - 1 == index,
+                            );
+                          },
+                        ),
+                      )
+                    : Expanded(
+                        child: const Center(
+                          child: Text("No tenders found"),
+                        ),
+                      ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

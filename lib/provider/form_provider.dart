@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/utils/functions.dart';
 import 'package:logger/web.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FormProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
@@ -24,7 +25,8 @@ class FormProvider with ChangeNotifier {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Success'),
-          content: const Text('Your form has been submitted successfully.'),
+          content:
+              Text(AppLocalizations.of(context)!.formSubmittedSuccessfully),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -62,14 +64,17 @@ class FormProvider with ChangeNotifier {
       print("Submitting Contact Form with data:");
       print("Name: $name, Email: $email, Phone: $phone, Message: $message");
       Logger().d(response.data);
-      showTopMessage(context, 'Your form has been submitted successfully.');
+      showTopMessage(
+          context, AppLocalizations.of(context)!.formSubmittedSuccessfully);
       nameController.clear();
       emailController.clear();
       phoneController.clear();
       messageController.clear();
     } on DioException catch (e) {
       print(e.response!.data);
-      showTopMessage(context, 'Network Error happened', isSuccess: false);
+      showTopMessage(
+          context, AppLocalizations.of(context)!.networkErrorHappened,
+          isSuccess: false);
     } catch (e) {
       print(e);
     } finally {
@@ -98,12 +103,15 @@ class FormProvider with ChangeNotifier {
       print("Submitting Dispute Form with data:");
       print("Reason: $reason, Description: $description");
       Logger().d(response.data);
-      showTopMessage(context, 'Your form has been submitted successfully.');
+      showTopMessage(
+          context, AppLocalizations.of(context)!.formSubmittedSuccessfully);
       reasonController.clear();
       disputeDescriptionController.clear();
     } on DioException catch (e) {
       print(e.response!.data);
-      showTopMessage(context, 'Network Error happened', isSuccess: false);
+      showTopMessage(
+          context, AppLocalizations.of(context)!.networkErrorHappened,
+          isSuccess: false);
     } catch (e) {
       print(e);
     } finally {

@@ -6,6 +6,7 @@ import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/widgets/language_selector.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class UserProfileComponent extends StatelessWidget {
   final User user;
@@ -111,7 +112,7 @@ class UserProfileComponent extends StatelessWidget {
                       color: Colors.blue[50],
                       borderRadius: BorderRadius.circular(8.r),
                     ),
-                    child: Text('See my Schedule',
+                    child: Text(AppLocalizations.of(context)!.seeMySchedule,
                         style: TextStyle(
                           fontSize: 14.sp,
                           color: const Color.fromARGB(255, 16, 77, 128),

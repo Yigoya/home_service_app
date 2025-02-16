@@ -4,64 +4,87 @@ import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class LanguageSelectorPage extends StatelessWidget {
+class LanguageSelectorPage extends StatefulWidget {
   const LanguageSelectorPage({super.key});
+
+  @override
+  State<LanguageSelectorPage> createState() => _LanguageSelectorPageState();
+}
+
+class _LanguageSelectorPageState extends State<LanguageSelectorPage> {
+  String _selectedLanguage = 'English';
+  // Default selected language
+  final List<Map<String, String>> languages = [
+    {'name': 'English', 'code': 'en'},
+    {'name': 'አማርኛ', 'code': 'am'},
+    {'name': 'Oromiffa', 'code': 'om'},
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _selectedLanguage = Localizations.localeOf(context).languageCode == 'en'
+        ? 'English'
+        : Localizations.localeOf(context).languageCode == 'om'
+            ? 'Oromiffa'
+            : 'አማርኛ';
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text('Select Language',
-            style: TextStyle(color: Colors.white, fontSize: 24)),
-        backgroundColor: const Color(0xFF009fff),
+        backgroundColor: Colors.grey[200],
+        elevation: 0,
+        title: const Text(
+          'Language',
+          style: TextStyle(color: Colors.black),
+        ),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Choose your preferred language',
-              style: TextStyle(
-                fontSize: 20.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 20.h),
-            ...AppLocalizations.supportedLocales.map((locale) {
-              return Container(
-                margin: EdgeInsets.symmetric(vertical: 8.h),
-                padding: EdgeInsets.all(12.w),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10.r),
-                  border: Border.all(
-                    color: Colors.grey[300]!,
-                    width: 1.w,
+      body: SingleChildScrollView(
+        child: Container(
+          height: 70.h * languages.length,
+          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 16.h),
+          margin: EdgeInsets.all(16.h),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: ListView.builder(
+            itemCount: languages.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(
+                  languages[index]['name']! +
+                      (languages[index]['name'] == 'English'
+                          ? ' (Default)'
+                          : ''),
+                  style: TextStyle(
+                    color: _selectedLanguage == languages[index]['name']
+                        ? Theme.of(context).primaryColor
+                        : Colors.black,
                   ),
                 ),
-                child: Consumer<UserProvider>(
-                  builder: (context, userProvider, child) {
-                    return CheckboxListTile(
-                      title: Text(
-                        locale.languageCode == 'en' ? 'English' : 'አማርኛ',
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                        ),
-                      ),
-                      value: userProvider.locale == locale,
-                      onChanged: (bool? value) {
-                        if (value == true) {
-                          userProvider.changeLanguage(context, locale);
-                        }
-                      },
-                    );
-                  },
-                ),
+                trailing: _selectedLanguage == languages[index]['name']
+                    ? Icon(Icons.check, color: Theme.of(context).primaryColor)
+                    : null,
+                onTap: () {
+                  Locale locale = Locale(languages[index]['code']!);
+                  Provider.of<UserProvider>(context, listen: false)
+                      .changeLanguage(context, locale);
+                  setState(() {
+                    _selectedLanguage = languages[index]['name']!;
+                  });
+                },
               );
-            }).toList(),
-          ],
+            },
+          ),
         ),
       ),
     );

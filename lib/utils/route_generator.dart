@@ -127,7 +127,7 @@ class RouteGenerator {
         );
       case forgotPasswordPage:
         return MaterialPageRoute(
-          builder: (_) => ForgotPasswordPage(),
+          builder: (_) => const ForgotPasswordPage(),
         );
       default:
         return _errorRoute();

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:home_service_app/models/booking.dart';
 import 'package:home_service_app/provider/profile_page_provider.dart';

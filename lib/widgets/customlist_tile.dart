@@ -6,6 +6,7 @@ class CustomListTile extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final bool isFinal;
+  final double fontSize;
 
   const CustomListTile({
     super.key,
@@ -13,12 +14,14 @@ class CustomListTile extends StatelessWidget {
     required this.icon,
     required this.onTap,
     this.isFinal = false,
+    this.fontSize = 18,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
+      splashColor: Colors.grey[200], // Change this to your desired color
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 24.w),
         margin: EdgeInsets.only(top: 8.h),
@@ -47,9 +50,9 @@ class CustomListTile extends StatelessWidget {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 20.sp,
+                    fontSize: fontSize.sp,
                     color: Colors.grey[800],
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BuyCoinsPage extends StatelessWidget {
   const BuyCoinsPage({super.key});
@@ -118,15 +119,17 @@ class BuyCoinsPage extends StatelessWidget {
                               showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
-                                  title: const Text("Purchase Successful"),
+                                  title: Text(AppLocalizations.of(context)!
+                                      .purchaseSuccessful),
                                   content: Text(
-                                    "You have purchased ${package['coins']} coins for \$${package['price']}.",
+                                    "AppLocalizations.of(context)!.youHavePurchased ${package['coins']} coins for \$${package['price']}.",
                                   ),
                                   actions: [
                                     TextButton(
                                       onPressed: () =>
                                           Navigator.of(context).pop(),
-                                      child: const Text("OK"),
+                                      child: Text(
+                                          AppLocalizations.of(context)!.ok),
                                     ),
                                   ],
                                 ),
@@ -136,9 +139,9 @@ class BuyCoinsPage extends StatelessWidget {
                               width: double.infinity,
                               padding: EdgeInsets.symmetric(vertical: 8.h),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(colors: [
-                                  const Color.fromARGB(255, 9, 222, 250),
-                                  const Color.fromARGB(255, 9, 250, 190),
+                                gradient: const LinearGradient(colors: [
+                                  Color.fromARGB(255, 9, 222, 250),
+                                  Color.fromARGB(255, 9, 250, 190),
                                 ]),
                                 borderRadius: BorderRadius.circular(16.r),
                               ),

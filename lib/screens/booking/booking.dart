@@ -3,11 +3,11 @@ import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/models/technician.dart';
 import 'package:home_service_app/provider/booking_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
+import 'package:home_service_app/screens/payment/checkout_page.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/utils/functions.dart';
 import 'package:home_service_app/utils/route_generator.dart';
 import 'package:home_service_app/widgets/custom_button.dart';
-import 'package:home_service_app/widgets/custom_dropdown.dart';
 import 'package:provider/provider.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -55,7 +55,8 @@ class _BookingPageState extends State<BookingPage> {
       'city': 'Addis Ababa',
       'description': jobDescriptionController.text,
     };
-
+    await Navigator.push(context,
+        MaterialPageRoute(builder: (_) => const CheckoutPage(amount: 200)));
     // Send bookingData to the backend
     final res = await Provider.of<BookingProvider>(context, listen: false)
         .bookService(bookingData, context);
@@ -106,7 +107,7 @@ class _BookingPageState extends State<BookingPage> {
                     ),
                     child: Text(
                       widget.service.name,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -141,8 +142,9 @@ class _BookingPageState extends State<BookingPage> {
                     onLoad: () {},
                     isLoading: Provider.of<BookingProvider>(context).isLoading,
                     text: AppLocalizations.of(context)!
-                        .bookService, // 'Book Service',
+                        .bookService, // : AppLocalizations.of(context)!.bookServicePrompt,
                     onTap: bookService,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ],
               ),
@@ -171,7 +173,8 @@ class _BookingPageState extends State<BookingPage> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
           title: Row(
             children: [
-              Icon(Icons.check_circle, color: Colors.green, size: 24.sp),
+              Icon(Icons.check_circle,
+                  color: Theme.of(context).primaryColor, size: 24.sp),
               SizedBox(width: 10.w),
               Text(AppLocalizations.of(context)!.bookingConfirmed),
             ],
@@ -180,7 +183,8 @@ class _BookingPageState extends State<BookingPage> {
           actions: <Widget>[
             TextButton(
               child: Text('OK',
-                  style: TextStyle(color: Colors.green, fontSize: 12.sp)),
+                  style: TextStyle(
+                      color: Theme.of(context).primaryColor, fontSize: 12.sp)),
               onPressed: () {
                 Navigator.pushNamed(context, RouteGenerator.homePage);
               },

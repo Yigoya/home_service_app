@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
-import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SlideshowComponent extends StatefulWidget {
@@ -57,7 +54,7 @@ class _SlideshowComponentState extends State<SlideshowComponent> {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 16 / 8,
+      aspectRatio: 16 / 7,
       child: Stack(
         children: [
           GestureDetector(
@@ -109,9 +106,9 @@ class _SlideshowComponentState extends State<SlideshowComponent> {
                 widget.slides.length,
                 (index) => AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
-                  margin: EdgeInsets.symmetric(horizontal: 5.w),
-                  width: _currentPage == index ? 12.w : 8.w,
-                  height: _currentPage == index ? 12.h : 8.h,
+                  margin: EdgeInsets.symmetric(horizontal: 4.w),
+                  width: _currentPage == index ? 10.w : 6.w,
+                  height: _currentPage == index ? 10.h : 6.h,
                   decoration: BoxDecoration(
                     color: _currentPage == index
                         ? Colors.white

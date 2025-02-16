@@ -17,6 +17,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CustomerProfilePage extends StatefulWidget {
   const CustomerProfilePage({super.key});
@@ -438,7 +439,7 @@ class BookingCompletedList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Rate and Review',
+        Text(AppLocalizations.of(context)!.rateAndReviewPrompt,
             style: TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         RatingBar.builder(
@@ -456,8 +457,8 @@ class BookingCompletedList extends StatelessWidget {
         const SizedBox(height: 8),
         TextField(
           controller: reviewController,
-          decoration: const InputDecoration(
-            hintText: 'Write your review here',
+          decoration: InputDecoration(
+            hintText: AppLocalizations.of(context)!.writeYourReviewHere,
             border: OutlineInputBorder(),
           ),
           maxLines: 3,
@@ -473,12 +474,13 @@ class BookingCompletedList extends StatelessWidget {
                   .fetchBookings();
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text('Please provide a rating and review')),
+                SnackBar(
+                    content: Text(AppLocalizations.of(context)!
+                        .pleaseProvideRatingAndReviewPrompt)),
               );
             }
           },
-          child: const Text('Submit Review'),
+          child: Text(AppLocalizations.of(context)!.submitReviewPrompt),
         ),
       ],
     );

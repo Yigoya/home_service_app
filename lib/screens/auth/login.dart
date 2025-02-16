@@ -60,6 +60,15 @@ class _LoginPageState extends State<LoginPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text(
+          AppLocalizations.of(context)!.signIn,
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        centerTitle: true,
+      ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 32.w),
         child: Center(
@@ -68,26 +77,26 @@ class _LoginPageState extends State<LoginPage> {
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                // crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 46.h,
-                  ),
-                  Text(AppLocalizations.of(context)!.welcomeBack,
+                  Text("Hulu Moya",
                       style: TextStyle(
-                          fontSize: 28.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue)),
+                          fontSize: 48.sp,
+                          fontWeight: FontWeight.w900,
+                          color: Theme.of(context).primaryColor)),
                   SizedBox(height: 8.h),
                   Text(AppLocalizations.of(context)!.loginToYourAccount,
                       style: TextStyle(fontSize: 16.sp, color: Colors.grey)),
-                  SizedBox(height: 32.h),
-                  SimpleComponents.buildTextField(_emailController, "Email",
+                  SizedBox(height: 42.h),
+                  SimpleComponents.buildTextField(
+                      _emailController,
+                      AppLocalizations.of(context)!.emailOrPhoneNumber,
                       AppLocalizations.of(context)!.enterYourEmail,
                       isEmail: true),
                   SizedBox(height: 16.h),
                   SimpleComponents.buildTextField(
                       _passwordController,
-                      "Password",
+                      AppLocalizations.of(context)!.password,
                       AppLocalizations.of(context)!.enterYourPassword,
                       isPassword: true),
                   Row(
@@ -108,7 +117,34 @@ class _LoginPageState extends State<LoginPage> {
                   SimpleComponents.buildButton(
                       isLoading: provider.isLoading,
                       onTap: () => _login(context),
-                      buttonText: 'Login'),
+                      buttonText: AppLocalizations.of(context)!.loginSection,
+                      color: Theme.of(context).primaryColor),
+                  SizedBox(height: 16.h),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(
+                          context, '/signup'); // Navigate to Signup page
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                              text:
+                                  AppLocalizations.of(context)!.dontHaveAccount,
+                              style: TextStyle(
+                                  color: Colors.grey[600], fontSize: 14.sp),
+                              children: [
+                                TextSpan(
+                                  text: AppLocalizations.of(context)!.signUp,
+                                  style: TextStyle(
+                                      color: Colors.blue, fontSize: 14.sp),
+                                ),
+                              ]),
+                        ),
+                      ],
+                    ),
+                  ),
                   if (provider.errorMessage != null)
                     Padding(
                       padding: EdgeInsets.only(top: 8.h),
@@ -133,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w500)),
                       ),
-                      Expanded(child: Divider()),
+                      const Expanded(child: Divider()),
                     ],
                   ),
                   SizedBox(height: 16.h),
@@ -152,10 +188,12 @@ class _LoginPageState extends State<LoginPage> {
                           }
                         : null,
                     child: Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 32.w, vertical: 16.h),
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[400]!),
+                        border: Border.all(
+                          color: Theme.of(context).primaryColor,
+                        ),
                         borderRadius: BorderRadius.circular(32.r),
                       ),
                       child: !_authenticating
@@ -169,65 +207,21 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 SizedBox(width: 12.w),
                                 Text(
-                                  "Google",
+                                  AppLocalizations.of(context)!
+                                      .signInWithGoogle,
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: Theme.of(context).primaryColor,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 14.sp),
+                                      fontSize: 16.sp),
                                 ),
                               ],
                             )
-                          : Row(
+                          : const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 CircularProgressIndicator(),
                               ],
                             ),
-                    ),
-                  ),
-                  SizedBox(height: 64.h),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(
-                          context, '/signup'); // Navigate to Signup page
-                    },
-                    child: RichText(
-                      text: TextSpan(
-                          text: AppLocalizations.of(context)!.dontHaveAccount,
-                          style: TextStyle(
-                              color: Colors.grey[600], fontSize: 12.sp),
-                          children: [
-                            TextSpan(
-                              text: "Sign Up",
-                              style: TextStyle(
-                                  color: Colors.blue, fontSize: 12.sp),
-                            ),
-                          ]),
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context,
-                          '/register_technician'); // Navigate to Register Technician page
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 16.w, vertical: 16.h),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[400]!),
-                        borderRadius: BorderRadius.circular(32.r),
-                      ),
-                      child: Text(
-                        AppLocalizations.of(context)!.registerAsTechnician,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14.sp,
-                        ),
-                      ),
                     ),
                   ),
                 ],
@@ -290,7 +284,7 @@ class _LoginPageState extends State<LoginPage> {
         final TextEditingController phoneController = TextEditingController();
 
         return AlertDialog(
-          title: const Text('Complete Your Details'),
+          title: Text(AppLocalizations.of(context)!.completeYourDetailsPrompt),
           content: Form(
             key: formKey,
             child: Column(
@@ -302,7 +296,8 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: const InputDecoration(labelText: 'Name'),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Please enter your name';
+                        return AppLocalizations.of(context)!
+                            .pleaseEnterYourName;
                       }
                       return null;
                     },
@@ -315,7 +310,8 @@ class _LoginPageState extends State<LoginPage> {
                       if (value == null ||
                           value.trim().isEmpty ||
                           !value.contains('@')) {
-                        return 'Please enter a valid email';
+                        return AppLocalizations.of(context)!
+                            .pleaseEnterAValidEmail;
                       }
                       return null;
                     },
@@ -327,7 +323,8 @@ class _LoginPageState extends State<LoginPage> {
                         const InputDecoration(labelText: 'Phone Number'),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Please enter your phone number';
+                        return AppLocalizations.of(context)!
+                            .pleaseEnterYourPhoneNumber;
                       }
                       return null;
                     },

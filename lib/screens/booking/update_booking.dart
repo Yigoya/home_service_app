@@ -4,6 +4,7 @@ import 'package:home_service_app/provider/booking_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class UpdateBookingPage extends StatefulWidget {
   final Booking booking;
@@ -93,8 +94,8 @@ class _UpdateBookingPageState extends State<UpdateBookingPage> {
         "country": _countryController.text,
         "zipCode": _zipCodeController.text,
       });
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Booking Saved')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.bookingSaved)));
       Navigator.pop(context);
     }
   }
@@ -102,7 +103,7 @@ class _UpdateBookingPageState extends State<UpdateBookingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Booking')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.editBooking)),
       body: Padding(
         padding: EdgeInsets.all(16.w),
         child: Form(
@@ -111,14 +112,14 @@ class _UpdateBookingPageState extends State<UpdateBookingPage> {
             children: [
               TextFormField(
                 controller: _dateController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Scheduled Date",
                   border: OutlineInputBorder(),
                 ),
                 onTap: () => _selectDate(context),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please select a date';
+                    return AppLocalizations.of(context)!.pleaseSelectADate;
                   }
                   return null;
                 },
@@ -127,7 +128,7 @@ class _UpdateBookingPageState extends State<UpdateBookingPage> {
               SizedBox(height: 16.h),
               TextFormField(
                 controller: _cityController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "City",
                   border: OutlineInputBorder(),
                 ),
@@ -135,7 +136,7 @@ class _UpdateBookingPageState extends State<UpdateBookingPage> {
               SizedBox(height: 16.h),
               TextFormField(
                 controller: _subcityController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Subcity",
                   border: OutlineInputBorder(),
                 ),
@@ -143,7 +144,7 @@ class _UpdateBookingPageState extends State<UpdateBookingPage> {
               SizedBox(height: 16.h),
               TextFormField(
                 controller: _weredaController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Wereda",
                   border: OutlineInputBorder(),
                 ),
@@ -151,7 +152,7 @@ class _UpdateBookingPageState extends State<UpdateBookingPage> {
               SizedBox(height: 16.h),
               TextFormField(
                 controller: _stateController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "State",
                   border: OutlineInputBorder(),
                 ),
@@ -159,13 +160,13 @@ class _UpdateBookingPageState extends State<UpdateBookingPage> {
               SizedBox(height: 16.h),
               TextFormField(
                 controller: _countryController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Country",
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a country';
+                    return AppLocalizations.of(context)!.pleaseEnterACountry;
                   }
                   return null;
                 },
@@ -173,7 +174,7 @@ class _UpdateBookingPageState extends State<UpdateBookingPage> {
               SizedBox(height: 16.h),
               TextFormField(
                 controller: _zipCodeController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Zip Code",
                   border: OutlineInputBorder(),
                 ),
@@ -181,7 +182,7 @@ class _UpdateBookingPageState extends State<UpdateBookingPage> {
               SizedBox(height: 16.h),
               ElevatedButton(
                 onPressed: _saveBooking,
-                child: const Text('Save Booking'),
+                child: Text(AppLocalizations.of(context)!.saveBooking),
               ),
             ],
           ),

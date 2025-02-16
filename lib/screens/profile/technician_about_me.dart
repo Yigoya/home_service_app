@@ -3,6 +3,7 @@ import 'package:home_service_app/provider/profile_page_provider.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TechnicianAboutMe extends StatelessWidget {
   const TechnicianAboutMe({super.key});
@@ -76,7 +77,7 @@ class TechnicianAboutMe extends StatelessWidget {
                           fontWeight: FontWeight.bold)),
                   SizedBox(height: 10.h),
                   Text(
-                    data['bio'] ?? 'No bio available',
+                    data['bio'] ?? AppLocalizations.of(context)!.noBioAvailable,
                     style: TextStyle(fontSize: 14.sp, color: Colors.grey),
                   ),
                 ],

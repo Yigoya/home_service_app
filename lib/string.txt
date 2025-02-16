@@ -1,0 +1,228 @@
+'Home Service Platform'
+'Figtree'
+"TECHNICIAN"
+"email"
+"password"
+'booking'
+"No date provided."
+"Invalid date format."
+"The date has already passed."
+'Less than a minute remaining'
+"Location services are disabled. Please enable them in settings."
+"Location permission denied. Please grant permission to access location."
+"Location permission is permanently denied. Please enable it in settings."
+"Unable to fetch address for the current location."
+"error"
+"An error occurred while fetching the location "
+"Network issue occurred."
+"Network Error: "
+"Server error occurred."
+"Server Error: "
+"Invalid input."
+"Validation Error: "
+"An unknown error occurred."
+"Error: "
+"Submitting Contact Form with data:"
+'Your form has been submitted successfully.'
+'Network Error happened'
+"Submitting Dispute Form with data:"
+'Your form has been submitted successfully.'
+'Network Error happened'
+"Submitting Dispute Form with data:"
+'Signed up successfully'
+'Login failed'
+'Error occured'
+'Logged in successfully'
+"What services does TanahAir Offer?"
+"TanahAir offers a service for creating website design, illustration, icon set, and more."
+"Why should I choose a Design studio like TanahAir?"
+"TanahAir provides the best service and solves customer problems with flexibility."
+"How does TanahAir create website content without knowing our Business plan?"
+"We use collaborative tools and processes to align with the client’s vision."
+'Discover New Features'
+'Explore innovative tools designed to enhance your productivity'
+'Smart Analytics'
+'Real-time insights and data visualization for informed decisions'
+'Secure & Private'
+'Enterprise-grade security protecting your data 24/7'
+'Skip'
+'Get Started'
+"Tuesday"
+"Wednesday"
+"Thursday"
+"Friday"
+"Saturday"
+"Sunday"
+"Start Time"
+"End Time"
+"Monday"
+'Enter your phone number'
+'All fields must be filled'
+'Profile updated successfully'
+'Save All Changes'
+"Contact us"
+"Name"
+"Enter your name"
+"Name is required"
+"Email"
+"Enter your email"
+"Email is required"
+"Phone Number"
+"Enter your phone number"
+"Phone number is required"
+"Message"
+"Write your message"
+"Please put you message"
+"Submit"
+'Notifications'
+'Mark All As Read'
+'You have no notifications'
+'View Details'
+'Entity Details'
+"Dispute"
+"Reason"
+"Enter your reason"
+"Please enter your reason"
+"State your dispute"
+"Describe your dispute"
+"Please describe your issue your reason"
+"Submit"
+'Customer Information'
+'Become a Technician'
+'Login'
+'About Me'
+'Saved Address'
+'Account Setting'
+'Payment Methods'
+'Notifications'
+'Free Credit'
+'Online Chat'
+'Help Center'
+'Log Out'
+'Login Required'
+'Please login first to access this feature.'
+'Cancel'
+'Login'
+'Coming Soon'
+'This feature is coming soon!'
+'We are working hard to bring you this feature. Stay tuned for updates!'
+'Go Back'
+'Log Out'
+"What is the task location"
+"Continue"
+'Book Service'
+'View Profile'
+'No Name'
+"What the Customer Says"
+"FAQ"
+"No Technicians Found"
+"No Reviews Yet"
+"Current Location"
+'We are here to serve you'
+"Service Not Found"
+'See Less'
+'See More'
+"Services "
+'name'
+'subcity'
+'wereda'
+'date'
+'What would you like to do?'
+'Register as a Customer'
+'or'
+'Register as a Technician'
+'By creating an account or continuing to use the HuluMoya application, website, or software, you acknowledge and agree that you have accepted the '
+'terms of service'
+' and have reviewed the '
+'privacy policy'
+'Sign In'
+'Register'
+'Log Out'
+'You need to login first'
+'Please login first to be able to view more details'
+'Login'
+'My Schedule'
+'Home'
+'Settings'
+"Business Hour"
+'No bio available'
+'See my Schedule'
+'Enter your name'
+'Rate and Review'
+'Write your review here'
+'Please provide a rating and review'
+'Submit Review'
+'Payment'
+'Amount'
+'Please enter the amount'
+'Email'
+'Please enter your email'
+'First Name'
+'Please enter your first name'
+'Last Name'
+'Please enter your last name'
+'Select Bank'
+'Please select a bank'
+'Account Number'
+'Please enter your account number'
+'Could not launch payment page'
+'Could not launch payment page'
+'Failed to initialize payment'
+"Verification token is required!"
+"Passwords do not match!"
+"Password must be at least 6 characters long!"
+"Enter Your Email"
+"We'll send you a verification token to reset your password."
+"Email"
+"Send Token"
+"Set New Password"
+"Enter a strong password and confirm it below."
+"Verification token from your email"
+"New Password"
+"Confirm Password"
+"Reset Password"
+"Back"
+'Technician ID is missing'
+"Account Activated"
+"Your account has been successfully activated. You can now log in and start using the app."
+"Log In"
+"Waiting for Your Approval"
+"Your request is being processed. You will be notified once it has been approved."
+"Refresh Status"
+'Verification in Progress'
+'Thank you for your patience. We are currently verifying your account.'
+'We will contact you once your verification is complete.'
+'Complete Your Details'
+'Name'
+'Please enter your name'
+'Email'
+'Please enter a valid email'
+'Phone Number'
+'Please enter your phone number'
+'Submit'
+"Open Mail App"
+"No mail apps installed"
+"OK"
+"Verify Your Email"
+"To continue, please verify your email by clicking the link we sent to your inbox."
+"Open Gmail"
+"Resend email feature coming soon!"
+"Didn't receive the email? Resend"
+'Registration Fee Transfer'
+'For registration fee transfer\n500 birr'
+'Upload image'
+'Booking Saved'
+'Edit Booking'
+"Scheduled Date"
+'Please select a date'
+'Please enter a country'
+'Save Booking'
+'coins'
+"Purchase Successful"
+'You have purchased'
+'Chat'
+'Enter your message...'
+
+
+
+

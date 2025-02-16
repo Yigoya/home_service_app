@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:home_service_app/provider/auth_provider.dart';
+import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/utils/elements.dart';
 import 'package:home_service_app/widgets/custom_dropdown.dart';
 import 'package:home_service_app/widgets/multi_select.dart';
@@ -20,7 +21,8 @@ class TechnicianRegistrationPage extends StatefulWidget {
 class _TechnicianRegistrationPageState
     extends State<TechnicianRegistrationPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
@@ -53,9 +55,9 @@ class _TechnicianRegistrationPageState
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       var formData = FormData.fromMap({
-        'name': _nameController.text,
+        'name': '${_firstNameController.text} ${_lastNameController.text}',
         'email': _emailController.text,
-        'phoneNumber': _phoneController.text,
+        'phoneNumber': '+251${_phoneController.text}',
         'bio': _bioController.text,
         'services': _services.join(','),
         'subcity': _subCity ?? '',
@@ -82,72 +84,70 @@ class _TechnicianRegistrationPageState
 
   Widget _buildNextButton() {
     return SimpleComponents.buildButton(
-      isLoading: false,
-      onTap: () {
-        if (_formKey.currentState!.validate()) {
-          setState(() {
-            isNext = true;
-          });
-        }
-      },
-      buttonText: 'Next',
-    );
+        isLoading: false,
+        onTap: () {
+          if (_formKey.currentState!.validate()) {
+            setState(() {
+              isNext = true;
+            });
+          }
+        },
+        buttonText: AppLocalizations.of(context)!.next,
+        color: Theme.of(context).primaryColor);
   }
 
   Widget _buildFormPage1() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 36.h),
-        Center(
-          child: Text(
-            AppLocalizations.of(context)!.technicianRegistration,
+        Text(AppLocalizations.of(context)!.technicianRegistration,
             style: TextStyle(
-              fontSize: 28.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue,
-            ),
-          ),
-        ),
+                fontSize: 32.sp,
+                fontWeight: FontWeight.bold,
+                color: const Color.fromARGB(255, 0, 88, 22))),
         SizedBox(height: 8.h),
-        Center(
-          child: Text(
-            AppLocalizations.of(context)!.fillDetailsToRegister,
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.grey[600],
-            ),
-            textAlign: TextAlign.center,
+        Text(
+          AppLocalizations.of(context)!.fillDetailsToRegister,
+          style: TextStyle(
+            fontSize: 18.sp,
+            color: Colors.grey[600],
           ),
         ),
         SizedBox(height: 36.h),
         SimpleComponents.buildTextField(
-          _nameController,
-          'Name',
+          _firstNameController,
+          AppLocalizations.of(context)!.firstName,
+          AppLocalizations.of(context)!.enterYourName,
+        ),
+        SizedBox(height: 8.h),
+        SimpleComponents.buildTextField(
+          _lastNameController,
+          AppLocalizations.of(context)!.lastName,
           AppLocalizations.of(context)!.enterYourName,
         ),
         SizedBox(height: 8.h),
         SimpleComponents.buildTextField(
           _emailController,
-          'Email',
+          AppLocalizations.of(context)!.email,
           AppLocalizations.of(context)!.enterYourEmail,
           isEmail: true,
         ),
         SizedBox(height: 8.h),
         SimpleComponents.buildTextField(
           _phoneController,
-          'Phone Number',
+          AppLocalizations.of(context)!.phoneNumber,
           AppLocalizations.of(context)!.enterYourPhoneNumber,
           isPhone: true,
         ),
         SizedBox(height: 8.h),
         SimpleComponents.buildTextField(
           _bioController,
-          'Bio',
+          AppLocalizations.of(context)!.tellUsAboutYourself,
           AppLocalizations.of(context)!.enterYourBio,
           isLongText: true,
         ),
         SizedBox(height: 24.h),
-        _buildNextButton(),
+        // _buildNextButton(),
       ],
     );
   }
@@ -156,63 +156,64 @@ class _TechnicianRegistrationPageState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 36.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  isNext = false;
-                });
-              },
-              child: Row(
-                children: [
-                  Icon(Icons.arrow_back, color: Colors.blue),
-                  SizedBox(width: 4.w),
-                  Text(
-                    AppLocalizations.of(context)!.back,
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Text(
-              AppLocalizations.of(context)!.almostThere,
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 32.h),
-        Text(
-          AppLocalizations.of(context)!.services,
-          textAlign: TextAlign.left,
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 14.sp,
-          ),
-        ),
+        // SizedBox(height: 36.h),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //   children: [
+        //     GestureDetector(
+        //       onTap: () {
+        //         setState(() {
+        //           isNext = false;
+        //         });
+        //       },
+        //       child: Row(
+        //         children: [
+        //           const Icon(Icons.arrow_back, color: Colors.blue),
+        //           SizedBox(width: 4.w),
+        //           Text(
+        //             AppLocalizations.of(context)!.back,
+        //             style: const TextStyle(
+        //               color: Colors.blue,
+        //               fontWeight: FontWeight.bold,
+        //             ),
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //     Text(
+        //       AppLocalizations.of(context)!.almostThere,
+        //       style: TextStyle(
+        //         fontSize: 14.sp,
+        //         fontWeight: FontWeight.bold,
+        //         color: Colors.blue,
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        // SizedBox(height: 32.h),
+        // Text(
+        //   AppLocalizations.of(context)!.services,
+        //   textAlign: TextAlign.left,
+        //   style: TextStyle(
+        //     fontWeight: FontWeight.w500,
+        //     fontSize: 14.sp,
+        //   ),
+        // ),
         SizedBox(height: 8.h),
         MultiSelectComponent(
           onSelectionChanged: handleSelectionChanged,
         ),
         SizedBox(height: 16.h),
         CustomDropdown(
-          items: const ["Bole", "Akaki", "Nifas Silk"],
+          items: Provider.of<HomeServiceProvider>(context)
+              .subCitys(Localizations.localeOf(context)),
           hint: AppLocalizations.of(context)!.selectYourSubCity,
           selectedValue: _subCity,
           onChanged: (value) => setState(() => _subCity = value),
         ),
         SizedBox(height: 16.h),
         CustomDropdown(
-          items: const ["01", "02", "03", "04", "05"],
+          items: Provider.of<HomeServiceProvider>(context).weredas,
           hint: AppLocalizations.of(context)!.selectYourWereda,
           selectedValue: _wereda,
           onChanged: (value) => setState(() => _wereda = value),
@@ -221,15 +222,16 @@ class _TechnicianRegistrationPageState
             _documentsPath, () => _pickFile('documents')),
         _buildFileUploadButton(AppLocalizations.of(context)!.idCard,
             _idCardPath, () => _pickFile('idCard')),
-        _buildFileUploadButton('Profile Image', _profileImagePath,
-            () => _pickFile('profileImage')),
+        _buildFileUploadButton(AppLocalizations.of(context)!.profileImage,
+            _profileImagePath, () => _pickFile('profileImage')),
         SizedBox(height: 16.h),
         SimpleComponents.buildTextField(
           _passwordController,
-          'Password',
+          AppLocalizations.of(context)!.password,
           AppLocalizations.of(context)!.enterYourPassword,
           isPassword: true,
         ),
+        SizedBox(height: 16.h),
         SimpleComponents.buildTextField(
           _confirmPasswordController,
           AppLocalizations.of(context)!.confirmPassword,
@@ -240,7 +242,8 @@ class _TechnicianRegistrationPageState
         SimpleComponents.buildButton(
           isLoading: Provider.of<AuthenticationProvider>(context).isLoading,
           onTap: _submitForm,
-          buttonText: 'Register',
+          buttonText: AppLocalizations.of(context)!.registerPrompt,
+          color: Theme.of(context).primaryColor,
         ),
       ],
     );
@@ -250,14 +253,21 @@ class _TechnicianRegistrationPageState
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text(
+          AppLocalizations.of(context)!.signUp,
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        centerTitle: true,
+      ),
       body: Padding(
         padding: EdgeInsets.all(16.w),
         child: Form(
           key: _formKey,
           child: ListView(
-            children: [
-              isNext ? _buildFormPage2() : _buildFormPage1(),
-            ],
+            children: [_buildFormPage1(), _buildFormPage2()],
           ),
         ),
       ),
@@ -268,7 +278,14 @@ class _TechnicianRegistrationPageState
       String label, String? path, VoidCallback onTap) {
     return Row(
       children: [
-        Expanded(child: Text(label)),
+        Expanded(
+            child: Text(
+          label,
+          style: TextStyle(
+              color: Colors.grey[800],
+              fontSize: 18.sp,
+              fontWeight: FontWeight.w500),
+        )),
         GestureDetector(
           onTap: onTap,
           child: Container(
@@ -282,6 +299,10 @@ class _TechnicianRegistrationPageState
               path != null
                   ? path.split('/').last
                   : AppLocalizations.of(context)!.upload,
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 18.sp,
+              ),
             ),
           ),
         ),

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:home_service_app/provider/user_provider.dart';
-import 'package:home_service_app/screens/profile/technician_schedule.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // Adjust the import according to your project structure
 
 class TechnicianDrawer extends StatelessWidget {
@@ -26,14 +24,14 @@ class TechnicianDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.home),
-            title: const Text('Home'),
+            title: Text(AppLocalizations.of(context)!.homeSection),
             onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
             leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
+            title: Text(AppLocalizations.of(context)!.settingsSection),
             onTap: () {
               // Navigate to settings page
             },

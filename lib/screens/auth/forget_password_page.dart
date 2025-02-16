@@ -1,9 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:home_service_app/main.dart';
 import 'package:home_service_app/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   final String? token;
@@ -84,16 +83,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       return;
     } else if (_newPasswordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Passwords do not match!"),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.passwordsDoNotMatch),
           backgroundColor: Colors.red,
         ),
       );
       return;
     } else if (_newPasswordController.text.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Password must be at least 6 characters long!"),
+        SnackBar(
+          content: Text(
+              AppLocalizations.of(context)!.passwordMustBeAtLeast6Characters),
           backgroundColor: Colors.red,
         ),
       );
@@ -109,34 +109,48 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       case 0:
         return _buildStepContent(
           context,
-          title: "Enter Your Email",
-          description:
-              "We'll send you a verification token to reset your password.",
+          title: AppLocalizations.of(context)!.enterYourEmailPrompt,
+          description: AppLocalizations.of(context)!.sendVerificationToken,
           child: TextField(
             controller: _emailController,
             decoration: InputDecoration(
-              labelText: "Email or Phone",
-              prefixIcon: Icon(Icons.email_outlined),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(10.r)),
+              labelText: AppLocalizations.of(context)!.email,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(6.r),
+                borderSide: const BorderSide(
+                  color: Colors.blue,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(6.r),
+                borderSide: const BorderSide(
+                  color: Colors.blue,
+                  width: 2.0,
+                ),
+              ),
+              labelStyle: TextStyle(
+                color: Color.fromARGB(255, 0, 88, 22),
+                fontSize: 18.sp,
+              ),
             ),
           ),
-          buttonText: "Send Token",
+          buttonText: AppLocalizations.of(context)!.sendToken,
           onPressed: _nextPage,
         );
 
       case 1:
         return _buildStepContent(
           context,
-          title: "Set New Password",
-          description: "Enter a strong password and confirm it below.",
+          title: AppLocalizations.of(context)!.setNewPassword,
+          description: AppLocalizations.of(context)!.enterStrongPassword,
           child: Column(
             children: [
               TextField(
                 controller: _tokenController,
                 decoration: InputDecoration(
-                  labelText: "Verification token from your email",
-                  prefixIcon: Icon(Icons.verified_outlined),
+                  labelText:
+                      AppLocalizations.of(context)!.verificationTokenFromEmail,
+                  prefixIcon: const Icon(Icons.verified_outlined),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.r)),
                 ),
@@ -145,8 +159,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               TextField(
                 controller: _newPasswordController,
                 decoration: InputDecoration(
-                  labelText: "New Password",
-                  prefixIcon: Icon(Icons.lock_outline),
+                  labelText: AppLocalizations.of(context)!.newPassword,
+                  prefixIcon: const Icon(Icons.lock_outline),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.r)),
                 ),
@@ -156,8 +170,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               TextField(
                 controller: _confirmPasswordController,
                 decoration: InputDecoration(
-                  labelText: "Confirm Password",
-                  prefixIcon: Icon(Icons.lock_outline),
+                  labelText:
+                      AppLocalizations.of(context)!.confirmPasswordPrompt,
+                  prefixIcon: const Icon(Icons.lock_outline),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.r)),
                 ),
@@ -165,7 +180,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               ),
             ],
           ),
-          buttonText: "Reset Password",
+          buttonText: AppLocalizations.of(context)!.resetPassword,
           onPressed: _resetPassword,
           isBackVisible: true,
         );
@@ -211,22 +226,26 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         ElevatedButton(
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blueAccent,
+            backgroundColor: Theme.of(context).primaryColor,
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.r)),
             padding: EdgeInsets.symmetric(vertical: 15.h),
           ),
           child: Provider.of<AuthenticationProvider>(context).isLoading
-              ? CircularProgressIndicator()
-              : Text(buttonText, style: TextStyle(fontSize: 14.sp)),
+              ? const CircularProgressIndicator()
+              : Text(buttonText,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18.sp)),
         ),
         if (isBackVisible)
           TextButton(
             onPressed: _previousPage,
             child: Text(
-              "Back",
-              style: TextStyle(color: Colors.blueAccent, fontSize: 12.sp),
+              AppLocalizations.of(context)!.backPrompt,
+              style: TextStyle(color: Colors.blueAccent, fontSize: 16.sp),
             ),
           ),
       ],
@@ -236,26 +255,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade200,
+      backgroundColor: Colors.white,
       body: Center(
-        child: Container(
-          height: 500.h,
-          padding: EdgeInsets.all(20.w),
-          margin: EdgeInsets.all(20.w),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20.r),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                blurRadius: 10.r,
-                spreadRadius: 5.r,
-              ),
-            ],
-          ),
+        child: Padding(
+          padding: EdgeInsets.all(24.0.h),
           child: PageView.builder(
             controller: _pageController,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemCount: 2,
             itemBuilder: _buildPageContent,
           ),

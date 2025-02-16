@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ComingSoonPage extends StatelessWidget {
   const ComingSoonPage({super.key});
@@ -7,7 +8,7 @@ class ComingSoonPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Coming Soon'),
+        title: Text(AppLocalizations.of(context)!.comingSoon),
         backgroundColor: Colors.blueAccent,
       ),
       body: Center(
@@ -16,13 +17,13 @@ class ComingSoonPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(
+              const Icon(
                 Icons.construction,
                 size: 100,
                 color: Colors.orangeAccent,
               ),
               const SizedBox(height: 20),
-              Text(
+              const Text(
                 'This feature is coming soon!',
                 style: TextStyle(
                   fontSize: 24,
@@ -33,7 +34,7 @@ class ComingSoonPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'We are working hard to bring you this feature. Stay tuned for updates!',
+                AppLocalizations.of(context)!.workingHardForFeature,
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[600],
@@ -54,8 +55,8 @@ class ComingSoonPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: Colors.white),
                 ),
-                child: const Text(
-                  'Go Back',
+                child: Text(
+                  AppLocalizations.of(context)!.goBack,
                   style: TextStyle(color: Colors.white),
                 ),
               ),

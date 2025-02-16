@@ -20,22 +20,36 @@ class CustomDropdown extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       width: double.infinity,
+      height: 50.h,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey[600]!),
         borderRadius: BorderRadius.circular(12.r),
       ),
-      child: DropdownButton<String>(
-        isExpanded: true,
-        underline: const SizedBox(),
-        hint: Text(hint),
-        value: selectedValue,
-        items: items.map((String item) {
-          return DropdownMenuItem<String>(
-            value: item,
-            child: Text(item),
-          );
-        }).toList(),
-        onChanged: onChanged,
+      child: Center(
+        child: DropdownButtonHideUnderline(
+          child: DropdownButtonFormField<String>(
+            isExpanded: true,
+            decoration: InputDecoration.collapsed(hintText: ''),
+            hint: Text(hint),
+            value: selectedValue,
+            dropdownColor: Colors.white,
+            borderRadius: BorderRadius.circular(12.r),
+            items: items.map((String item) {
+              return DropdownMenuItem<String>(
+                value: item,
+                child: Text(item),
+              );
+            }).toList(),
+            onChanged: onChanged,
+            selectedItemBuilder: (BuildContext context) {
+              return items.map<Widget>((String item) {
+                return Text(item);
+              }).toList();
+            },
+            itemHeight: null,
+            menuMaxHeight: 260.h,
+          ),
+        ),
       ),
     );
   }

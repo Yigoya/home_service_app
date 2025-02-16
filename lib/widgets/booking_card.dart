@@ -4,7 +4,6 @@ import 'package:home_service_app/models/booking.dart';
 import 'package:home_service_app/models/enums.dart';
 import 'package:home_service_app/provider/booking_provider.dart';
 import 'package:home_service_app/provider/profile_page_provider.dart';
-import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/booking/update_booking.dart';
 import 'package:home_service_app/screens/detail_booking.dart';
 import 'package:home_service_app/screens/dispute_page.dart';
@@ -14,6 +13,7 @@ import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BookingCard extends StatelessWidget {
   final Booking booking;
@@ -87,7 +87,7 @@ class BookingCard extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 20.sp, fontWeight: FontWeight.bold)),
                       Text(booking.serviceName,
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
                       Text(
                           'Location: ${booking.address.subcity}, ${booking.address.wereda}',
                           style: TextStyle(
@@ -97,7 +97,7 @@ class BookingCard extends StatelessWidget {
                       Text(timeRemaining(booking.scheduledDate),
                           style: TextStyle(
                               fontSize: 16.sp,
-                              color: Colors.blue[900],
+                              color: Color.fromARGB(255, 0, 88, 22),
                               fontWeight: FontWeight.w500)),
                     ],
                   ),
@@ -196,7 +196,7 @@ class _BookingListState extends State<BookingList> {
               case 'COMPLETED':
                 additionalContent = booking.review != null
                     ? _buildReviewDisplay(booking)
-                    : SizedBox.shrink();
+                    : const SizedBox.shrink();
                 break;
               default:
                 actions = [];
@@ -452,7 +452,7 @@ class _BookingListState extends State<BookingList> {
                                 Navigator.of(context).pop();
                               },
                               child: Text(
-                                "OK",
+                                AppLocalizations.of(context)!.ok,
                                 style: TextStyle(
                                   color: Colors.teal,
                                   fontSize: 14.sp,

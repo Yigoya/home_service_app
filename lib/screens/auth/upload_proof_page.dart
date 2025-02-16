@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Technician {
   final int id;
@@ -74,7 +75,7 @@ class _UploadProofPageState extends State<UploadProofPage> {
         if (token == null) {
           await saveUserStatus(UserStatus.TOKEN_ENTRY);
           setState(() {
-            message = 'Token not found.';
+            message = AppLocalizations.of(context)!.tokenNotFound;
             isLoading = false;
             return;
           });
@@ -132,11 +133,15 @@ class _UploadProofPageState extends State<UploadProofPage> {
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ticket uploaded successfully!')),
+          SnackBar(
+              content: Text(
+                  AppLocalizations.of(context)!.ticketUploadedSuccessfully)),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to upload ticket.')),
+          SnackBar(
+              content:
+                  Text(AppLocalizations.of(context)!.failedToUploadTicket)),
         );
       }
       await saveUserStatus(UserStatus.WAITING_FOR_APPROVAL);
@@ -156,7 +161,7 @@ class _UploadProofPageState extends State<UploadProofPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Technician Details'),
+        title: const Text('AppLocalizations.of(context)!.technicianDetails'),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -195,7 +200,7 @@ class _UploadProofPageState extends State<UploadProofPage> {
                       ElevatedButton.icon(
                         onPressed: pickImage,
                         icon: const Icon(Icons.upload_file),
-                        label: const Text('Upload Ticket'),
+                        label: Text(AppLocalizations.of(context)!.uploadTicket),
                       ),
                       if (uploadedFile != null) ...[
                         SizedBox(height: 8.h),
@@ -204,7 +209,8 @@ class _UploadProofPageState extends State<UploadProofPage> {
                         SizedBox(height: 8.h),
                         ElevatedButton(
                           onPressed: uploadImage,
-                          child: const Text('Submit Ticket'),
+                          child:
+                              Text(AppLocalizations.of(context)!.submitTicket),
                         ),
                       ]
                     ],

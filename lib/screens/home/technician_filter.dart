@@ -148,7 +148,9 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                       height: 8.h,
                     ),
                     CustomDropdown(
-                      items: Provider.of<HomeServiceProvider>(context).subCitys,
+                      items: Provider.of<HomeServiceProvider>(context,
+                              listen: false)
+                          .subCitys(Localizations.localeOf(context)),
                       hint: AppLocalizations.of(context)!.selectYourSubCity,
                       selectedValue: selectedSubCity,
                       onChanged: (value) {
@@ -175,6 +177,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                       onLoad: () {},
                       text: AppLocalizations.of(context)!.applyFilters,
                       onTap: fetchTechnicians,
+                      color: Theme.of(context).primaryColor,
                     ),
                   ],
                 ),
@@ -192,7 +195,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
               ),
               Consumer<HomeServiceProvider>(
                 builder: (context, provider, child) {
-                  final height = 270.h;
+                  final height = 280.h;
                   if (provider.isLoading) {
                     return SizedBox(
                         height: 460.h,
@@ -234,7 +237,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
 
   Widget _buildTechnicianCard(Technician tech, double height) {
     return Container(
-      width: 320.w,
+      width: 330.w,
       height: height.h,
       margin: EdgeInsets.only(left: 16.w, top: 16.h, right: 16.w),
       padding: EdgeInsets.all(16.w),
@@ -414,7 +417,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
               Container(
                 padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 12.w),
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: Theme.of(context).primaryColor,
                   borderRadius: BorderRadius.circular(16.r),
                 ),
                 child: InkWell(

@@ -6,6 +6,7 @@ import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TechniciansSection extends StatelessWidget {
   const TechniciansSection({super.key});
@@ -149,7 +150,7 @@ class CustomerReviewsSection extends StatelessWidget {
       children: [
         Padding(
           padding: EdgeInsets.all(16.0.w),
-          child: Text("What the Customer Says",
+          child: Text(AppLocalizations.of(context)!.whatTheCustomerSays,
               style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold)),
         ),
         ...reviews.map((review) => _buildReviewCard(review)),
@@ -241,7 +242,7 @@ class FAQSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("FAQ",
+          Text(AppLocalizations.of(context)!.faq,
               style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold)),
           SizedBox(height: 20.h),
           ...provider.faqs.asMap().entries.map((entry) {

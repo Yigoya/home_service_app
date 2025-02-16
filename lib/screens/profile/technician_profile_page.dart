@@ -6,14 +6,13 @@ import 'package:home_service_app/models/user.dart';
 import 'package:home_service_app/provider/booking_provider.dart';
 import 'package:home_service_app/provider/profile_page_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
-import 'package:home_service_app/screens/profile/technician_drawer.dart';
-import 'package:home_service_app/screens/profile/technician_schedule.dart';
 import 'package:home_service_app/screens/profile/user_profile_card.dart';
 import 'package:home_service_app/widgets/booking_card.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TechnicianProfilePage extends StatefulWidget {
   const TechnicianProfilePage({super.key});
@@ -255,7 +254,7 @@ class BookingPendingList extends StatelessWidget {
                                   listen: false)
                               .fetchBookings();
                         },
-                        child: const Text('Accept'),
+                        child: Text(AppLocalizations.of(context)!.accept),
                       ),
                       TextButton(
                         onPressed: () async {

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_service_app/provider/booking_provider.dart';
-import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BookingDetailsPage extends StatelessWidget {
   const BookingDetailsPage({super.key});
@@ -31,7 +30,7 @@ class BookingDetailsPage extends StatelessWidget {
             children: [
               // Customer Information Section
               _buildSection(
-                title: 'Customer Information',
+                title: AppLocalizations.of(context)!.customerInformation,
                 icon: Icons.person,
                 children: [
                   _buildInfoRow('Name', bookingData['customerName']),
@@ -47,7 +46,7 @@ class BookingDetailsPage extends StatelessWidget {
                   _buildInfoRow('Service Name', bookingData['serviceName']),
                   _buildInfoRow(
                       'Description', bookingData['serviceDescription']),
-                  _buildInfoRow('Scheduled Date',
+                  _buildInfoRow(AppLocalizations.of(context)!.scheduledDate,
                       bookingData['scheduledDate'] ?? 'Not set'),
                   _buildInfoRow('Status', bookingData['status']),
                   _buildInfoRow('Total Cost',

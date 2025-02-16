@@ -3,6 +3,7 @@ import 'package:home_service_app/provider/form_provider.dart';
 import 'package:home_service_app/widgets/custom_textfield.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DisputePage extends StatefulWidget {
   final int bookingId;
@@ -35,14 +36,14 @@ class _DisputePageState extends State<DisputePage> {
                       TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold)),
               SizedBox(height: 16.h),
               CustomTextField(
-                label: "Reason",
+                label: AppLocalizations.of(context)!.reason,
                 hint: "Enter your reason",
                 controller: formProvider.reasonController,
-                errorMsg: "Please enter your reason",
+                errorMsg: AppLocalizations.of(context)!.pleaseEnterYourReason,
               ),
               CustomTextField(
-                label: "State your dispute",
-                hint: "Describe your dispute",
+                label: AppLocalizations.of(context)!.stateYourDisputePrompt,
+                hint: AppLocalizations.of(context)!.describeYourDisputePrompt,
                 controller: formProvider.disputeDescriptionController,
                 errorMsg: "Please describe your issue your reason",
               ),
@@ -63,7 +64,7 @@ class _DisputePageState extends State<DisputePage> {
                           ? const CircularProgressIndicator.adaptive(
                               backgroundColor: Colors.white,
                             )
-                          : const Text("Submit"),
+                          : Text(AppLocalizations.of(context)!.submitPrompt),
                     ),
             ],
           ),

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import 'package:home_service_app/provider/profile_page_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AccountSettingsPage extends StatefulWidget {
-  const AccountSettingsPage({Key? key}) : super(key: key);
+  const AccountSettingsPage({super.key});
 
   @override
   State<AccountSettingsPage> createState() => _AccountSettingsPageState();
@@ -17,7 +17,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   @override
   void initState() {
@@ -60,7 +60,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                             ? Icons.phone
                             : Icons.edit,
                     color: Colors.grey[600]),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
                   label,
                   style: const TextStyle(
@@ -178,7 +178,8 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                         Provider.of<UserProvider>(context, listen: false)
                             .changePhoneNumber(
                                 _phoneController.text.trim(), context),
-                    hintText: 'Enter your phone number',
+                    hintText: AppLocalizations.of(context)!
+                        .enterYourPhoneNumberPrompt,
                     inputType: TextInputType.phone,
                   ),
                   const SizedBox(height: 24),
@@ -188,7 +189,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                   //     if (_nameController.text.trim().isEmpty ||
                   //         _emailController.text.trim().isEmpty ||
                   //         _phoneController.text.trim().isEmpty) {
-                  //       _showToast('All fields must be filled');
+                  //       _showToast(AppLocalizations.of(context)!.allFieldsMustBeFilled);
                   //       return;
                   //     }
                   //     setState(() {
@@ -199,7 +200,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                   //       setState(() {
                   //         _isLoading = false;
                   //       });
-                  //       _showToast('Profile updated successfully');
+                  //       _showToast(AppLocalizations.of(context)!.profileUpdatedSuccessfully);
                   //     });
                   //   },
                   //   style: ElevatedButton.styleFrom(
@@ -211,7 +212,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                   //     ),
                   //   ),
                   //   child: const Text(
-                  //     'Save All Changes',
+                  //     AppLocalizations.of(context)!.saveAllChanges,
                   //     style: TextStyle(
                   //       color: Colors.white,
                   //       fontSize: 16,

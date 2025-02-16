@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
@@ -17,11 +18,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Open Mail App"),
-          content: const Text("No mail apps installed"),
+          title: Text(AppLocalizations.of(context)!.openMailApp),
+          content: Text(AppLocalizations.of(context)!.noMailAppsInstalled),
           actions: <Widget>[
             ElevatedButton(
-              child: const Text("OK"),
+              child: Text(AppLocalizations.of(context)!.ok),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -36,7 +37,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Verify Your Email"),
+        title: Text(AppLocalizations.of(context)!.verifyYourEmail),
         centerTitle: true,
       ),
       body: Padding(
@@ -51,8 +52,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               color: Colors.blueAccent,
             ),
             SizedBox(height: 24.h),
-            const Text(
-              "Verify Your Email",
+            Text(
+              AppLocalizations.of(context)!.verifyYourEmail,
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -61,7 +62,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             ),
             SizedBox(height: 16.h),
             Text(
-              "To continue, please verify your email by clicking the link we sent to your inbox.",
+              AppLocalizations.of(context)!.verifyEmailMessage,
               style: TextStyle(
                 fontSize: 14.sp,
                 color: Colors.grey[700],
@@ -82,7 +83,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 children: [
                   Icon(Icons.open_in_new, size: 24.sp),
                   SizedBox(width: 8.w),
-                  const Text("Open Gmail"),
+                  Text(AppLocalizations.of(context)!.openGmail),
                 ],
               ),
             ),
@@ -90,11 +91,12 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             TextButton(
               onPressed: () {
                 // Include additional options if they didn’t receive an email
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text("Resend email feature coming soon!"),
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(AppLocalizations.of(context)!
+                      .resendEmailFeatureComingSoon),
                 ));
               },
-              child: const Text("Didn't receive the email? Resend"),
+              child: Text(AppLocalizations.of(context)!.didntReceiveEmail),
             ),
           ],
         ),

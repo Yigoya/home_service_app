@@ -9,7 +9,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:home_service_app/main.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/auth/verification_wait_screen.dart';
-import 'package:home_service_app/screens/profile/technician_profile_page.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/utils/functions.dart';
 import 'package:home_service_app/utils/route_generator.dart';
@@ -17,6 +16,7 @@ import 'package:home_service_app/widgets/bottom_navigation.dart';
 import 'package:home_service_app/widgets/technician_navigation.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AuthenticationProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
@@ -57,7 +57,8 @@ class AuthenticationProvider with ChangeNotifier {
       );
 
       _isLoading = false;
-      showTopMessage(context, 'Signed up successfully');
+      showTopMessage(
+          context, AppLocalizations.of(context)!.signedUpSuccessfully);
       notifyListeners();
       Navigator.of(context).pushNamedAndRemoveUntil(
           RouteGenerator.verificationPage, (route) => false);
@@ -130,7 +131,8 @@ class AuthenticationProvider with ChangeNotifier {
             (route) => false);
       }
 
-      showTopMessage(context, 'Logged in successfully');
+      showTopMessage(
+          context, AppLocalizations.of(context)!.loggedInSuccessfully);
       _isLoading = false;
       notifyListeners();
     } on DioException catch (e) {

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:home_service_app/models/booking.dart';
 import 'package:home_service_app/models/schedule.dart';
-import 'package:home_service_app/models/techinician_detail.dart';
 import 'package:home_service_app/models/user.dart';
 import 'package:home_service_app/models/user_customer.dart';
 import 'package:home_service_app/models/user_technician.dart';

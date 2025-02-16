@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/provider/booking_provider.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
-import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/home/technician_filter.dart';
 import 'package:home_service_app/utils/functions.dart';
 import 'package:home_service_app/widgets/custom_dropdown.dart';
@@ -32,11 +31,12 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final location =
-          Provider.of<HomeServiceProvider>(context, listen: false).location;
+      final location = Provider.of<HomeServiceProvider>(context, listen: false)
+          .selectedLocation;
 
       setState(() {
-        selectedSubCity = location['subcity'] as String? ?? '';
+        selectedSubCity =
+            '${Provider.of<HomeServiceProvider>(context, listen: false).subCityNameInLanguage(location, Localizations.localeOf(context))}';
       });
     });
   }
@@ -345,7 +345,8 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             CustomDropdown(
-              items: Provider.of<HomeServiceProvider>(context).subCitys,
+              items: Provider.of<HomeServiceProvider>(context, listen: false)
+                  .subCitys(Localizations.localeOf(context)),
               hint: AppLocalizations.of(context)!.selectYourSubCity,
               selectedValue: selectedSubCity,
               onChanged: (value) {

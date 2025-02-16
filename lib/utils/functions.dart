@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:logger/web.dart';
-import 'package:intl/intl.dart';
 
 String timeRemaining(String? dateTimeString) {
   if (dateTimeString == null) {
@@ -114,7 +112,7 @@ void showTopMessage(BuildContext context, String message,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: isSuccess && !isWaring
-                  ? Colors.green
+                  ? Theme.of(context).primaryColor
                   : isWaring
                       ? Colors.amber[600]
                       : Colors.red,
@@ -152,9 +150,9 @@ void showTopMessage(BuildContext context, String message,
 
 String formatNumber(int number) {
   if (number >= 1000000) {
-    return (number / 1000000).toStringAsFixed(1) + 'M';
+    return '${(number / 1000000).toStringAsFixed(1)}M';
   } else if (number >= 1000) {
-    return (number / 1000).toStringAsFixed(1) + 'k';
+    return '${(number / 1000).toStringAsFixed(1)}k';
   } else {
     return number.toString();
   }
@@ -192,7 +190,7 @@ Future<Map<String, Object?>> getCurrentLocation() async {
 
     // Fetch the current position
     Position position = await Geolocator.getCurrentPosition(
-      locationSettings: LocationSettings(
+      locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
       ),
     );

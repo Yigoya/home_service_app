@@ -4,13 +4,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:home_service_app/firebase_options.dart';
+import 'package:home_service_app/l10n/oromo_matrial_localizations.dart';
 import 'package:home_service_app/provider/booking_provider.dart';
 import 'package:home_service_app/provider/form_provider.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/provider/auth_provider.dart';
 import 'package:home_service_app/provider/notification_provider.dart';
+import 'package:home_service_app/provider/payment_provider.dart';
 import 'package:home_service_app/provider/profile_page_provider.dart';
 import 'package:home_service_app/provider/technician_provider.dart';
+import 'package:home_service_app/provider/tender_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/auth/token_entery_page.dart';
 import 'package:home_service_app/screens/auth/upload_proof_page.dart';
@@ -19,6 +22,7 @@ import 'package:home_service_app/services/deepLink_handler.dart';
 import 'package:home_service_app/services/notification_service.dart';
 import 'package:home_service_app/utils/functions.dart';
 import 'package:home_service_app/utils/route_generator.dart';
+import 'package:home_service_app/widgets/app_loader.dart';
 import 'package:home_service_app/widgets/bottom_navigation.dart';
 import 'package:home_service_app/widgets/technician_navigation.dart';
 import 'package:logger/logger.dart';
@@ -44,6 +48,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ProfilePageProvider()),
         ChangeNotifierProvider(create: (_) => FormProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => PaymentProvider()),
+        ChangeNotifierProvider(create: (_) => TenderProvider()),
       ],
       child: MyApp(
         defaultLocale: defaultLocale,
@@ -71,11 +77,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late Locale _locale;
 
-  void setLocale(Locale locale) {
+  void setLocale(Locale locale) async {
     setState(() {
       _locale = locale;
     });
-    Provider.of<HomeServiceProvider>(context, listen: false).loadHome(_locale);
   }
 
   @override
@@ -103,23 +108,47 @@ class _MyAppState extends State<MyApp> {
             navigatorKey: navigatorKey,
             title: 'Home Service Platform',
             debugShowCheckedModeBanner: false,
-            theme: ThemeData(primarySwatch: Colors.blue),
+            theme: ThemeData(
+              fontFamily: 'Figtree',
+              brightness: Brightness.light,
+              primaryColor: const Color.fromARGB(255, 0, 71, 18),
+              secondaryHeaderColor: const Color(0xFF3385BB),
+              textTheme: TextTheme(
+                headlineLarge: TextStyle(
+                  fontSize: 32.sp, // Adjust the font size based on screen size
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
             onGenerateRoute: RouteGenerator.generateRoute,
             supportedLocales: L10n.all,
             locale: _locale,
             localizationsDelegates: const [
+              const OromoLocalizationsDelegate(),
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
+            localeResolutionCallback: (locale, supportedLocales) {
+              for (var supportedLocale in supportedLocales) {
+                if (supportedLocale.languageCode == locale?.languageCode) {
+                  return supportedLocale;
+                }
+              }
+              return const Locale('en'); // Fallback to English
+            },
             home: FutureBuilder(
               future: Future.wait([
                 Provider.of<UserProvider>(context, listen: false).loadUser(),
                 Provider.of<HomeServiceProvider>(context, listen: false)
-                    .loadHome(widget.defaultLocale),
+                    .loadHome(_locale),
               ]),
               builder: (context, snapshot) {
+                // if (snapshot.connectionState == ConnectionState.waiting) {
+                //   return const AppLoader();
+                // }
                 final user = Provider.of<UserProvider>(context).user;
                 final status = Provider.of<UserProvider>(context).status;
                 if (user != null && user.role == "TECHNICIAN") {

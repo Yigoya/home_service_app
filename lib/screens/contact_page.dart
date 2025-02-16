@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:home_service_app/provider/form_provider.dart';
 import 'package:home_service_app/widgets/custom_textfield.dart';
-import 'package:logger/web.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ContactPage extends StatefulWidget {
   const ContactPage({super.key});
@@ -39,28 +39,28 @@ class _ContactPageState extends State<ContactPage> {
                         fontSize: 22.sp, fontWeight: FontWeight.bold)),
                 SizedBox(height: 16.h),
                 CustomTextField(
-                  label: "Name",
-                  hint: "Enter your name",
+                  label: AppLocalizations.of(context)!.name,
+                  hint: AppLocalizations.of(context)!.enterYourNamePrompt,
                   controller: formProvider.nameController,
-                  errorMsg: "Name is required",
+                  errorMsg: AppLocalizations.of(context)!.nameIsRequired,
                 ),
                 CustomTextField(
                   label: "Email",
-                  hint: "Enter your email",
+                  hint: AppLocalizations.of(context)!.enterYourEmailPrompt,
                   controller: formProvider.emailController,
                   keyboardType: TextInputType.emailAddress,
-                  errorMsg: "Email is required",
+                  errorMsg: AppLocalizations.of(context)!.emailIsRequired,
                 ),
                 CustomTextField(
                   label: "Phone Number",
                   hint: "Enter your phone number",
                   controller: formProvider.phoneController,
                   keyboardType: TextInputType.phone,
-                  errorMsg: "Phone number is required",
+                  errorMsg: AppLocalizations.of(context)!.phoneNumberIsRequired,
                 ),
                 CustomTextField(
                   label: "Message",
-                  hint: "Write your message",
+                  hint: AppLocalizations.of(context)!.writeYourMessagePrompt,
                   controller: formProvider.messageController,
                   errorMsg: "Please put you message",
                   maxLines: 4,
@@ -78,7 +78,7 @@ class _ContactPageState extends State<ContactPage> {
                       ? const CircularProgressIndicator.adaptive(
                           backgroundColor: Colors.white,
                         )
-                      : const Text("Submit"),
+                      : Text(AppLocalizations.of(context)!.submitPrompt),
                 ),
               ],
             ),

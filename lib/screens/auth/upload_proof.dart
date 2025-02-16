@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class UploadProofPagee extends StatelessWidget {
   final picker = ImagePicker();
@@ -29,7 +30,7 @@ class UploadProofPagee extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'For registration fee transfer\n500 birr',
+                AppLocalizations.of(context)!.registrationFeeTransferMessage,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18.sp),
               ),
@@ -37,7 +38,7 @@ class UploadProofPagee extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () => _pickImage(context),
                 icon: const Icon(Icons.upload_file),
-                label: const Text('Upload image'),
+                label: Text(AppLocalizations.of(context)!.uploadImagePrompt),
               ),
               SizedBox(height: 20.h),
               Consumer<AuthenticationProvider>(

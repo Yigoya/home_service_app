@@ -5,6 +5,7 @@ import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/utils/functions.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BookingProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();
@@ -155,7 +156,7 @@ class BookingProvider extends ChangeNotifier {
     try {
       final data = {
         "bookingId": bookingId,
-        "rating": rating,
+        'rating': rating,
         "review": review,
       };
       final response = await _apiService.postRequest('/review', data);

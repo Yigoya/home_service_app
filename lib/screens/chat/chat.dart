@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -24,7 +25,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chat'),
+        title: Text(AppLocalizations.of(context)!.chat),
       ),
       body: Column(
         children: <Widget>[
@@ -45,8 +46,8 @@ class _ChatPageState extends State<ChatPage> {
                 Expanded(
                   child: TextField(
                     controller: _controller,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter your message...',
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.of(context)!.enterYourMessage,
                     ),
                   ),
                 ),

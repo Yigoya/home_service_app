@@ -3,6 +3,7 @@ import 'package:home_service_app/provider/notification_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});
@@ -14,7 +15,7 @@ class NotificationsPage extends StatelessWidget {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text('Notifications'),
+        title: Text(AppLocalizations.of(context)!.notificationsSection),
         actions: [
           user != null
               ? TextButton(
@@ -22,7 +23,7 @@ class NotificationsPage extends StatelessWidget {
                     Provider.of<NotificationProvider>(context, listen: false)
                         .markAllAsRead(user.id);
                   },
-                  child: const Text('Mark All As Read',
+                  child: Text(AppLocalizations.of(context)!.markAllAsRead,
                       style: TextStyle(color: Colors.blue)))
               : const SizedBox.shrink(),
         ],
@@ -34,7 +35,7 @@ class NotificationsPage extends StatelessWidget {
           } else if (notificationProvider.notifications.isEmpty) {
             return Center(
               child: Text(
-                'You have no notifications',
+                AppLocalizations.of(context)!.noNotifications,
                 style: TextStyle(
                   fontSize: 22.sp,
                   color: Colors.grey,
@@ -111,7 +112,7 @@ class NotificationsPage extends StatelessWidget {
                                   context, notification.relatedEntityId);
                             },
                             child: Text(
-                              'View Details',
+                              AppLocalizations.of(context)!.viewDetails,
                               style: TextStyle(
                                   fontSize: 14.sp, color: Colors.blue),
                             ),
@@ -138,7 +139,7 @@ class SomeOtherPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Entity Details')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.entityDetails)),
       body: Center(child: Text('Details for entity $relatedEntityId')),
     );
   }

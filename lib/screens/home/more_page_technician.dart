@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/account_setting.dart';
-import 'package:home_service_app/screens/booking/buy_coins_page.dart';
-import 'package:home_service_app/screens/contact_page.dart';
-import 'package:home_service_app/screens/disputelist_page.dart';
 import 'package:home_service_app/screens/home/coming_soon.dart';
 import 'package:home_service_app/screens/language_selector_page.dart';
 import 'package:home_service_app/screens/notification.dart';
@@ -11,12 +8,11 @@ import 'package:home_service_app/screens/profile/customer_profile_page.dart';
 import 'package:home_service_app/screens/profile/technician_about_me.dart';
 import 'package:home_service_app/screens/saved_address.dart';
 import 'package:home_service_app/services/api_service.dart';
-import 'package:home_service_app/utils/functions.dart';
 import 'package:home_service_app/utils/route_generator.dart';
 import 'package:home_service_app/widgets/customlist_tile.dart';
-import 'package:home_service_app/widgets/language_selector.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MorePageTechnician extends StatelessWidget {
   const MorePageTechnician({super.key});
@@ -30,12 +26,12 @@ class MorePageTechnician extends StatelessWidget {
         body: SafeArea(
             child: ListView(children: [
           Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Text(
               'Welcome ',
               style: TextStyle(
                 fontSize: 28.sp,
-                color: Colors.blue[900],
+                color: Color.fromARGB(255, 0, 88, 22),
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -119,10 +115,11 @@ class MorePageTechnician extends StatelessWidget {
                                     color: Colors.white,
                                   ),
                                   child: Text(
-                                    'Become a Technician',
+                                    AppLocalizations.of(context)!
+                                        .becomeATechnician,
                                     style: TextStyle(
                                       fontSize: 18.sp,
-                                      color: Color(0xFF642b73),
+                                      color: const Color(0xFF642b73),
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -156,10 +153,10 @@ class MorePageTechnician extends StatelessWidget {
                                     color: Colors.white,
                                   ),
                                   child: Text(
-                                    'Login',
+                                    AppLocalizations.of(context)!.loginSection,
                                     style: TextStyle(
                                       fontSize: 18.sp,
-                                      color: Color(0xFF3F5EFB),
+                                      color: const Color(0xFF3F5EFB),
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -175,7 +172,7 @@ class MorePageTechnician extends StatelessWidget {
           ),
 
           CustomListTile(
-            title: 'About Me',
+            title: AppLocalizations.of(context)!.aboutMe,
             icon: Icons.bookmark_outline,
             onTap: () {
               if (user != null) {
@@ -188,7 +185,7 @@ class MorePageTechnician extends StatelessWidget {
           ),
 
           CustomListTile(
-            title: 'Saved Address',
+            title: AppLocalizations.of(context)!.savedAddress,
             icon: Icons.bookmark_outline,
             onTap: () {
               if (user != null) {
@@ -202,7 +199,7 @@ class MorePageTechnician extends StatelessWidget {
             },
           ),
           CustomListTile(
-            title: 'Account Setting',
+            title: AppLocalizations.of(context)!.accountSetting,
             icon: Icons.account_circle_outlined,
             onTap: () {
               if (user != null) {
@@ -214,7 +211,7 @@ class MorePageTechnician extends StatelessWidget {
             },
           ),
           CustomListTile(
-            title: 'Payment Methods',
+            title: AppLocalizations.of(context)!.paymentMethods,
             icon: Icons.payment_rounded,
             onTap: () {
               if (user != null) {
@@ -226,7 +223,7 @@ class MorePageTechnician extends StatelessWidget {
             },
           ),
           CustomListTile(
-            title: 'Notifications',
+            title: AppLocalizations.of(context)!.notificationsSection,
             icon: Icons.notifications_none_rounded,
             onTap: () {
               if (user != null) {
@@ -238,7 +235,7 @@ class MorePageTechnician extends StatelessWidget {
             },
           ),
           CustomListTile(
-            title: 'Free Credit',
+            title: AppLocalizations.of(context)!.freeCredit,
             icon: Icons.credit_score_rounded,
             onTap: () {
               if (user != null) {
@@ -250,7 +247,7 @@ class MorePageTechnician extends StatelessWidget {
             },
           ),
           CustomListTile(
-            title: 'Online Chat',
+            title: AppLocalizations.of(context)!.onlineChat,
             icon: Icons.chat,
             onTap: () {
               if (user != null) {
@@ -262,7 +259,7 @@ class MorePageTechnician extends StatelessWidget {
             },
           ),
           CustomListTile(
-            title: 'Help Center',
+            title: AppLocalizations.of(context)!.helpCenter,
             icon: Icons.help_outline_rounded,
             onTap: () {
               if (user != null) {
@@ -313,7 +310,7 @@ class MorePageTechnician extends StatelessWidget {
           //         ),
           //         SizedBox(width: 8.w),
           //         Text(
-          //           'Log Out',
+          //           AppLocalizations.of(context)!.logOut,
           //           style: TextStyle(
           //             color: Colors.white,
           //             fontSize: 18.sp,
@@ -332,17 +329,17 @@ class MorePageTechnician extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Login Required'),
-          content: Text('Please login first to access this feature.'),
+          title: Text(AppLocalizations.of(context)!.loginRequired),
+          content: Text(AppLocalizations.of(context)!.pleaseLoginFirst),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Login'),
+              child: Text(AppLocalizations.of(context)!.loginSection),
               onPressed: () {
                 Navigator.of(context).pop();
                 // Navigate to the login page

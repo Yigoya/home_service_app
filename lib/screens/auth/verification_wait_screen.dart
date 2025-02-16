@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class VerificationWaitPage extends StatelessWidget {
   const VerificationWaitPage({super.key});
@@ -17,7 +18,7 @@ class VerificationWaitPage extends StatelessWidget {
             children: [
               SizedBox(height: 40.h),
               Text(
-                'Verification in Progress',
+                AppLocalizations.of(context)!.verificationInProgress,
                 style: TextStyle(
                   fontSize: 22.sp,
                   fontWeight: FontWeight.bold,
@@ -26,7 +27,7 @@ class VerificationWaitPage extends StatelessWidget {
               ),
               SizedBox(height: 20.h),
               Text(
-                'Thank you for your patience. We are currently verifying your account.',
+                AppLocalizations.of(context)!.verificationInProgressMessage,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14.sp,
@@ -35,7 +36,7 @@ class VerificationWaitPage extends StatelessWidget {
               ),
               SizedBox(height: 10.h),
               Text(
-                'We will contact you once your verification is complete.',
+                AppLocalizations.of(context)!.weWillContactYou,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14.sp,
