@@ -3,11 +3,12 @@ import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/provider/tender_provider.dart';
 import 'package:home_service_app/screens/tender/component/tender_card.dart';
 import 'package:home_service_app/screens/tender/component/search_drawer.dart';
+import 'package:home_service_app/screens/tender/tender_detail_page.dart';
 import 'package:provider/provider.dart';
 
 class TenderListPage extends StatefulWidget {
-  final int serviceId;
-  const TenderListPage({Key? key, required this.serviceId}) : super(key: key);
+  final Service service;
+  const TenderListPage({Key? key, required this.service}) : super(key: key);
 
   @override
   State<TenderListPage> createState() => _TenderListPageState();
@@ -30,13 +31,13 @@ class _TenderListPageState extends State<TenderListPage> {
   void initState() {
     super.initState();
     Future.microtask(() => Provider.of<TenderProvider>(context, listen: false)
-        .fetchTenders(widget.serviceId));
+        .fetchTenders(widget.service.id));
   }
 
   void _loadSubServices() async {
     final subServices =
         await Provider.of<TenderProvider>(context, listen: false)
-            .loadSubServices(widget.serviceId);
+            .loadSubServices(widget.service.id);
     setState(() {
       _subServices = subServices;
       _filteredSubServices = subServices;
@@ -61,7 +62,7 @@ class _TenderListPageState extends State<TenderListPage> {
         selectedLocation: _selectedLocation,
         locations: _locations,
         filteredSubServices: _filteredSubServices,
-        serviceId: widget.serviceId,
+        serviceId: widget.service.id,
         onSearchChanged: (value) {
           Provider.of<TenderProvider>(context, listen: false)
               .searchTenders(value);
@@ -70,10 +71,10 @@ class _TenderListPageState extends State<TenderListPage> {
           setState(() => _selectedLocation = value);
           if (value == "All Locations") {
             Provider.of<TenderProvider>(context, listen: false)
-                .fetchTenders(widget.serviceId);
+                .fetchTenders(widget.service.id);
           } else {
             Provider.of<TenderProvider>(context, listen: false)
-                .filterByLocation(value, widget.serviceId);
+                .filterByLocation(value, widget.service.id);
           }
         },
         onCategorySelected: (id) {
@@ -126,33 +127,83 @@ class _TenderListPageState extends State<TenderListPage> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(
-                    "showing ${provider.tenders.length} tenders from ${provider.totalTenders} tenders",
-                    style: TextStyle(
-                      color: Theme.of(context).secondaryHeaderColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                Container(
+                  width: double.infinity,
+                  margin:
+                      const EdgeInsets.only(top: 8.0, left: 16, right: 16.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 12.0),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).secondaryHeaderColor,
+                    border: Border(
+                        left: BorderSide(
+                          color: Colors.grey[300]!,
+                          width: 1.5,
+                        ),
+                        right: BorderSide(
+                          color: Colors.grey[300]!,
+                          width: 1.5,
+                        ),
+                        top: BorderSide(
+                          color: Colors.grey[300]!,
+                          width: 1.5,
+                        )),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
                     ),
                   ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('${widget.service.name} ',
+                          style: TextStyle(
+                              fontSize: 22,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold)),
+                      Text(
+                        provider.tenders.isNotEmpty
+                            ? "showing ${(provider.page * provider.size) + 1} to ${(provider.page * provider.size) + provider.tenders.length}"
+                            : "Nothing to show",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 8.0),
                 provider.tenders.isNotEmpty
                     ? Expanded(
                         child: ListView.builder(
                           itemCount: provider.tenders.length,
                           itemBuilder: (context, index) {
-                            return TenderCard(
-                              tender: provider.tenders[index],
-                              isLast: provider.tenders.length - 1 == index,
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => TenderDetailPage(
+                                            tenderId:
+                                                provider.tenders[index].id,
+                                            service: widget.service)));
+                              },
+                              child: TenderCard(
+                                tender: provider.tenders[index],
+                                isLast: provider.tenders.length - 1 == index,
+                              ),
                             );
                           },
                         ),
                       )
                     : Expanded(
                         child: const Center(
-                          child: Text("No tenders found"),
+                          child: Text("No tenders found",
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey)),
                         ),
                       ),
               ],

@@ -130,7 +130,7 @@ class CategoryServices extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => TenderListPage(
-                                        serviceId: services[index].id)));
+                                        service: services[index])));
                             return;
                           }
                           if (services[index].hasChild) {

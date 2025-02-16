@@ -77,7 +77,7 @@ class TenderCategorys extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => TenderListPage(
-                                      serviceId: services[index].id)));
+                                      service: services[index])));
                           return;
                         },
                         child: Container(

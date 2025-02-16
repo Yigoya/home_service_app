@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/models/tender.dart';
 import 'package:home_service_app/provider/tender_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
@@ -11,8 +12,11 @@ import 'package:intl/intl.dart';
 
 class TenderDetailPage extends StatefulWidget {
   final int tenderId;
+  final Service service;
 
-  const TenderDetailPage({Key? key, required this.tenderId}) : super(key: key);
+  const TenderDetailPage(
+      {Key? key, required this.tenderId, required this.service})
+      : super(key: key);
 
   @override
   State<TenderDetailPage> createState() => _TenderDetailPageState();
@@ -60,34 +64,48 @@ class _TenderDetailPageState extends State<TenderDetailPage> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey[300]!),
                     borderRadius: BorderRadius.circular(8)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildHeader(tender),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Column(
-                        children: [
-                          _buildDetailRow(
-                              Icons.location_on, "Location", tender.location),
-                          _buildDetailRow(Icons.date_range, "Closing Date",
-                              _formatDate(tender.closingDate)),
-                          if (user != null)
-                            _buildDetailRow(Icons.contact_mail, "Contact Info",
-                                tender.contactInfo ?? ''),
-                          _buildDetailRow(Icons.info_outline, "Status",
-                              _formatStatus(tender.status)),
-                          tender.description != null && user != null
-                              ? _buildDescription(tender.description!)
-                              : SizedBox(
-                                  height: 52,
-                                )
-                        ],
-                      ),
+                    // _buildHeader(tender),
+                    Text(
+                      tender.title,
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w900),
                     ),
+                    SizedBox(height: 12),
+                    Text("Posted on: ${_formatDate(tender.closingDate)}",
+                        style: TextStyle(
+                            color: Theme.of(context).secondaryHeaderColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
+                    SizedBox(height: 8),
+                    Text("Expiry Date: ${_formatDate(tender.closingDate)}",
+                        style: TextStyle(
+                            color: Theme.of(context).secondaryHeaderColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
+                    SizedBox(height: 8),
+                    Text(
+                      "Category: ${widget.service.name}",
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    Text("Location: ${tender.location}",
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold)),
                     if (tender.document != null && user != null)
                       _buildDownloadButton(
                           '${ApiService.API_URL_FILE}${tender.document}',
@@ -112,20 +130,10 @@ class _TenderDetailPageState extends State<TenderDetailPage> {
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(8), topRight: Radius.circular(8)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            tender.title,
-            style: const TextStyle(
-                color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "Service ID: ${tender.serviceId}",
-            style: const TextStyle(color: Colors.black54, fontSize: 14),
-          ),
-        ],
+      child: Text(
+        tender.title,
+        style: const TextStyle(
+            color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );
   }

@@ -18,141 +18,133 @@ class TenderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) => TenderDetailPage(tenderId: tender.id)));
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-              left: BorderSide(
-                color: Colors.grey[300]!,
-                width: 1.5,
-              ),
-              right: BorderSide(
-                color: Colors.grey[300]!,
-                width: 1.5,
-              ),
-              bottom: isLast
-                  ? BorderSide(
-                      color: isLast ? Colors.grey[300]! : Colors.transparent,
-                      width: 1.5,
-                    )
-                  : BorderSide.none),
-          borderRadius: BorderRadius.only(
-            bottomLeft: isLast ? Radius.circular(8) : Radius.zero,
-            bottomRight: isLast ? Radius.circular(8) : Radius.zero,
-          ),
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  InkWell(
-                    onTap: () {}, // Add functionality for link navigation
-                    child: Text(
-                      tender.title,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  // RichText(
-                  //   text: TextSpan(
-                  //     style: DefaultTextStyle.of(context).style,
-                  //     children: [
-                  //       TextSpan(
-                  //         text: "Contract Value: ",
-                  //         style: TextStyle(fontWeight: FontWeight.bold),
-                  //       ),
-                  //       TextSpan(
-                  //         // text: " (USD) ${tender.contractValue}",
-                  //         text: " (USD) 12",
-                  //         style: TextStyle(
-                  //             color: Colors.blue, fontWeight: FontWeight.bold),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  _buildDetailRow(
-                      Icons.calendar_month,
-                      "Posted Date",
-                      tender.closingDate != null
-                          ? formatDate(tender.closingDate!)
-                          : "N/A",
-                      color: Theme.of(context).primaryColor),
-
-                  _buildDetailRow(
-                      Icons.calendar_month,
-                      "Expiry Date",
-                      tender.closingDate != null
-                          ? formatDate(tender.closingDate!)
-                          : "N/A",
-                      color: Theme.of(context).secondaryHeaderColor),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildDetailRow(
-                          Icons.location_on, "Location", tender.location,
-                          color: Theme.of(context).secondaryHeaderColor),
-                      IconButton(
-                          onPressed:
-                              _shareContent, // Add functionality for sharing
-                          icon: Icon(Icons.share_rounded, color: Colors.blue)),
-                    ],
-                  ),
-                  SizedBox(height: 12),
-                  if (!isLast)
-                    const Divider(
-                      thickness: 2,
-                      color: Color(0x993385BB),
-                    ),
-                  // _buildDetailRow(Icons.assignment, "Tender Type", tender.tenderType),
-                ],
-              ),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+            left: BorderSide(
+              color: Colors.grey[300]!,
+              width: 1.5,
             ),
-            // GestureDetector(
-            //   onTap: () {
-            //     Navigator.push(
-            //         context,
-            //         MaterialPageRoute(
-            //             builder: (_) => TenderDetailPage(tenderId: tender.id)));
-            //   },
-            //   child: Container(
-            //     width: double.infinity,
-            //     margin: const EdgeInsets.only(top: 8),
-            //     padding: const EdgeInsets.all(8),
-            //     decoration: BoxDecoration(
-            //       color: Colors.blue,
-            //       borderRadius: BorderRadius.only(
-            //         bottomLeft: Radius.circular(8),
-            //         bottomRight: Radius.circular(8),
-            //       ),
-            //     ),
-            //     child: Center(
-            //       child: const Text(
-            //         "See Details",
-            //         style: TextStyle(
-            //             fontSize: 16,
-            //             fontWeight: FontWeight.bold,
-            //             color: Colors.white),
-            //       ),
-            //     ),
-            //   ),
-            // )
-          ],
+            right: BorderSide(
+              color: Colors.grey[300]!,
+              width: 1.5,
+            ),
+            bottom: isLast
+                ? BorderSide(
+                    color: isLast ? Colors.grey[300]! : Colors.transparent,
+                    width: 1.5,
+                  )
+                : BorderSide.none),
+        borderRadius: BorderRadius.only(
+          bottomLeft: isLast ? Radius.circular(8) : Radius.zero,
+          bottomRight: isLast ? Radius.circular(8) : Radius.zero,
         ),
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.only(left: 12, right: 12, top: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: () {}, // Add functionality for link navigation
+                  child: Text(
+                    tender.title,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                // RichText(
+                //   text: TextSpan(
+                //     style: DefaultTextStyle.of(context).style,
+                //     children: [
+                //       TextSpan(
+                //         text: "Contract Value: ",
+                //         style: TextStyle(fontWeight: FontWeight.bold),
+                //       ),
+                //       TextSpan(
+                //         // text: " (USD) ${tender.contractValue}",
+                //         text: " (USD) 12",
+                //         style: TextStyle(
+                //             color: Colors.blue, fontWeight: FontWeight.bold),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                _buildDetailRow(
+                    Icons.calendar_month,
+                    "Posted Date",
+                    tender.closingDate != null
+                        ? formatDate(tender.closingDate!)
+                        : "N/A",
+                    color: Theme.of(context).primaryColor),
+
+                _buildDetailRow(
+                    Icons.calendar_month,
+                    "Expiry Date",
+                    tender.closingDate != null
+                        ? formatDate(tender.closingDate!)
+                        : "N/A",
+                    color: Theme.of(context).secondaryHeaderColor),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildDetailRow(
+                        Icons.location_on, "Location", tender.location,
+                        color: Theme.of(context).secondaryHeaderColor),
+                    IconButton(
+                        onPressed:
+                            _shareContent, // Add functionality for sharing
+                        icon: Icon(Icons.share_rounded, color: Colors.blue)),
+                  ],
+                ),
+                SizedBox(height: 12),
+                if (!isLast)
+                  const Divider(
+                    thickness: 2,
+                    color: Color(0x993385BB),
+                  ),
+                // _buildDetailRow(Icons.assignment, "Tender Type", tender.tenderType),
+              ],
+            ),
+          ),
+          // GestureDetector(
+          //   onTap: () {
+          //     Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //             builder: (_) => TenderDetailPage(tenderId: tender.id)));
+          //   },
+          //   child: Container(
+          //     width: double.infinity,
+          //     margin: const EdgeInsets.only(top: 8),
+          //     padding: const EdgeInsets.all(8),
+          //     decoration: BoxDecoration(
+          //       color: Colors.blue,
+          //       borderRadius: BorderRadius.only(
+          //         bottomLeft: Radius.circular(8),
+          //         bottomRight: Radius.circular(8),
+          //       ),
+          //     ),
+          //     child: Center(
+          //       child: const Text(
+          //         "See Details",
+          //         style: TextStyle(
+          //             fontSize: 16,
+          //             fontWeight: FontWeight.bold,
+          //             color: Colors.white),
+          //       ),
+          //     ),
+          //   ),
+          // )
+        ],
       ),
     );
   }

@@ -169,8 +169,8 @@ class _SubCategoryServicesState extends State<SubCategoryServices> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => TenderListPage(
-                                          serviceId: subService.id)));
+                                      builder: (context) =>
+                                          TenderListPage(service: subService)));
                               return;
                             }
 

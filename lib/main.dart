@@ -112,7 +112,7 @@ class _MyAppState extends State<MyApp> {
               fontFamily: 'Figtree',
               brightness: Brightness.light,
               primaryColor: const Color.fromARGB(255, 0, 71, 18),
-              secondaryHeaderColor: const Color(0xFF3385BB),
+              secondaryHeaderColor: const Color(0xFF236FA1),
               textTheme: TextTheme(
                 headlineLarge: TextStyle(
                   fontSize: 32.sp, // Adjust the font size based on screen size

@@ -519,13 +519,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width -
                                           134.w,
-                                      child: Text(category.categoryName,
+                                      child: Text(
+                                          category.categoryName.toUpperCase(),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                               color: Colors.black,
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 18.sp)),
+                                              fontSize: 16.sp)),
                                     ),
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width -
