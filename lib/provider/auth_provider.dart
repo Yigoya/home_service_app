@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:home_service_app/main.dart';
+import 'package:home_service_app/models/login_source.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/auth/verification_wait_screen.dart';
 import 'package:home_service_app/services/api_service.dart';
@@ -79,6 +80,7 @@ class AuthenticationProvider with ChangeNotifier {
     required String email,
     required String password,
     required BuildContext context,
+    required LoginSource source,
   }) async {
     _isLoading = true;
     _errorMessage = null;
@@ -90,8 +92,14 @@ class AuthenticationProvider with ChangeNotifier {
 
       if (response.data['user']['status'] == 'INACTIVE' &&
           response.data['user']['role'] == 'CUSTOMER') {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-            RouteGenerator.verificationPage, (route) => false);
+        if (source == LoginSource.tender) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              RouteGenerator.subscriptionPage, (route) => false);
+        } else {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              RouteGenerator.verificationPage, (route) => false);
+        }
+
         return;
       }
 
@@ -108,8 +116,11 @@ class AuthenticationProvider with ChangeNotifier {
       final newLocale = userLang != null && userLang == 'AMHARIC'
           ? const Locale('am')
           : const Locale('en');
+
+      // Save user data to local storage
       MyApp.setLocale(context, newLocale);
       Provider.of<UserProvider>(context, listen: false).setLocale(newLocale);
+
       if (response.data['user']['role'] == 'CUSTOMER') {
         await storage.write(
             key: "customer", value: jsonEncode(response.data['customer']));

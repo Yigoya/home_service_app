@@ -524,9 +524,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16.sp)),
+                                            color: Colors.black87,
+                                            fontFamily: 'Roboto',
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.w900,
+                                          )),
                                     ),
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width -

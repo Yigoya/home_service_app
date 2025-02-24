@@ -14,7 +14,7 @@ class SearchDrawer extends StatefulWidget {
   final Function(int) onCategorySelected;
 
   const SearchDrawer({
-    Key? key,
+    super.key,
     required this.searchController,
     required this.selectedLocation,
     required this.locations,
@@ -23,7 +23,7 @@ class SearchDrawer extends StatefulWidget {
     required this.onSearchChanged,
     required this.onLocationChanged,
     required this.onCategorySelected,
-  }) : super(key: key);
+  });
 
   @override
   _SearchDrawerState createState() => _SearchDrawerState();
@@ -31,6 +31,7 @@ class SearchDrawer extends StatefulWidget {
 
 class _SearchDrawerState extends State<SearchDrawer> {
   bool _showSubServices = false;
+  bool _showLocations = false;
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +42,27 @@ class _SearchDrawerState extends State<SearchDrawer> {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          SizedBox(
-            height: 24,
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.only(top: 60, bottom: 4, right: 20),
+            color: Theme.of(context).secondaryHeaderColor,
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                Text(
+                  "Search Tenders",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -66,23 +86,66 @@ class _SearchDrawerState extends State<SearchDrawer> {
                   onChanged: widget.onSearchChanged,
                 ),
                 const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: widget.selectedLocation,
-                  items: widget.locations.map((location) {
-                    return DropdownMenuItem(
-                        value: location, child: Text(location));
-                  }).toList(),
-                  onChanged: (value) {
-                    widget.onLocationChanged(value!);
-                    Navigator.of(context).pop();
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _showLocations = !_showLocations;
+                    });
                   },
-                  decoration: InputDecoration(
-                    labelText: "Filter by location",
-                    border: OutlineInputBorder(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 14.0, horizontal: 8.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Filter by location",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Icon(
+                          _showLocations
+                              ? Icons.arrow_drop_up
+                              : Icons.arrow_drop_down,
+                        ),
+                      ],
                     ),
                   ),
                 ),
+                SizedBox(height: 8),
+                if (_showLocations)
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      border: Border.all(color: Colors.grey[300]!),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: widget.locations.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            widget.onLocationChanged(widget.locations[index]);
+                            Navigator.of(context).pop();
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: Text(
+                              widget.locations[index],
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 const SizedBox(height: 16),
                 GestureDetector(
                   onTap: () {

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:home_service_app/models/login_source.dart';
+import 'package:home_service_app/provider/user_provider.dart';
+import 'package:home_service_app/screens/auth/login.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TenderDrawer extends StatefulWidget {
@@ -11,25 +15,64 @@ class TenderDrawer extends StatefulWidget {
 class _TenderDrawerState extends State<TenderDrawer> {
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<UserProvider>(context).user;
     return Drawer(
+      backgroundColor: Colors.white,
       child: Column(
         children: [
-          UserAccountsDrawerHeader(
-            accountName: Text("Yigermal Abebe"),
-            accountEmail: Text("yigermal@example.com"),
-            currentAccountPicture: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Icon(Icons.person,
-                  size: 40, color: Theme.of(context).secondaryHeaderColor),
-            ),
-            decoration: BoxDecoration(
-              color: Theme.of(context).secondaryHeaderColor,
-            ),
-          ),
+          user == null
+              ? Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.only(top: 42, bottom: 12),
+                  color: Theme.of(context).secondaryHeaderColor,
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 40,
+                        child: Icon(Icons.person_outline,
+                            size: 40,
+                            color: Theme.of(context).secondaryHeaderColor),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Guest User",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        "Please log in",
+                        style: TextStyle(fontSize: 14, color: Colors.white54),
+                      ),
+                      SizedBox(height: 10),
+                    ],
+                  ),
+                )
+              : UserAccountsDrawerHeader(
+                  accountName: Text(user.name),
+                  accountEmail: Text(user.email),
+                  currentAccountPicture: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    child: Icon(Icons.person,
+                        size: 40,
+                        color: Theme.of(context).secondaryHeaderColor),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).secondaryHeaderColor,
+                  ),
+                ),
           _buildDrawerItem(
               icon: Icons.login,
               text: "Login",
-              onTap: () => _navigate(context, "/login")),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const LoginPage(
+                            source: LoginSource.tender,
+                          )))),
           _buildDrawerItem(
               icon: Icons.subscriptions,
               text: "Subscription",

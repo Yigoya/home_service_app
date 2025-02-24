@@ -41,7 +41,7 @@ dependencies:
   logger: ^2.4.0
   multi_select_flutter: ^4.1.3
   flutter_rating_bar: ^4.0.1
-  syncfusion_flutter_calendar: ^27.2.2
+  syncfusion_flutter_calendar: ^28.2.6
   firebase_core: ^3.8.0
   firebase_auth: ^5.3.3
   google_sign_in: ^6.2.2
@@ -63,6 +63,8 @@ dependencies:
   permission_handler: ^11.3.1
   open_file: ^3.5.10
   share_plus: ^10.1.4
+  flutter_form_builder: ^9.7.0
+  form_field_validator: ^1.1.0
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_test:
@@ -96,6 +98,9 @@ flutter:
         - asset: assets/fonts/Figtree-VariableFont_wght.ttf
         - asset: assets/fonts/Figtree-Italic-VariableFont_wght.ttf
           style: italic
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Black.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

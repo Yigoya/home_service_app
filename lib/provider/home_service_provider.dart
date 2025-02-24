@@ -66,9 +66,10 @@ class HomeServiceProvider with ChangeNotifier {
   List<Technician> get topTechnicians => _topTechnicians;
   List<Review> get reviews => _reviews;
   List<FAQ> get faqs => _faqs;
-  List<Service> get fiterableByCatagory => _fiterableByCatagory;
+  List<Service> get fiterableByCatagory =>
+      _fiterableByCatagory..sort((a, b) => a.id.compareTo(b.id));
   List<Service> get fiterableBySearch => _fiterableBySearch;
-  int selectedCategoryId = 0;
+  int? selectedCategoryId = 0;
   Category? get selectedCategory =>
       _categories.firstWhere((element) => element.id == selectedCategoryId);
   int totalPages = 1;
@@ -118,7 +119,7 @@ class HomeServiceProvider with ChangeNotifier {
 
   Future<void> loadHome(Locale newLocate) async {
     locale = newLocate;
-    notifyListeners();
+
     try {
       final res = await apiService.getRequestByQueryWithoutToken('/home', {
         'lang': locale.languageCode == 'om'
@@ -127,6 +128,7 @@ class HomeServiceProvider with ChangeNotifier {
                 ? 'AMHARIC'
                 : 'ENGLISH',
       });
+      print(res.data);
       final topFiveTechnicians = res.data['topFiveTechnicians'];
       final services = res.data['services'];
       final topFiveReviews = res.data['topFiveReviews'];
@@ -152,7 +154,7 @@ class HomeServiceProvider with ChangeNotifier {
       try {
         _services = services.map<Service>((e) => Service.fromJson(e)).toList();
         _fiterableByCatagory = _services
-            .where((service) => service.categoryId == _categories.first.id)
+            .where((service) => service.categoryId == selectedCategoryId)
             .toList();
         _fiterableBySearch = _services;
       } catch (e) {
@@ -180,7 +182,7 @@ class HomeServiceProvider with ChangeNotifier {
       if (e.response != null) {
         Logger().e(e.response!.data);
       } else {
-        Logger().e(e.message);
+        Logger().e(e);
       }
     } catch (e) {
       Logger().e(e);

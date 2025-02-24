@@ -1,0 +1,1 @@
+/home/yigo/dev/projects/home_service_app/build/app/intermediates/cxx/RelWithDebInfo/2h1a6f53/obj/x86_64

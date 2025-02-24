@@ -21,6 +21,7 @@ import 'package:home_service_app/screens/notification.dart';
 import 'package:home_service_app/screens/profile/customer_profile_page.dart';
 import 'package:home_service_app/screens/profile/technician_detail_page.dart';
 import 'package:home_service_app/screens/profile/technician_profile_page.dart';
+import 'package:home_service_app/screens/tender/subscription_page.dart';
 // Import other pages here
 
 class RouteGenerator {
@@ -43,6 +44,7 @@ class RouteGenerator {
   static const String notificationPage = '/notification';
   static const String detailBookingPage = '/detail_booking';
   static const String forgotPasswordPage = '/forgot_password';
+  static const String subscriptionPage = '/subscription';
 
   // static const String resetPasswordPage = '/reset_password';
   // static const String settingsPage = '/settings';
@@ -128,6 +130,10 @@ class RouteGenerator {
       case forgotPasswordPage:
         return MaterialPageRoute(
           builder: (_) => const ForgotPasswordPage(),
+        );
+      case subscriptionPage:
+        return MaterialPageRoute(
+          builder: (_) => const SubscriptionPage(),
         );
       default:
         return _errorRoute();

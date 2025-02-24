@@ -7,11 +7,9 @@ import 'package:home_service_app/main.dart';
 import 'package:home_service_app/models/dispute.dart';
 import 'package:home_service_app/models/user_customer.dart';
 import 'package:home_service_app/models/user.dart';
-import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/utils/functions.dart';
 import 'package:logger/web.dart';
-import 'package:provider/provider.dart';
 
 class UserProvider with ChangeNotifier {
   ApiService apiService = ApiService();
@@ -214,5 +212,28 @@ class UserProvider with ChangeNotifier {
     } catch (e) {
       Logger().e(e);
     }
+  }
+
+  bool validateForm({
+    required String firstName,
+    required String lastName,
+    required String emailOrMobile,
+    required String tenderReceiveVia,
+    required String contactId,
+    required String category,
+    required String password,
+  }) {
+    // Basic validation (expand as needed)
+    if (firstName.isEmpty ||
+        lastName.isEmpty ||
+        emailOrMobile.isEmpty ||
+        tenderReceiveVia.isEmpty ||
+        contactId.isEmpty ||
+        category.isEmpty ||
+        password.isEmpty) {
+      return false;
+    }
+    // Add email/mobile validation logic here (e.g., regex for email or phone)
+    return true;
   }
 }

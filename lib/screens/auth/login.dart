@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:home_service_app/models/login_source.dart';
 import 'package:home_service_app/provider/auth_provider.dart';
 import 'package:home_service_app/utils/elements.dart';
 import 'package:home_service_app/utils/route_generator.dart';
@@ -8,7 +9,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final LoginSource source;
+  const LoginPage({super.key, this.source = LoginSource.seeMore});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -50,6 +52,7 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
         context: context,
+        source: widget.source,
       );
     }
   }

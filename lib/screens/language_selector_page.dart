@@ -44,7 +44,8 @@ class _LanguageSelectorPageState extends State<LanguageSelectorPage> {
         elevation: 0,
         title: const Text(
           'Language',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(
+              color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),
       body: SingleChildScrollView(
@@ -69,6 +70,9 @@ class _LanguageSelectorPageState extends State<LanguageSelectorPage> {
                     color: _selectedLanguage == languages[index]['name']
                         ? Theme.of(context).primaryColor
                         : Colors.black,
+                    fontWeight: _selectedLanguage == languages[index]['name']
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                 ),
                 trailing: _selectedLanguage == languages[index]['name']

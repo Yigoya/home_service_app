@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream Weaver</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: #e94560;
+            text-align: center;
+            overflow: hidden;
+        }
+        #dream-container {
+            position: relative;
+            width: 100vw;
+            height: 80vh;
+            background: linear-gradient(to bottom, #16213e, #0f3460);
+            overflow: hidden;
+        }
+        #input-section {
+            padding: 20px;
+        }
+        #dream-seed {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #e94560;
+            border-radius: 5px;
+            background: #0f3460;
+            color: #fff;
+        }
+        #generate-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #e94560;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+        }
+        #generate-btn:hover {
+            background: #ff6b6b;
+        }
+        .dream-element {
+            position: absolute;
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+        .dream-element:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="input-section">
+        <input type="text" id="dream-seed" placeholder="Enter your dream seed (e.g., 'flying cats in a candy forest')">
+        <button id="generate-btn">Weave Dream</button>
+    </div>
+    <div id="dream-container"></div>
+
+    <script>
+        const dreamContainer = document.getElementById('dream-container');
+        const dreamSeedInput = document.getElementById('dream-seed');
+        const generateBtn = document.getElementById('generate-btn');
+
+        // Predefined elements for randomness (simulating AI generation)
+        const landscapes = ['candy forest', 'neon desert', 'floating islands', 'upside-down ocean'];
+        const creatures = ['flying cats', 'dancing cacti', 'singing whales', 'glowing turtles'];
+        const quirks = ['raining chocolate', 'talking trees', 'disco moons', 'pie-throwing clouds'];
+
+        // Generate a random dreamscape
+        function generateDreamscape(seed) {
+            // Clear previous dream
+            dreamContainer.innerHTML = '';
+
+            // Parse seed or randomize if empty
+            let seedWords = seed.toLowerCase().split(' ');
+            let landscape = seedWords.find(word => landscapes.some(l => l.includes(word))) || landscapes[Math.floor(Math.random() * landscapes.length)];
+            let creature = seedWords.find(word => creatures.some(c => c.includes(word))) || creatures[Math.floor(Math.random() * creatures.length)];
+            let quirk = seedWords.find(word => quirks.some(q => q.includes(word))) || quirks[Math.floor(Math.random() * quirks.length)];
+
+            // Set background based on landscape
+            dreamContainer.style.background = getBackground(landscape);
+
+            // Add elements to the scene
+            addDreamElement(creature, 100, 100);
+            addDreamElement(quirk, 300, 200);
+            addDreamElement('mysterious echo', 500, 300); // Interactive riddle
+        }
+
+        // Background styles for landscapes
+        function getBackground(landscape) {
+            switch (landscape) {
+                case 'candy forest': return 'linear-gradient(to bottom, #ff9ff3, #feca57)';
+                case 'neon desert': return 'linear-gradient(to bottom, #00ddeb, #ff006e)';
+                case 'floating islands': return 'linear-gradient(to bottom, #54a0ff, #00d2d3)';
+                case 'upside-down ocean': return 'linear-gradient(to bottom, #2e86de, #0a3d62)';
+                default: return 'linear-gradient(to bottom, #16213e, #0f3460)';
+            }
+        }
+
+        // Add an interactive element to the dreamscape
+        function addDreamElement(name, x, y) {
+            const element = document.createElement('div');
+            element.className = 'dream-element';
+            element.style.left = `${x}px`;
+            element.style.top = `${y}px`;
+            element.innerHTML = getElementHTML(name);
+            element.addEventListener('click', () => interactWithElement(name, element));
+            dreamContainer.appendChild(element);
+        }
+
+        // Define visuals for elements
+        function getElementHTML(name) {
+            if (name.includes('cats')) return '<span style="font-size: 40px;">🐱✨</span>';
+            if (name.includes('cacti')) return '<span style="font-size: 40px;">🌵💃</span>';
+            if (name.includes('whales')) return '<span style="font-size: 40px;">🐳🎶</span>';
+            if (name.includes('turtles')) return '<span style="font-size: 40px;">🐢🌟</span>';
+            if (name.includes('chocolate')) return '<span style="font-size: 40px;">🍫🌧️</span>';
+            if (name.includes('trees')) return '<span style="font-size: 40px;">🌳🗣️</span>';
+            if (name.includes('moons')) return '<span style="font-size: 40px;">🌙🕺</span>';
+            if (name.includes('clouds')) return '<span style="font-size: 40px;">☁️🥧</span>';
+            if (name === 'mysterious echo') return '<span style="font-size: 30px; color: #fff;">❓</span>';
+            return `<span style="font-size: 20px; color: #fff;">${name}</span>`;
+        }
+
+        // Interaction logic
+        function interactWithElement(name, element) {
+            if (name === 'mysterious echo') {
+                alert('Echo whispers: "What walks on four legs and purrs in the sky?" (Hint: Check your dream!)');
+            } else {
+                element.style.left = `${Math.random() * (window.innerWidth - 100)}px`;
+                element.style.top = `${Math.random() * (dreamContainer.clientHeight - 100)}px`;
+                element.innerHTML += '<br><span style="font-size: 12px;">*giggles*</span>';
+            }
+        }
+
+        // Event listener for generating the dream
+        generateBtn.addEventListener('click', () => {
+            const seed = dreamSeedInput.value.trim() || '';
+            generateDreamscape(seed);
+        });
+
+        // Start with a random dream on load
+        generateDreamscape('');
+    </script>
+</body>
+</html>

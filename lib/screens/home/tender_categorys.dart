@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
-import 'package:home_service_app/provider/tender_provider.dart';
-import 'package:home_service_app/screens/home/select_location.dart';
-import 'package:home_service_app/screens/home/subcatagory_services.dart';
 import 'package:home_service_app/screens/language_selector_page.dart';
+import 'package:home_service_app/screens/tender/component/advance_search.dart';
 import 'package:home_service_app/screens/tender/tender_list_page.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/widgets/tender_drawer.dart';
-import 'package:logger/web.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TenderCategorys extends StatelessWidget {
   const TenderCategorys({super.key});
@@ -21,8 +17,11 @@ class TenderCategorys extends StatelessWidget {
         Provider.of<HomeServiceProvider>(context).fiterableByCatagory;
     final category = Provider.of<HomeServiceProvider>(context).selectedCategory;
     final location = Provider.of<HomeServiceProvider>(context).selectedLocation;
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(
+      key: scaffoldKey,
       drawer: TenderDrawer(),
+      endDrawer: TenderSearchDrawer(),
       appBar: AppBar(
         backgroundColor: Theme.of(context).secondaryHeaderColor,
         title: Text(
@@ -153,13 +152,13 @@ class TenderCategorys extends StatelessWidget {
             label: 'Advance Search',
           ),
         ],
-        currentIndex: 0, // Set the current index to the desired tab
+        currentIndex: 0,
         selectedItemColor: Theme.of(context).secondaryHeaderColor,
         onTap: (index) {
           if (index == 0) {
             Navigator.pop(context);
           } else if (index == 1) {
-            Navigator.pushNamed(context, '/search');
+            scaffoldKey.currentState?.openEndDrawer();
           }
         },
       ),

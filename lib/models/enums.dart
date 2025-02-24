@@ -21,8 +21,6 @@ enum BookingStatus {
         return 'COMPLETED';
       case BookingStatus.CANCELED:
         return 'CANCELED';
-      default:
-        return '';
     }
   }
 }

@@ -1,38 +1,64 @@
 import 'package:flutter/material.dart';
-import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/models/tender.dart';
 import 'package:home_service_app/provider/tender_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
-import 'package:home_service_app/screens/auth/login.dart';
 import 'package:home_service_app/screens/tender/component/login_blur.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/services/document_service.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 
 class TenderDetailPage extends StatefulWidget {
   final int tenderId;
-  final Service service;
 
-  const TenderDetailPage(
-      {Key? key, required this.tenderId, required this.service})
-      : super(key: key);
+  const TenderDetailPage({Key? key, required this.tenderId}) : super(key: key);
 
   @override
   State<TenderDetailPage> createState() => _TenderDetailPageState();
 }
 
 class _TenderDetailPageState extends State<TenderDetailPage> {
+  final GlobalKey _widgetKey = GlobalKey();
+  Size? _widgetSize;
+
   @override
   void initState() {
     super.initState();
     Future.microtask(() => Provider.of<TenderProvider>(context, listen: false)
         .fetchTender(widget.tenderId));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getWidgetSize();
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _getWidgetSize();
+  }
+
+  void _shareContent() {
+    String shareableLink = "${ApiService.API_URL}/details/${widget.tenderId}";
+
+    Share.share("Check this out: $shareableLink");
+  }
+
+  void _getWidgetSize() {
+    final RenderBox? renderBox =
+        _widgetKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox != null && renderBox.hasSize) {
+      setState(() {
+        _widgetSize = renderBox.size;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context).user;
+    print(_widgetSize?.height);
+    print("Widget Size: $_widgetSize");
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -42,6 +68,18 @@ class _TenderDetailPageState extends State<TenderDetailPage> {
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.share,
+              color: Theme.of(context).secondaryHeaderColor,
+              size: 26,
+            ),
+            onPressed: () {
+              _shareContent();
+            },
+          ),
+        ],
       ),
       body: Consumer<TenderProvider>(
         builder: (context, provider, child) {
@@ -61,58 +99,82 @@ class _TenderDetailPageState extends State<TenderDetailPage> {
           }
 
           return LoginBlur(
+            getSize: _getWidgetSize,
+            size: _widgetSize,
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey[300]!),
-                    borderRadius: BorderRadius.circular(8)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // _buildHeader(tender),
-                    Text(
-                      tender.title,
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w900),
+              child: Column(
+                key: _widgetKey,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildHeader(tender),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey[300]!),
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(8),
+                            bottomRight: Radius.circular(8))),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(height: 12),
+                        Text("Posted on: ${_formatDate(tender.closingDate)}",
+                            style: TextStyle(
+                                color: Theme.of(context).secondaryHeaderColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
+                        SizedBox(height: 8),
+                        Text("Expiry Date: ${_formatDate(tender.closingDate)}",
+                            style: TextStyle(
+                                color: Theme.of(context).secondaryHeaderColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
+                        SizedBox(height: 8),
+                        Text(
+                          "Category: ${tender.categoryName}",
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 8),
+                        Text("Location: ${tender.location}",
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
+                        SizedBox(height: 8),
+                        Text("Status: ${_formatStatus(tender.status)}",
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
+                        SizedBox(height: 8),
+                        Text(
+                            "Question Answer Deadline: ${_formatDate(tender.questionDeadline)}",
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
+                      ],
                     ),
-                    SizedBox(height: 12),
-                    Text("Posted on: ${_formatDate(tender.closingDate)}",
-                        style: TextStyle(
-                            color: Theme.of(context).secondaryHeaderColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold)),
-                    SizedBox(height: 8),
-                    Text("Expiry Date: ${_formatDate(tender.closingDate)}",
-                        style: TextStyle(
-                            color: Theme.of(context).secondaryHeaderColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold)),
-                    SizedBox(height: 8),
-                    Text(
-                      "Category: ${widget.service.name}",
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 8),
-                    Text("Location: ${tender.location}",
-                        style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold)),
-                    if (tender.document != null && user != null)
-                      _buildDownloadButton(
-                          '${ApiService.API_URL_FILE}${tender.document}',
-                          tender.document!,
-                          context),
-                  ],
-                ),
+                  ),
+                  if (tender.description != null && user != null)
+                    _buildDescription(tender.description!),
+                  if (tender.document != null && user != null)
+                    _buildDownloadButton(
+                        '${ApiService.API_URL_FILE}${tender.document}',
+                        tender.document!,
+                        context),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Container();
+                    },
+                  )
+                ],
               ),
             ),
           );
@@ -126,14 +188,14 @@ class _TenderDetailPageState extends State<TenderDetailPage> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).secondaryHeaderColor,
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(8), topRight: Radius.circular(8)),
       ),
       child: Text(
         tender.title,
         style: const TextStyle(
-            color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+            color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -156,19 +218,41 @@ class _TenderDetailPageState extends State<TenderDetailPage> {
 
   Widget _buildDescription(String description) {
     return Container(
+      width: double.infinity,
+      height: 216,
       margin: const EdgeInsets.only(top: 16),
-      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
-      ),
+          border: Border.all(color: Colors.grey[300]!),
+          borderRadius: BorderRadius.circular(8)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Description",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          Text(description),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8), topRight: Radius.circular(8)),
+            ),
+            child: Text(
+              "Organization Details, Notice Details and Documents",
+              style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(8),
+            child: Text(
+              description,
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -190,9 +274,8 @@ class _TenderDetailPageState extends State<TenderDetailPage> {
         margin: const EdgeInsets.only(top: 20),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
         decoration: BoxDecoration(
-          color: Colors.blue,
-          borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(8), bottomRight: Radius.circular(8)),
+          color: Theme.of(context).secondaryHeaderColor,
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -210,7 +293,7 @@ class _TenderDetailPageState extends State<TenderDetailPage> {
   }
 
   String _formatDate(String? date) {
-    if (date == null) return "N/A";
+    if (date == null) return "Not specified";
     try {
       DateTime parsedDate = DateTime.parse(date);
       return DateFormat("dd MMM yyyy, hh:mm a").format(parsedDate);

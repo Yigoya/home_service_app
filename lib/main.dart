@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:home_service_app/firebase_options.dart';
 import 'package:home_service_app/l10n/oromo_matrial_localizations.dart';
+import 'package:home_service_app/provider/agency_provider.dart';
 import 'package:home_service_app/provider/booking_provider.dart';
 import 'package:home_service_app/provider/form_provider.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
@@ -50,6 +51,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => PaymentProvider()),
         ChangeNotifierProvider(create: (_) => TenderProvider()),
+        ChangeNotifierProvider(create: (_) => AgencyProvider()),
       ],
       child: MyApp(
         defaultLocale: defaultLocale,
@@ -111,8 +113,8 @@ class _MyAppState extends State<MyApp> {
             theme: ThemeData(
               fontFamily: 'Figtree',
               brightness: Brightness.light,
-              primaryColor: const Color.fromARGB(255, 0, 71, 18),
-              secondaryHeaderColor: const Color(0xFF236FA1),
+              primaryColor: const Color.fromARGB(255, 0, 44, 11),
+              secondaryHeaderColor: const Color.fromARGB(255, 25, 84, 124),
               textTheme: TextTheme(
                 headlineLarge: TextStyle(
                   fontSize: 32.sp, // Adjust the font size based on screen size
@@ -146,9 +148,9 @@ class _MyAppState extends State<MyApp> {
                     .loadHome(_locale),
               ]),
               builder: (context, snapshot) {
-                // if (snapshot.connectionState == ConnectionState.waiting) {
-                //   return const AppLoader();
-                // }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const AppLoader();
+                }
                 final user = Provider.of<UserProvider>(context).user;
                 final status = Provider.of<UserProvider>(context).status;
                 if (user != null && user.role == "TECHNICIAN") {

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/models/tender.dart';
 import 'package:home_service_app/services/api_service.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:intl/intl.dart';
 
 import 'package:logger/web.dart';
 
@@ -17,6 +16,7 @@ class TenderProvider extends ChangeNotifier {
   int totalTenders = 0;
   int page = 0;
   int size = 10;
+  final DateFormat _dateFormat = DateFormat('yyyy-MM-dd');
 
   List<Tender> get tenders => _filteredTenders;
   bool get isLoading => _isLoading;
@@ -25,6 +25,70 @@ class TenderProvider extends ChangeNotifier {
   Tender? _tender;
 
   Tender? get tender => _tender;
+
+  TextEditingController keywordController = TextEditingController();
+
+  String? status;
+  DateTime? datePosted;
+  DateTime? closingDate;
+  String? location;
+  Service? service;
+
+  void setStatus(String? val) {
+    status = val;
+    notifyListeners();
+  }
+
+  void setDatePosted(DateTime val) {
+    datePosted = val;
+    notifyListeners();
+  }
+
+  void setClosingDate(DateTime val) {
+    closingDate = val;
+    notifyListeners();
+  }
+
+  void setLocation(String val) {
+    location = val;
+    notifyListeners();
+  }
+
+  void setService(Service? service) {
+    service = service;
+    notifyListeners();
+  }
+
+  Future<void> advanceTenders() async {
+    print("Advance");
+    Map<String, dynamic> searchParams = {
+      "keyword":
+          keywordController.text.isNotEmpty ? keywordController.text : null,
+      "status": status,
+      "location": location,
+      "serviceId": service?.id,
+      "datePosted": datePosted != null ? _dateFormat.format(datePosted!) : null,
+      "closingDate":
+          closingDate != null ? _dateFormat.format(closingDate!) : null,
+      "page": 0,
+      "size": 10,
+    };
+
+    try {
+      final response = await _apiService.postRequestWithoutToken(
+        "/tenders/search",
+        searchParams,
+      );
+      List<dynamic> jsonData = response.data["content"];
+      Logger().d(jsonData);
+      _tenders = jsonData.map((data) => Tender.fromJson(data)).toList();
+      _filteredTenders = List.from(_tenders);
+      totalTenders = response.data["totalElements"];
+      print("Fetched Tenders: ${response.data}");
+    } catch (e) {
+      print("Error fetching tenders: $e");
+    }
+  }
 
   Future<void> fetchTender(int id) async {
     _isLoading = true;

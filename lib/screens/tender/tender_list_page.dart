@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/provider/tender_provider.dart';
+import 'package:home_service_app/screens/tender/component/advance_search.dart';
 import 'package:home_service_app/screens/tender/component/tender_card.dart';
 import 'package:home_service_app/screens/tender/component/search_drawer.dart';
 import 'package:home_service_app/screens/tender/tender_detail_page.dart';
@@ -17,12 +18,66 @@ class TenderListPage extends StatefulWidget {
 class _TenderListPageState extends State<TenderListPage> {
   final TextEditingController _searchController = TextEditingController();
   String _selectedLocation = 'All Locations';
-  final List<String> _locations = [
-    'All Locations',
-    'Addis Ababa',
-    'Nairobi',
-    'Kampala'
-  ];
+  final Map<String, List<String>> _locations = {
+    'en': [
+      'All Locations',
+      'Afar',
+      'Amhara',
+      'Benishangul-Gumuz',
+      'Central Ethiopia',
+      'Gambella',
+      'Harari',
+      'Oromia',
+      'Sidama',
+      'Somali',
+      'South Ethiopia',
+      'South West Ethiopia',
+      'Tigray',
+      'Addis Ababa',
+      'Dire Dawa',
+      'Southern Nations, Nationalities, and Peoples\'',
+    ],
+    'am': [
+      'ሁሉም አካባቢዎች',
+      'አፋር',
+      'አማራ',
+      'ቤኒሻንጉል ጉሙዝ',
+      'መካከለኛው ኢትዮጵያ',
+      'ጋምቤላ',
+      'ሀረሪ',
+      'ኦሮሚያ',
+      'ሲዳማ',
+      'ሶማሊ',
+      'ደቡብ ኢትዮጵያ',
+      'ደቡብ ምዕራብ ኢትዮጵያ',
+      'ትግራይ',
+      'አዲስ አበባ',
+      'ድሬዳዋ',
+      'የደቡብ ብሔር ብሔረሰቦችና ህዝቦች',
+    ],
+    'om': [
+      'Iddoo Hunda',
+      'Affaar',
+      'Amaaraa',
+      'Benishaangul-Gumuz jedhamtu',
+      'Giddugaleessa Itoophiyaa',
+      'Gaambeellaa',
+      'Hararii',
+      'Oromiyaa',
+      'Sidaamaa',
+      'Afaan Somaalee',
+      'Kibba Itoophiyaa',
+      'Kibba Lixa Itoophiyaa',
+      'Tigraay',
+      'Addis Ababa',
+      'Dire Dawaa',
+      'Saboota, Sablammoota, fi Ummatoota Kibbaa\'',
+    ],
+  };
+
+  String _selectedLanguage = 'en';
+
+  List<String> get _currentLocations => _locations[_selectedLanguage]!;
   bool _showSearchInterface = false;
   List<Service> _subServices = [];
   List<Service> _filteredSubServices = [];
@@ -60,7 +115,7 @@ class _TenderListPageState extends State<TenderListPage> {
       drawer: SearchDrawer(
         searchController: _searchController,
         selectedLocation: _selectedLocation,
-        locations: _locations,
+        locations: _currentLocations,
         filteredSubServices: _filteredSubServices,
         serviceId: widget.service.id,
         onSearchChanged: (value) {
@@ -81,6 +136,7 @@ class _TenderListPageState extends State<TenderListPage> {
           Provider.of<TenderProvider>(context, listen: false).fetchTenders(id);
         },
       ),
+      // drawer: TenderSearchDrawer(),
       body: Consumer<TenderProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
@@ -95,36 +151,55 @@ class _TenderListPageState extends State<TenderListPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    _loadSubServices();
-                    Scaffold.of(context).openDrawer();
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 4.0),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 12.0),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(24.0),
-                      border: Border.all(
-                        color: Colors.grey,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.search, color: Colors.grey[600]),
-                        const SizedBox(width: 8.0),
-                        Text(
-                          "Search by name, location or category ",
-                          style: TextStyle(
-                              color: Theme.of(context).secondaryHeaderColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 4.0),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Icon(
+                          Icons.arrow_back,
+                          size: 28,
+                          color: Theme.of(context).secondaryHeaderColor,
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 8.0),
+                      GestureDetector(
+                        onTap: () {
+                          _loadSubServices();
+                          Scaffold.of(context).openDrawer();
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width - 72,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(24.0),
+                            border: Border.all(
+                              color: Colors.grey,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.search, color: Colors.grey[600]),
+                              const SizedBox(width: 8.0),
+                              Text(
+                                "name, location or category ",
+                                style: TextStyle(
+                                    color:
+                                        Theme.of(context).secondaryHeaderColor,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Container(
@@ -156,7 +231,7 @@ class _TenderListPageState extends State<TenderListPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('${widget.service.name} ',
+                      Text('${provider.totalTenders} ${widget.service.name} ',
                           style: TextStyle(
                               fontSize: 22,
                               color: Colors.white,
@@ -185,9 +260,9 @@ class _TenderListPageState extends State<TenderListPage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (_) => TenderDetailPage(
-                                            tenderId:
-                                                provider.tenders[index].id,
-                                            service: widget.service)));
+                                              tenderId:
+                                                  provider.tenders[index].id,
+                                            )));
                               },
                               child: TenderCard(
                                 tender: provider.tenders[index],

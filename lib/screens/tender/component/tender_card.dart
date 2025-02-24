@@ -50,7 +50,6 @@ class TenderCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 InkWell(
-                  onTap: () {}, // Add functionality for link navigation
                   child: Text(
                     tender.title,
                     style: TextStyle(
@@ -156,15 +155,17 @@ class TenderCard extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            "$label ",
-            style: TextStyle(fontWeight: FontWeight.bold, color: color),
+            "$label: ",
+            style: TextStyle(
+                fontWeight: FontWeight.w900, color: color, fontSize: 14),
           ),
-          SizedBox(width: 8),
+          SizedBox(width: 4),
           Icon(icon, size: 18, color: color),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
           Text(
             value,
-            style: TextStyle(color: color),
+            style: TextStyle(
+                color: color, fontSize: 14, fontWeight: FontWeight.bold),
             overflow: TextOverflow.ellipsis,
           ),
         ],

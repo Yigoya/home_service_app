@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/provider/tender_provider.dart';
+import 'package:home_service_app/screens/agency/agency_list_screen.dart';
 import 'package:home_service_app/screens/home/select_location.dart';
 import 'package:home_service_app/screens/home/subcatagory_services.dart';
 import 'package:home_service_app/screens/tender/tender_list_page.dart';
@@ -89,12 +90,16 @@ class CategoryServices extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          category.categoryName,
-                          style: TextStyle(
-                              fontSize: 24.sp,
-                              fontWeight: FontWeight.w900,
-                              color: Color.fromARGB(255, 0, 88, 22)),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width - 106.w,
+                          child: Text(
+                            category.categoryName,
+                            maxLines: 2,
+                            style: TextStyle(
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.w900,
+                                color: Color.fromARGB(255, 0, 88, 22)),
+                          ),
                         ),
                         SizedBox(height: 8.h),
                         SizedBox(
@@ -125,11 +130,11 @@ class CategoryServices extends StatelessWidget {
                     itemBuilder: (context, index) {
                       return GestureDetector(
                         onTap: () {
-                          if (category.id == 3) {
+                          if (category.id == 4) {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => TenderListPage(
+                                    builder: (context) => AgencyListScreen(
                                         service: services[index])));
                             return;
                           }
