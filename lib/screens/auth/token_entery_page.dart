@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_service_app/screens/auth/upload_proof_page.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:home_service_app/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TokenEntryPage extends StatelessWidget {

@@ -19,6 +19,9 @@ import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/auth/token_entery_page.dart';
 import 'package:home_service_app/screens/auth/upload_proof_page.dart';
 import 'package:home_service_app/screens/auth/waiting_for_approval_page.dart';
+import 'package:home_service_app/screens/job/job_search_screen.dart';
+import 'package:home_service_app/screens/job/main_screen.dart';
+import 'package:home_service_app/screens/job/onboarding_screen.dart';
 import 'package:home_service_app/services/deepLink_handler.dart';
 import 'package:home_service_app/services/notification_service.dart';
 import 'package:home_service_app/utils/functions.dart';
@@ -30,7 +33,7 @@ import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:home_service_app/l10n/l10n.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:home_service_app/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() async {
@@ -53,11 +56,47 @@ void main() async {
         ChangeNotifierProvider(create: (_) => TenderProvider()),
         ChangeNotifierProvider(create: (_) => AgencyProvider()),
       ],
-      child: MyApp(
-        defaultLocale: defaultLocale,
-      ),
+      child: const MyAppTemporary(),
     ),
   );
+}
+
+class MyAppTemporary extends StatefulWidget {
+  const MyAppTemporary({super.key});
+
+  @override
+  State<MyAppTemporary> createState() => _MyAppTemporaryState();
+}
+
+class _MyAppTemporaryState extends State<MyAppTemporary> {
+  @override
+  Widget build(BuildContext context) {
+    return ScreenUtilInit(
+        designSize: const Size(420, 890), // Design size used in the UI design
+        minTextAdapt: true,
+        builder: (context, child) {
+          return MaterialApp(
+            navigatorKey: navigatorKey,
+            title: 'Home Service Platform',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              fontFamily: 'Figtree',
+              brightness: Brightness.light,
+              primaryColor: const Color.fromARGB(255, 0, 44, 11),
+              secondaryHeaderColor: const Color.fromARGB(255, 25, 84, 124),
+              textTheme: TextTheme(
+                headlineLarge: TextStyle(
+                  fontSize: 32.sp, // Adjust the font size based on screen size
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            onGenerateRoute: RouteGenerator.generateRoute,
+            home: const OnboardingScreen(),
+          );
+        });
+  }
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

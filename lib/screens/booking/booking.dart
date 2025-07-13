@@ -10,7 +10,7 @@ import 'package:home_service_app/utils/route_generator.dart';
 import 'package:home_service_app/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:home_service_app/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BookingPage extends StatefulWidget {

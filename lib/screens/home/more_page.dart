@@ -14,7 +14,7 @@ import 'package:home_service_app/utils/route_generator.dart';
 import 'package:home_service_app/widgets/customlist_tile.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:home_service_app/l10n/app_localizations.dart';
 
 class MorePage extends StatefulWidget {
   const MorePage({super.key});

@@ -4,7 +4,7 @@ import 'package:home_service_app/provider/profile_page_provider.dart';
 import 'package:home_service_app/widgets/calender.dart';
 import 'package:home_service_app/widgets/schedule.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:home_service_app/l10n/app_localizations.dart';
 
 class TechnicianSchedule extends StatefulWidget {
   const TechnicianSchedule({super.key});
