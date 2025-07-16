@@ -3,7 +3,6 @@ import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/screens/home/select_location.dart';
 import 'package:home_service_app/screens/tender/tender_list_page.dart';
-import 'package:home_service_app/services/api_service.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:home_service_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -156,7 +155,7 @@ class _SubCategoryServicesState extends State<SubCategoryServices> {
                         final subService = snapshot.data![index];
                         return GestureDetector(
                           onTap: () {
-                            if (subService.hasChild) {
+                            if (subService.services.isNotEmpty) {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(

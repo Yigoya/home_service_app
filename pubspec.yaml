@@ -69,6 +69,14 @@ dependencies:
   speech_to_text: ^7.1.0
   timeago: ^3.7.1
   url_launcher: ^6.3.1
+  flutter_form_builder: ^9.7.0
+  form_field_validator: ^1.1.0
+  chapa_unofficial: ^0.0.5
+  shimmer: ^3.0.0
+  cached_network_image: ^3.3.1
+  carousel_slider: ^5.0.0
+  google_fonts: ^5.1.0
+
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
 
@@ -104,6 +112,7 @@ flutter:
     - family: Roboto
       fonts:
         - asset: assets/fonts/Roboto-Black.ttf
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
   # For details regarding adding assets from package dependencies, see

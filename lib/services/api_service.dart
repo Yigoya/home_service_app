@@ -6,10 +6,13 @@ import 'package:logger/web.dart';
 class ApiService {
   final Dio _dio = Dio();
   final storage = const FlutterSecureStorage();
-  static String API_URL = "https://hulumoya2.zapto.org";
+  static String API_URL = "https://hulumoya.zapto.org";
+  // static String API_URL = "http://10.2.76.189:5000";
   static String API_URL_FILE = "$API_URL/uploads/";
   ApiService() {
     _dio.options.baseUrl = API_URL; // Replace with actual URL
+    _dio.options.connectTimeout = Duration(seconds: 30);
+    _dio.options.receiveTimeout = Duration(seconds: 30);
   }
 
   Future<Response> postRequest(
@@ -99,5 +102,41 @@ class ApiService {
 
   Future<Response> multiPartRequest(String endpoint, FormData formData) async {
     return await _dio.post(endpoint, data: formData);
+  }
+
+  Future<Response> postMultipartRequest(
+      String endpoint, FormData formData) async {
+    try {
+      String? token = await storage.read(key: 'auth_token');
+      return await _dio.post(
+        endpoint,
+        data: formData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> postMultipartRequestWithoutToken(
+      String endpoint, FormData formData) async {
+    try {
+      return await _dio.post(
+        endpoint,
+        data: formData,
+        options: Options(
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 }

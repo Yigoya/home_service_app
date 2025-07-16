@@ -1,0 +1,1 @@
+/home/yigo/dev/projects/home_service_app/build/app/intermediates/cxx/RelWithDebInfo/y2k5o4z4/obj/armeabi-v7a

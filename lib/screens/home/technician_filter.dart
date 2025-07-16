@@ -89,7 +89,11 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
 
     // Fetch technicians
     await Provider.of<HomeServiceProvider>(context, listen: false)
-        .filterTechnician(queryParameters, widget.service.id);
+        .filterTechnician(
+      queryParameters,
+      //  widget.service.id,
+      1,
+    );
   }
 
   @override

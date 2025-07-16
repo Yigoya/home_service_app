@@ -1,0 +1,2 @@
+/home/yigo/dev/projects/home_service_app/android/app/.cxx/RelWithDebInfo/y2k5o4z4/armeabi-v7a/CMakeFiles/edit_cache.dir
+/home/yigo/dev/projects/home_service_app/android/app/.cxx/RelWithDebInfo/y2k5o4z4/armeabi-v7a/CMakeFiles/rebuild_cache.dir

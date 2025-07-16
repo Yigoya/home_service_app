@@ -85,7 +85,7 @@ class _LoadingScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Hulu Moya',
+                        'Hulu',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 56,

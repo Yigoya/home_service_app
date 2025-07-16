@@ -9,6 +9,65 @@ import 'package:logger/web.dart';
 class TenderProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();
 
+  final Map<String, List<String>> _locations = {
+    'en': [
+      'All Locations',
+      'Afar',
+      'Amhara',
+      'Benishangul-Gumuz',
+      'Central Ethiopia',
+      'Gambella',
+      'Harari',
+      'Oromia',
+      'Sidama',
+      'Somali',
+      'South Ethiopia',
+      'South West Ethiopia',
+      'Tigray',
+      'Addis Ababa',
+      'Dire Dawa',
+      'Southern Nations, Nationalities, and Peoples\'',
+    ],
+    'am': [
+      'ሁሉም አካባቢዎች',
+      'አፋር',
+      'አማራ',
+      'ቤኒሻንጉል ጉሙዝ',
+      'መካከለኛው ኢትዮጵያ',
+      'ጋምቤላ',
+      'ሀረሪ',
+      'ኦሮሚያ',
+      'ሲዳማ',
+      'ሶማሊ',
+      'ደቡብ ኢትዮጵያ',
+      'ደቡብ ምዕራብ ኢትዮጵያ',
+      'ትግራይ',
+      'አዲስ አበባ',
+      'ድሬዳዋ',
+      'የደቡብ ብሔር ብሔረሰቦችና ህዝቦች',
+    ],
+    'om': [
+      'Iddoo Hunda',
+      'Affaar',
+      'Amaaraa',
+      'Benishaangul-Gumuz jedhamtu',
+      'Giddugaleessa Itoophiyaa',
+      'Gaambeellaa',
+      'Hararii',
+      'Oromiyaa',
+      'Sidaamaa',
+      'Afaan Somaalee',
+      'Kibba Itoophiyaa',
+      'Kibba Lixa Itoophiyaa',
+      'Tigraay',
+      'Addis Ababa',
+      'Dire Dawaa',
+      'Saboota, Sablammoota, fi Ummatoota Kibbaa\'',
+    ],
+  };
+
+  List<String> get currentLocations => _locations['en']!;
+
   List<Tender> _tenders = [];
   List<Tender> _filteredTenders = [];
   bool _isLoading = false;

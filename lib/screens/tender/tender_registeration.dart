@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_service_app/models/tender_user.dart';
+import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -47,6 +48,9 @@ class _RegistrationContentState extends State<RegistrationContent> {
 
   @override
   Widget build(BuildContext context) {
+    final services =
+        Provider.of<HomeServiceProvider>(context).fiterableByCatagory;
+    final serviceNames = services.map((service) => service.name).toList();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: SingleChildScrollView(
@@ -59,7 +63,7 @@ class _RegistrationContentState extends State<RegistrationContent> {
                 height: 16,
               ),
               const Text(
-                'Create Your Account',
+                'Register for Tender',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -73,25 +77,25 @@ class _RegistrationContentState extends State<RegistrationContent> {
               ),
               const SizedBox(height: 24),
 
-              // First Name (Required)
-              _buildTextField(
-                name: 'firstName',
-                label: 'First Name',
-                validator: ffv.RequiredValidator(
-                    errorText: 'First name is required'), // Use prefix
-                isRequired: true,
-              ),
-              const SizedBox(height: 16),
+              // // First Name (Required)
+              // _buildTextField(
+              //   name: 'firstName',
+              //   label: 'First Name',
+              //   validator: ffv.RequiredValidator(
+              //       errorText: 'First name is required'), // Use prefix
+              //   isRequired: true,
+              // ),
+              // const SizedBox(height: 16),
 
-              // Last Name (Required)
-              _buildTextField(
-                name: 'lastName',
-                label: 'Last Name',
-                validator: ffv.RequiredValidator(
-                    errorText: 'Last name is required'), // Use prefix
-                isRequired: true,
-              ),
-              const SizedBox(height: 16),
+              // // Last Name (Required)
+              // _buildTextField(
+              //   name: 'lastName',
+              //   label: 'Last Name',
+              //   validator: ffv.RequiredValidator(
+              //       errorText: 'Last name is required'), // Use prefix
+              //   isRequired: true,
+              // ),
+              // const SizedBox(height: 16),
 
               // Email/Mobile (Required)
               _buildTextField(
@@ -133,13 +137,7 @@ class _RegistrationContentState extends State<RegistrationContent> {
               _buildDropdownField(
                 name: 'category',
                 label: 'Select Category',
-                items: [
-                  'Construction',
-                  'IT Services',
-                  'Healthcare',
-                  'Education',
-                  'Other'
-                ],
+                items: serviceNames,
                 validator: ffv.RequiredValidator(
                     errorText: 'Please select a category'), // Use prefix
                 isRequired: true,
@@ -198,28 +196,28 @@ class _RegistrationContentState extends State<RegistrationContent> {
                     ),
               const SizedBox(height: 16),
 
-              // Login Prompt
-              Center(
-                child: TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'Do you have an account? Login',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Theme.of(context).secondaryHeaderColor,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
+              // // Login Prompt
+              // Center(
+              //   child: TextButton(
+              //     onPressed: () {},
+              //     child: Text(
+              //       'Do you have an account? Login',
+              //       style: TextStyle(
+              //         fontSize: 16,
+              //         color: Theme.of(context).secondaryHeaderColor,
+              //         decoration: TextDecoration.underline,
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // const SizedBox(height: 8),
 
               // SMS/Email Notification Text
-              const Text(
-                'ከተመዘገቡ በኃላ የስልክ መልዕክት (SMS) ወይም ኢሜል ማየት አይርሱ',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-                textAlign: TextAlign.center,
-              ),
+              // const Text(
+              //   'ከተመዘገቡ በኃላ የስልክ መልዕክት (SMS) ወይም ኢሜል ማየት አይርሱ',
+              //   style: TextStyle(fontSize: 14, color: Colors.grey),
+              //   textAlign: TextAlign.center,
+              // ),
             ],
           ),
         ),

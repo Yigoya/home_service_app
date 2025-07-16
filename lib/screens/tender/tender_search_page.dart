@@ -18,13 +18,7 @@ class TenderSearchPage extends StatefulWidget {
 
 class _TenderSearchPageState extends State<TenderSearchPage> {
   final TextEditingController _searchController = TextEditingController();
-  String _selectedLocation = 'All Locations';
-  final List<String> _locations = [
-    'All Locations',
-    'Addis Ababa',
-    'Nairobi',
-    'Kampala'
-  ];
+
   bool _showSearchInterface = false;
   List<Service> _subServices = [];
   List<Service> _filteredSubServices = [];
@@ -65,7 +59,8 @@ class _TenderSearchPageState extends State<TenderSearchPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16.0, vertical: 4.0),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       GestureDetector(
                         onTap: () {
@@ -76,21 +71,22 @@ class _TenderSearchPageState extends State<TenderSearchPage> {
                           size: 24,
                         ),
                       ),
-                      const SizedBox(width: 16.0),
+                      const SizedBox(height: 8.0),
                       GestureDetector(
                         onTap: () {
                           Scaffold.of(context).openDrawer();
                         },
                         child: Container(
-                          width: MediaQuery.of(context).size.width - 72,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
+                          padding: const EdgeInsets.only(
+                              left: 16.0, top: 8.0, bottom: 8.0, right: 8.0),
                           decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(24.0),
                             border: Border.all(
-                              color: Colors.grey,
+                              color: Theme.of(context)
+                                  .secondaryHeaderColor
+                                  .withOpacity(0.7),
+                              width: 1.5,
                             ),
+                            borderRadius: BorderRadius.circular(24.0),
                           ),
                           child: Row(
                             children: [

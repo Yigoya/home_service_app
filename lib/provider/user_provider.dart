@@ -154,6 +154,7 @@ class UserProvider with ChangeNotifier {
       locale = newLocale;
       // Provider.of<HomeServiceProvider>(context, listen: false).loadHome(locale);
       // notifyListeners();
+      Navigator.of(context).popUntil((route) => route.isFirst);
     } on DioException catch (e) {
       Logger().e(e.response!.data);
     } catch (e) {
