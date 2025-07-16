@@ -23,22 +23,81 @@ class HomeServiceProvider with ChangeNotifier {
   Location? selectedLocation;
   List<Location> locations = [
     Location(
-      englishName: 'Addis Ababa',
-      amharicName: 'አዲስ አበባ',
-      oromoName: 'Finfinne',
+      id: 1,
+      englishName: 'Akaki Kaliti',
+      amharicName: 'አቃቂ ቃሊቲ',
+      oromoName: 'Akakii Kaalitii',
+      numberOfWeredas: 13,
+    ),
+    Location(
+      id: 2,
+      englishName: 'Arada',
+      amharicName: 'አራዳ',
+      oromoName: 'Aradaa',
       numberOfWeredas: 10,
     ),
     Location(
-      englishName: 'Dire Dawa',
-      amharicName: 'ድሬ ዳዋ',
-      oromoName: 'Dirre Dhawaa',
-      numberOfWeredas: 5,
+      id: 3,
+      englishName: 'Bole',
+      amharicName: 'ቦሌ',
+      oromoName: 'Bolee',
+      numberOfWeredas: 15,
     ),
     Location(
-      englishName: 'Harar',
-      amharicName: 'ሐረር',
-      oromoName: 'Harar',
-      numberOfWeredas: 6,
+      id: 4,
+      englishName: 'Gullele',
+      amharicName: 'ጉለሌ',
+      oromoName: 'Gulleelee',
+      numberOfWeredas: 10,
+    ),
+    Location(
+      id: 5,
+      englishName: 'Kirkos',
+      amharicName: 'ቂርቆስ',
+      oromoName: 'Kirkos',
+      numberOfWeredas: 11,
+    ),
+    Location(
+      id: 6,
+      englishName: 'Kolfe Keranio',
+      amharicName: 'ኮልፌ ቀራኒዮ',
+      oromoName: 'Kolfe Keranio',
+      numberOfWeredas: 14,
+    ),
+    Location(
+      id: 7,
+      englishName: 'Ledeta',
+      amharicName: 'ልደታ',
+      oromoName: 'Ledeta jedhamtu',
+      numberOfWeredas: 10,
+    ),
+    Location(
+      id: 8,
+      englishName: 'Nifas Silk Lafto',
+      amharicName: 'ንፋስ ስልክ ላፍቶ',
+      oromoName: 'Nifaas Siilkii Laaftoo',
+      numberOfWeredas: 15,
+    ),
+    Location(
+      id: 9,
+      englishName: 'Yeka',
+      amharicName: 'የካ',
+      oromoName: 'Yekaa',
+      numberOfWeredas: 13,
+    ),
+    Location(
+      id: 10,
+      englishName: 'Lemi Kura',
+      amharicName: 'ለሚ ኩራ',
+      oromoName: 'Leemii Kuraa',
+      numberOfWeredas: 15,
+    ),
+    Location(
+      id: 11,
+      englishName: 'Addis Ketema',
+      amharicName: 'አዲስ ከተማ',
+      oromoName: 'Addis Ketemaa',
+      numberOfWeredas: 14,
     ),
   ];
 
@@ -94,15 +153,21 @@ class HomeServiceProvider with ChangeNotifier {
   }
 
   String subCityNameInLanguage(Location? location, Locale locale) {
-    if (location == null) {
-      return '';
-    }
     switch (locale.languageCode) {
       case 'am':
+        if (location == null) {
+          return locations[0].amharicName;
+        }
         return location.amharicName;
       case 'om':
+        if (location == null) {
+          return locations[0].oromoName;
+        }
         return location.oromoName;
       default:
+        if (location == null) {
+          return locations[0].englishName;
+        }
         return location.englishName;
     }
   }
@@ -117,76 +182,107 @@ class HomeServiceProvider with ChangeNotifier {
     );
   }
 
+  // Future<void> loadHome(Locale newLocate) async {
+  //   locale = newLocate;
+
+  //   try {
+  //     final res = await apiService.getRequestByQueryWithoutToken('/home', {
+  //       'lang': locale.languageCode == 'om'
+  //           ? 'OROMO'
+  //           : locale.languageCode == 'am'
+  //               ? 'AMHARIC'
+  //               : 'ENGLISH',
+  //     });
+  //     print(res.data);
+  //     final topFiveTechnicians = res.data['topFiveTechnicians'];
+  //     final services = res.data['services'];
+  //     final topFiveReviews = res.data['topFiveReviews'];
+  //     final serviceCategories = res.data['serviceCategories'];
+
+  //     try {
+  //       _topTechnicians = topFiveTechnicians
+  //           .map<Technician>((e) => Technician.fromJson(e))
+  //           .toList();
+  //     } catch (e) {
+  //       Logger().e('Error mapping topFiveTechnicians: $e');
+  //     }
+
+  //     try {
+  //       _categories = serviceCategories
+  //           .map<Category>((e) => Category.fromJson(e))
+  //           .toList();
+  //       _categories.sort((a, b) => a.id.compareTo(b.id));
+  //     } catch (e) {
+  //       Logger().e('Error mapping serviceCategories: $e');
+  //     }
+
+  //     try {
+  //       _services = services.map<Service>((e) => Service.fromJson(e)).toList();
+  //       _fiterableByCatagory = _services
+  //           .where((service) => service.categoryId == selectedCategoryId)
+  //           .toList();
+  //       _fiterableBySearch = _services;
+  //     } catch (e) {
+  //       Logger().e('Error mapping services: $e');
+  //     }
+
+  //     try {
+  //       _reviews =
+  //           topFiveReviews.map<Review>((e) => Review.fromJson(e)).toList();
+  //     } catch (e) {
+  //       Logger().e('Error mapping topFiveReviews: $e');
+  //     }
+
+  //     try {
+  //       locations = res.data['locations']
+  //           .map<Location>((e) => Location.fromJson(e))
+  //           .toList();
+  //     } catch (e) {
+  //       Logger().e('Error mapping locations: $e');
+  //     }
+
+  //     await selectDefaultLocation();
+  //     notifyListeners();
+  //   } on DioException catch (e) {
+  //     if (e.response != null) {
+  //       Logger().e(e.response!.data);
+  //     } else {
+  //       Logger().e(e);
+  //     }
+  //   } catch (e) {
+  //     Logger().e(e);
+  //   }
+  // }
+
   Future<void> loadHome(Locale newLocate) async {
     locale = newLocate;
+    final res =
+        await apiService.getRequestByQueryWithoutToken('/admin/services', {
+      'lang': locale.languageCode == 'om'
+          ? 'OROMO'
+          : locale.languageCode == 'am'
+              ? 'AMHARIC'
+              : 'ENGLISH',
+    });
+    final data = res.data as List<dynamic>;
+    final categories = data.map<Category>((e) => Category.fromJson(e)).toList();
+    _categories = categories..sort((a, b) {
+      const order = [1, 2, 6, 4, 3];
+      final aIndex = order.indexOf(a.id);
+      final bIndex = order.indexOf(b.id);
+      if (aIndex == -1 && bIndex == -1) return a.id.compareTo(b.id);
+      if (aIndex == -1) return 1;
+      if (bIndex == -1) return -1;
+      return aIndex.compareTo(bIndex);
+    });
+    _services = categories.expand((category) => category.services).toList()
+      ..sort((a, b) => a.id.compareTo(b.id));
+    _fiterableByCatagory = _services
+        .where((service) => service.categoryId == selectedCategoryId)
+        .toList();
+    _fiterableBySearch = _services;
 
-    try {
-      final res = await apiService.getRequestByQueryWithoutToken('/home', {
-        'lang': locale.languageCode == 'om'
-            ? 'OROMO'
-            : locale.languageCode == 'am'
-                ? 'AMHARIC'
-                : 'ENGLISH',
-      });
-      print(res.data);
-      final topFiveTechnicians = res.data['topFiveTechnicians'];
-      final services = res.data['services'];
-      final topFiveReviews = res.data['topFiveReviews'];
-      final serviceCategories = res.data['serviceCategories'];
-
-      try {
-        _topTechnicians = topFiveTechnicians
-            .map<Technician>((e) => Technician.fromJson(e))
-            .toList();
-      } catch (e) {
-        Logger().e('Error mapping topFiveTechnicians: $e');
-      }
-
-      try {
-        _categories = serviceCategories
-            .map<Category>((e) => Category.fromJson(e))
-            .toList();
-        _categories.sort((a, b) => a.id.compareTo(b.id));
-      } catch (e) {
-        Logger().e('Error mapping serviceCategories: $e');
-      }
-
-      try {
-        _services = services.map<Service>((e) => Service.fromJson(e)).toList();
-        _fiterableByCatagory = _services
-            .where((service) => service.categoryId == selectedCategoryId)
-            .toList();
-        _fiterableBySearch = _services;
-      } catch (e) {
-        Logger().e('Error mapping services: $e');
-      }
-
-      try {
-        _reviews =
-            topFiveReviews.map<Review>((e) => Review.fromJson(e)).toList();
-      } catch (e) {
-        Logger().e('Error mapping topFiveReviews: $e');
-      }
-
-      try {
-        locations = res.data['locations']
-            .map<Location>((e) => Location.fromJson(e))
-            .toList();
-      } catch (e) {
-        Logger().e('Error mapping locations: $e');
-      }
-
-      await selectDefaultLocation();
-      notifyListeners();
-    } on DioException catch (e) {
-      if (e.response != null) {
-        Logger().e(e.response!.data);
-      } else {
-        Logger().e(e);
-      }
-    } catch (e) {
-      Logger().e(e);
-    }
+    notifyListeners();
   }
 
   int levenshteinDistance(String s, String t) {
@@ -239,10 +335,9 @@ class HomeServiceProvider with ChangeNotifier {
   }
 
   void filterServicesByCategory(int categoryId) {
-    _fiterableByCatagory =
-        _services.where((service) => service.categoryId == categoryId).toList();
-
     selectedCategoryId = categoryId;
+    _fiterableByCatagory =
+        _categories.firstWhere((element) => element.id == categoryId).services;
     notifyListeners();
   }
 
@@ -256,6 +351,21 @@ class HomeServiceProvider with ChangeNotifier {
       _fiterableBySearch = _services
           .where((service) =>
               service.name.toLowerCase().contains(search.toLowerCase()))
+          .toList();
+    }
+    notifyListeners();
+  }
+
+  void searchServices(String searchTerm) {
+    if (searchTerm.isEmpty) {
+      _fiterableByCatagory = _services
+          .where((service) => service.categoryId == selectedCategoryId)
+          .toList();
+    } else {
+      _fiterableByCatagory = _services
+          .where((service) => 
+              service.categoryId == selectedCategoryId &&
+              service.name.toLowerCase().contains(searchTerm.toLowerCase()))
           .toList();
     }
     notifyListeners();
@@ -277,7 +387,7 @@ class HomeServiceProvider with ChangeNotifier {
       question:
           "How does TanahAir create website content without knowing our Business plan?",
       answer:
-          "We use collaborative tools and processes to align with the client’s vision.",
+          "We use collaborative tools and processes to align with the client's vision.",
     ),
   ];
 

@@ -18,66 +18,9 @@ class TenderListPage extends StatefulWidget {
 class _TenderListPageState extends State<TenderListPage> {
   final TextEditingController _searchController = TextEditingController();
   String _selectedLocation = 'All Locations';
-  final Map<String, List<String>> _locations = {
-    'en': [
-      'All Locations',
-      'Afar',
-      'Amhara',
-      'Benishangul-Gumuz',
-      'Central Ethiopia',
-      'Gambella',
-      'Harari',
-      'Oromia',
-      'Sidama',
-      'Somali',
-      'South Ethiopia',
-      'South West Ethiopia',
-      'Tigray',
-      'Addis Ababa',
-      'Dire Dawa',
-      'Southern Nations, Nationalities, and Peoples\'',
-    ],
-    'am': [
-      'ሁሉም አካባቢዎች',
-      'አፋር',
-      'አማራ',
-      'ቤኒሻንጉል ጉሙዝ',
-      'መካከለኛው ኢትዮጵያ',
-      'ጋምቤላ',
-      'ሀረሪ',
-      'ኦሮሚያ',
-      'ሲዳማ',
-      'ሶማሊ',
-      'ደቡብ ኢትዮጵያ',
-      'ደቡብ ምዕራብ ኢትዮጵያ',
-      'ትግራይ',
-      'አዲስ አበባ',
-      'ድሬዳዋ',
-      'የደቡብ ብሔር ብሔረሰቦችና ህዝቦች',
-    ],
-    'om': [
-      'Iddoo Hunda',
-      'Affaar',
-      'Amaaraa',
-      'Benishaangul-Gumuz jedhamtu',
-      'Giddugaleessa Itoophiyaa',
-      'Gaambeellaa',
-      'Hararii',
-      'Oromiyaa',
-      'Sidaamaa',
-      'Afaan Somaalee',
-      'Kibba Itoophiyaa',
-      'Kibba Lixa Itoophiyaa',
-      'Tigraay',
-      'Addis Ababa',
-      'Dire Dawaa',
-      'Saboota, Sablammoota, fi Ummatoota Kibbaa\'',
-    ],
-  };
 
   String _selectedLanguage = 'en';
 
-  List<String> get _currentLocations => _locations[_selectedLanguage]!;
   bool _showSearchInterface = false;
   List<Service> _subServices = [];
   List<Service> _filteredSubServices = [];
@@ -115,7 +58,6 @@ class _TenderListPageState extends State<TenderListPage> {
       drawer: SearchDrawer(
         searchController: _searchController,
         selectedLocation: _selectedLocation,
-        locations: _currentLocations,
         filteredSubServices: _filteredSubServices,
         serviceId: widget.service.id,
         onSearchChanged: (value) {
@@ -154,52 +96,62 @@ class _TenderListPageState extends State<TenderListPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16.0, vertical: 4.0),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Icon(
-                          Icons.arrow_back,
-                          size: 28,
-                          color: Theme.of(context).secondaryHeaderColor,
-                        ),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Icon(
+                      Icons.arrow_back,
+                      size: 28,
+                      color: Theme.of(context).secondaryHeaderColor,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    _loadSubServices();
+                    Scaffold.of(context).openDrawer();
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 4.0),
+                    padding: const EdgeInsets.only(
+                        left: 16.0, top: 4.0, bottom: 4.0, right: 4.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Theme.of(context)
+                            .secondaryHeaderColor
+                            .withOpacity(0.7),
+                        width: 1.5,
                       ),
-                      const SizedBox(width: 8.0),
-                      GestureDetector(
-                        onTap: () {
-                          _loadSubServices();
-                          Scaffold.of(context).openDrawer();
-                        },
-                        child: Container(
-                          width: MediaQuery.of(context).size.width - 72,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(24.0),
-                            border: Border.all(
-                              color: Colors.grey,
+                      borderRadius: BorderRadius.circular(24.0),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "Search for ${widget.service.name}",
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .secondaryHeaderColor
+                                  .withValues(alpha: 100),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.search, color: Colors.grey[600]),
-                              const SizedBox(width: 8.0),
-                              Text(
-                                "name, location or category ",
-                                style: TextStyle(
-                                    color:
-                                        Theme.of(context).secondaryHeaderColor,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ],
-                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 8.0),
+                        Container(
+                            padding: const EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).secondaryHeaderColor,
+                              borderRadius: BorderRadius.circular(24.0),
+                            ),
+                            child: Icon(Icons.search,
+                                color: Colors.white, size: 20)),
+                      ],
+                    ),
                   ),
                 ),
                 Container(
@@ -235,7 +187,7 @@ class _TenderListPageState extends State<TenderListPage> {
                           style: TextStyle(
                               fontSize: 22,
                               color: Colors.white,
-                              fontWeight: FontWeight.bold)),
+                              fontWeight: FontWeight.w600)),
                       Text(
                         provider.tenders.isNotEmpty
                             ? "showing ${(provider.page * provider.size) + 1} to ${(provider.page * provider.size) + provider.tenders.length}"

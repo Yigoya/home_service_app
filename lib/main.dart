@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chapa_unofficial/chapa_unofficial.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -7,9 +8,11 @@ import 'package:home_service_app/firebase_options.dart';
 import 'package:home_service_app/l10n/oromo_matrial_localizations.dart';
 import 'package:home_service_app/provider/agency_provider.dart';
 import 'package:home_service_app/provider/booking_provider.dart';
+import 'package:home_service_app/provider/business_provider.dart';
 import 'package:home_service_app/provider/form_provider.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/provider/auth_provider.dart';
+import 'package:home_service_app/provider/marketplace_provider.dart';
 import 'package:home_service_app/provider/notification_provider.dart';
 import 'package:home_service_app/provider/payment_provider.dart';
 import 'package:home_service_app/provider/profile_page_provider.dart';
@@ -34,6 +37,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() async {
+  Chapa.configure(privateKey: "CHASECK_TEST-bYOyIBsWl9cSziVLFrthBNVG3P9RQzUm");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final locale = await const FlutterSecureStorage().read(key: 'locale');
@@ -52,6 +56,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => PaymentProvider()),
         ChangeNotifierProvider(create: (_) => TenderProvider()),
         ChangeNotifierProvider(create: (_) => AgencyProvider()),
+        ChangeNotifierProvider(create: (_) => BusinessProvider()),
+        ChangeNotifierProvider(create: (_) => MarketplaceProvider()),
       ],
       child: MyApp(
         defaultLocale: defaultLocale,
@@ -111,7 +117,7 @@ class _MyAppState extends State<MyApp> {
             title: 'Home Service Platform',
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
-              fontFamily: 'Figtree',
+              // fontFamily: 'Figtree',
               brightness: Brightness.light,
               primaryColor: const Color.fromARGB(255, 0, 44, 11),
               secondaryHeaderColor: const Color.fromARGB(255, 25, 84, 124),

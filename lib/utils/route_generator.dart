@@ -10,6 +10,12 @@ import 'package:home_service_app/screens/auth/upload_proof.dart';
 import 'package:home_service_app/screens/auth/verification_wait_screen.dart';
 import 'package:home_service_app/screens/auth/verifyemail_page.dart';
 import 'package:home_service_app/screens/booking/booking.dart';
+import 'package:home_service_app/screens/business/add_business_page.dart';
+import 'package:home_service_app/screens/business/business_home_page.dart';
+import 'package:home_service_app/screens/business/business_list_page.dart';
+import 'package:home_service_app/screens/business/business_search_page.dart';
+import 'package:home_service_app/screens/business/business_subcategory_page.dart';
+import 'package:home_service_app/screens/business/business_top_rated_page.dart';
 import 'package:home_service_app/screens/home/questionnaire_page.dart';
 import 'package:home_service_app/screens/booking/update_booking.dart';
 import 'package:home_service_app/screens/contact_page.dart';
@@ -17,11 +23,16 @@ import 'package:home_service_app/screens/detail_booking.dart';
 import 'package:home_service_app/screens/dispute_page.dart';
 import 'package:home_service_app/screens/disputelist_page.dart';
 import 'package:home_service_app/screens/home/home.dart';
+import 'package:home_service_app/screens/marketplace/marketplace_home_page.dart';
+import 'package:home_service_app/screens/marketplace/marketplace_product_detail.dart';
+import 'package:home_service_app/screens/marketplace/marketplace_product_list.dart';
+import 'package:home_service_app/screens/marketplace/marketplace_search_page.dart';
 import 'package:home_service_app/screens/notification.dart';
 import 'package:home_service_app/screens/profile/customer_profile_page.dart';
 import 'package:home_service_app/screens/profile/technician_detail_page.dart';
 import 'package:home_service_app/screens/profile/technician_profile_page.dart';
 import 'package:home_service_app/screens/tender/subscription_page.dart';
+import 'package:home_service_app/screens/business/business_detail_page.dart';
 // Import other pages here
 
 class RouteGenerator {
@@ -45,6 +56,17 @@ class RouteGenerator {
   static const String detailBookingPage = '/detail_booking';
   static const String forgotPasswordPage = '/forgot_password';
   static const String subscriptionPage = '/subscription';
+  static const String businessHomePage = '/business_home';
+  static const String businessListingPage = '/business_listing';
+  static const String businessDetailPage = '/business_detail';
+  static const String businessSubcategoryPage = '/business_subcategory';
+  static const String businessSearchPage = '/business_search';
+  static const String businessTopRatedPage = '/business_top_rated';
+  static const String addBusinessPage = '/add_business';
+  static const String marketplaceHomePage = '/marketplace_home';
+  static const String marketplaceProductListPage = '/marketplace_product_list';
+  static const String marketplaceProductDetailPage = '/marketplace_product_detail';
+  static const String marketplaceSearchPage = '/marketplace_search';
 
   // static const String resetPasswordPage = '/reset_password';
   // static const String settingsPage = '/settings';
@@ -134,6 +156,53 @@ class RouteGenerator {
       case subscriptionPage:
         return MaterialPageRoute(
           builder: (_) => const SubscriptionPage(),
+        );
+      case businessHomePage:
+        return MaterialPageRoute(builder: (_) => const BusinessHomePage());
+      case businessDetailPage:
+        return MaterialPageRoute(
+          builder: (_) => BusinessDetailPage(
+              businessId: (settings.arguments as Map<String, dynamic>)['id']),
+        );
+      case businessSubcategoryPage:
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => BusinessSubcategoryPage(
+            categoryId: args['categoryId'],
+            categoryName: args['categoryName'],
+          ),
+        );
+      // case businessSearchPage:
+      //   return MaterialPageRoute(
+      //     builder: (_) => const BusinessSearchPage(),
+      //   );
+      case businessTopRatedPage:
+        return MaterialPageRoute(
+          builder: (_) => const BusinessTopRatedPage(),
+        );
+      case addBusinessPage:
+        return MaterialPageRoute(builder: (_) => const AddBusinessPage());
+        
+      // Marketplace routes
+      case marketplaceHomePage:
+        return MaterialPageRoute(builder: (_) => const MarketplaceHomePage());
+      case marketplaceProductListPage:
+        final args = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => MarketplaceProductList(
+            category: args?['category'],
+            serviceId: args?['serviceId'],
+          ),
+        );
+      case marketplaceProductDetailPage:
+        return MaterialPageRoute(
+          builder: (_) => MarketplaceProductDetail(
+            productId: settings.arguments as int,
+          ),
+        );
+      case marketplaceSearchPage:
+        return MaterialPageRoute(
+          builder: (_) => const MarketplaceSearchPage(),
         );
       default:
         return _errorRoute();

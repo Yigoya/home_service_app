@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:home_service_app/models/login_source.dart';
 import 'package:home_service_app/provider/auth_provider.dart';
+import 'package:home_service_app/screens/auth/signup.dart';
 import 'package:home_service_app/utils/elements.dart';
 import 'package:home_service_app/utils/route_generator.dart';
 import 'package:provider/provider.dart';
@@ -125,8 +126,12 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(height: 16.h),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(
-                          context, '/signup'); // Navigate to Signup page
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => SignupPage(
+                                    source: widget.source,
+                                  ))); // Navigate to Signup page
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

@@ -218,8 +218,18 @@ class _SelectLocationState extends State<SelectLocation> {
                         height: 16.h,
                       ),
                       CustomDropdown(
-                        items:
-                            Provider.of<HomeServiceProvider>(context).weredas,
+                        items: [
+                          '1',
+                          '2',
+                          '3',
+                          '4',
+                          '5',
+                          '6',
+                          '7',
+                          '8',
+                          '9',
+                          '10'
+                        ],
                         hint: AppLocalizations.of(context)!.selectYourWereda,
                         selectedValue: selectedWereda,
                         onChanged: (value) {

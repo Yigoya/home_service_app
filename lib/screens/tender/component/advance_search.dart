@@ -12,15 +12,6 @@ class TenderSearchDrawer extends StatefulWidget {
 }
 
 class _TenderSearchDrawerState extends State<TenderSearchDrawer> {
-  String selectedLocation = 'All Locations';
-
-  final List<String> locations = [
-    'All Locations',
-    'Addis Ababa',
-    'Nairobi',
-    'Kampala'
-  ];
-
   bool _showCategories = false;
 
   @override
@@ -67,14 +58,14 @@ class _TenderSearchDrawerState extends State<TenderSearchDrawer> {
                     DropdownButtonFormField<String>(
                       dropdownColor: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      value: selectedLocation,
-                      items: locations.map((location) {
+                      items: Provider.of<TenderProvider>(context, listen: false)
+                          .currentLocations
+                          .map((location) {
                         return DropdownMenuItem(
                             value: location, child: Text(location));
                       }).toList(),
                       onChanged: (value) {
-                        selectedLocation = value!;
-                        tenderProvider.setLocation(value);
+                        tenderProvider.setLocation(value!);
                       },
                       decoration: InputDecoration(
                         labelText: "Filter by location",

@@ -115,65 +115,268 @@ class CategoryServices extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 40.h),
-                SizedBox(
-                  height: 130.h * (services.length / 3).ceil(),
-                  child: GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      childAspectRatio: 6 / 6,
-                      crossAxisSpacing: 10.w,
-                      mainAxisSpacing: 10.h,
-                    ),
-                    itemCount: services.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
+
+                // SizedBox(
+                //   height: 130.h * (services.length / 3).ceil(),
+                //   child: GridView.builder(
+                //     physics: const NeverScrollableScrollPhysics(),
+                //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                //       crossAxisCount: 3,
+                //       childAspectRatio: 6 / 6,
+                //       crossAxisSpacing: 10.w,
+                //       mainAxisSpacing: 10.h,
+                //     ),
+                //     itemCount: services.length,
+                //     itemBuilder: (context, index) {
+                //       return GestureDetector(
+                //         onTap: () {
+                //           if (category.id == 4) {
+                //             Navigator.push(
+                //                 context,
+                //                 MaterialPageRoute(
+                //                     builder: (context) => AgencyListScreen(
+                //                         service: services[index])));
+                //             return;
+                //           }
+                //           if (services[index].services.isNotEmpty) {
+                //             Navigator.push(
+                //                 context,
+                //                 MaterialPageRoute(
+                //                     builder: (context) => SubCategoryServices(
+                //                           service: services[index],
+                //                         )));
+                //             return;
+                //           }
+                //           Provider.of<HomeServiceProvider>(context,
+                //                   listen: false)
+                //               .fetchServiceQuestions(services[index].id);
+                //           Navigator.push(
+                //               context,
+                //               MaterialPageRoute(
+                //                   builder: (context) => SelectLocation(
+                //                       service: services[index])));
+                //         },
+                //         child: Container(
+                //           padding: EdgeInsets.all(8.w),
+                //           decoration: BoxDecoration(
+                //             color: Colors.white,
+                //             borderRadius: BorderRadius.circular(6.r),
+                //             boxShadow: [
+                //               BoxShadow(
+                //                 color: Colors.grey.withOpacity(0.5),
+                //                 spreadRadius: 2.r,
+                //                 blurRadius: 3.r,
+                //                 offset: Offset(0, 2.h),
+                //               ),
+                //             ],
+                //           ),
+                //           child: Column(
+                //             mainAxisAlignment: MainAxisAlignment.center,
+                //             children: [
+                //               services[index].icon == null
+                //                   ? Icon(
+                //                       [
+                //                         Icons.home_repair_service,
+                //                         Icons.cleaning_services,
+                //                         Icons.electrical_services,
+                //                         Icons.plumbing,
+                //                         Icons.construction,
+                //                         Icons.door_back_door_outlined
+                //                       ].elementAt(index % 6),
+                //                       size: 30.sp,
+                //                       color: Color.fromARGB(255, 0, 88, 22),
+                //                     )
+                //                   : Image.network(
+                //                       '${ApiService.API_URL_FILE}${services[index].icon}',
+                //                       width: 30.w,
+                //                       height: 30.h,
+                //                       fit: BoxFit.cover,
+                //                       color: Color.fromARGB(255, 0, 88, 22),
+                //                     ),
+                //               SizedBox(height: 16.h),
+                //               Text(
+                //                 services[index].name,
+                //                 textAlign: TextAlign.center,
+                //                 overflow: TextOverflow.ellipsis,
+                //                 maxLines: 2,
+                //                 style: TextStyle(
+                //                   fontWeight: FontWeight.w600,
+                //                   fontSize: 14.sp,
+                //                 ),
+                //               ),
+                //             ],
+                //           ),
+                //         ),
+                //       );
+                //     },
+                //   ),
+                // ),
+                ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: services.length,
+                  itemBuilder: (context, index) {
+                    final service = services[index];
+
+                    // Check if the service has child services
+                    if (service.services.isNotEmpty) {
+                      // Display parent service as a title with its child services
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Parent service as title
+                          Padding(
+                            padding: EdgeInsets.only(top: 16.h, bottom: 8.h),
+                            child: Row(
+                              children: [
+                                // service.icon == null
+                                //     ? Icon(
+                                //         [
+                                //           Icons.home_repair_service,
+                                //           Icons.cleaning_services,
+                                //           Icons.electrical_services,
+                                //           Icons.plumbing,
+                                //           Icons.construction,
+                                //           Icons.door_back_door_outlined
+                                //         ].elementAt(index % 6),
+                                //         size: 24.sp,
+                                //         color: Color.fromARGB(255, 0, 88, 22),
+                                //       )
+                                //     : Image.network(
+                                //         '${ApiService.API_URL_FILE}${service.icon}',
+                                //         width: 24.w,
+                                //         height: 24.h,
+                                //         fit: BoxFit.cover,
+                                //         color: Color.fromARGB(255, 0, 88, 22),
+                                //       ),
+                                // SizedBox(width: 8.w),
+                                Text(
+                                  service.name,
+                                  style: TextStyle(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 0, 88, 22),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // SizedBox(height: 8.h),
+                          Divider(color: Colors.grey.withOpacity(0.3)),
+                          SizedBox(
+                            height: 16.h,
+                          ),
+                          // Child services
+                          GridView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              childAspectRatio: 6 / 6,
+                              crossAxisSpacing: 10.w,
+                              mainAxisSpacing: 10.h,
+                            ),
+                            itemCount: service.services.length,
+                            itemBuilder: (context, childIndex) {
+                              final childService = service.services[childIndex];
+                              print(
+                                  '${ApiService.API_URL_FILE}${childService.icon}');
+                              return InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => SelectLocation(
+                                              service: services[index])));
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(6.r),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.3),
+                                        spreadRadius: 1.r,
+                                        blurRadius: 2.r,
+                                        offset: Offset(0, 1.h),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      childService.icon == null
+                                          ? Icon(
+                                              [
+                                                Icons.home_repair_service,
+                                                Icons.cleaning_services,
+                                                Icons.electrical_services,
+                                                Icons.plumbing,
+                                                Icons.construction,
+                                                Icons.door_back_door_outlined
+                                              ].elementAt(childIndex % 6),
+                                              size: 24.sp,
+                                            )
+                                          : Image.network(
+                                              '${ApiService.API_URL_FILE}${childService.icon}',
+                                              width: 24.w,
+                                              height: 24.h,
+                                              fit: BoxFit.cover,
+                                            ),
+                                      SizedBox(height: 8.h),
+                                      Text(
+                                        childService.name,
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14.sp,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          SizedBox(
+                            height: 16.h,
+                          )
+                        ],
+                      );
+                    } else {
+                      // Display the service as a normal grid item
+                      return InkWell(
                         onTap: () {
-                          if (category.id == 4) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => AgencyListScreen(
-                                        service: services[index])));
-                            return;
-                          }
-                          if (services[index].hasChild) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => SubCategoryServices(
-                                          service: services[index],
-                                        )));
-                            return;
-                          }
-                          Provider.of<HomeServiceProvider>(context,
-                                  listen: false)
-                              .fetchServiceQuestions(services[index].id);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SelectLocation(
-                                      service: services[index])));
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) =>
+                          //             BusinessSubcategoryPage(
+                          //               categoryId: service.id,
+                          //               categoryName: service.name,
+                          //             )));
                         },
                         child: Container(
-                          padding: EdgeInsets.all(8.w),
+                          margin: EdgeInsets.only(bottom: 16.h),
+                          padding: EdgeInsets.all(16.r),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(6.r),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 2.r,
+                                color: Colors.grey.withOpacity(0.4),
+                                spreadRadius: 1.r,
                                 blurRadius: 3.r,
                                 offset: Offset(0, 2.h),
                               ),
                             ],
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          child: Row(
                             children: [
-                              services[index].icon == null
+                              service.icon == null
                                   ? Icon(
                                       [
                                         Icons.home_repair_service,
@@ -183,33 +386,37 @@ class CategoryServices extends StatelessWidget {
                                         Icons.construction,
                                         Icons.door_back_door_outlined
                                       ].elementAt(index % 6),
-                                      size: 30.sp,
-                                      color: Color.fromARGB(255, 0, 88, 22),
+                                      size: 24.sp,
+                                      color: Colors.blue.shade700,
                                     )
                                   : Image.network(
-                                      '${ApiService.API_URL_FILE}${services[index].icon}',
-                                      width: 30.w,
-                                      height: 30.h,
+                                      '${ApiService.API_URL_FILE}${service.icon}',
+                                      width: 24.w,
+                                      height: 24.h,
                                       fit: BoxFit.cover,
-                                      color: Color.fromARGB(255, 0, 88, 22),
+                                      color: Colors.blue.shade700,
                                     ),
-                              SizedBox(height: 16.h),
-                              Text(
-                                services[index].name,
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14.sp,
+                              SizedBox(width: 16.w),
+                              Expanded(
+                                child: Text(
+                                  service.name,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16.sp,
+                                  ),
                                 ),
                               ),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                size: 16.sp,
+                                color: Colors.grey,
+                              )
                             ],
                           ),
                         ),
                       );
-                    },
-                  ),
+                    }
+                  },
                 ),
               ],
             ),

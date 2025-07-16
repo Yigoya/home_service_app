@@ -6,7 +6,7 @@ class Service {
   final String? duration;
   final int categoryId;
   final String? icon;
-  final bool hasChild;
+  final List<Service> services;
 
   Service({
     required this.id,
@@ -16,19 +16,21 @@ class Service {
     this.duration,
     required this.categoryId,
     this.icon,
-    required this.hasChild,
+    required this.services,
   });
 
   factory Service.fromJson(Map<String, dynamic> json) {
     return Service(
-      id: json['id'],
+      id: json['serviceId'] ?? json['id'],
       name: json['name'],
       description: json['description'],
-      price: json['price'],
-      duration: json['duration'],
+      price: json['serviceFee'],
+      duration: json['estimatedDuration'],
       categoryId: json['categoryId'],
       icon: json['icon'],
-      hasChild: json['hasChild'],
+      services: json['services'] != null
+          ? json['services'].map<Service>((e) => Service.fromJson(e)).toList()
+          : [],
     );
   }
 
@@ -41,7 +43,7 @@ class Service {
       'duration': duration,
       'categoryId': categoryId,
       'icon': icon,
-      'hasChild': hasChild,
+      'services': services.map((e) => e.toJson()).toList(),
     };
   }
 }

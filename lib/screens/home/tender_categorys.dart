@@ -107,16 +107,12 @@ class TenderCategorys extends StatelessWidget {
                                         Icons.door_back_door_outlined
                                       ].elementAt(index % 6),
                                       size: 30.sp,
-                                      color: Theme.of(context)
-                                          .secondaryHeaderColor,
                                     )
                                   : Image.network(
                                       '${ApiService.API_URL_FILE}${services[index].icon}',
                                       width: 30.w,
                                       height: 30.h,
                                       fit: BoxFit.cover,
-                                      color: Theme.of(context)
-                                          .secondaryHeaderColor,
                                     ),
                               SizedBox(height: 16.h),
                               Text(
