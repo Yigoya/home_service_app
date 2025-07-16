@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/utils/functions.dart';
 import 'package:logger/web.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:home_service_app/l10n/app_localizations.dart';
 
 class FormProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();

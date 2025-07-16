@@ -4,7 +4,7 @@ import 'package:home_service_app/provider/auth_provider.dart';
 import 'package:home_service_app/screens/auth/login.dart';
 import 'package:home_service_app/utils/elements.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:home_service_app/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SignupPage extends StatefulWidget {

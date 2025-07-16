@@ -4,7 +4,7 @@ import 'package:home_service_app/provider/payment_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:home_service_app/l10n/app_localizations.dart';
 
 class CheckoutPage extends StatefulWidget {
   final double amount;

@@ -6,7 +6,7 @@ import 'package:home_service_app/screens/auth/signup.dart';
 import 'package:home_service_app/utils/elements.dart';
 import 'package:home_service_app/utils/route_generator.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:home_service_app/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoginPage extends StatefulWidget {

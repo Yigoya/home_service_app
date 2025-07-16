@@ -14,7 +14,7 @@ import 'package:home_service_app/widgets/custom_dropdown.dart';
 import 'package:home_service_app/widgets/pagination.dart';
 import 'package:logger/web.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:home_service_app/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TechnicianFilter extends StatefulWidget {

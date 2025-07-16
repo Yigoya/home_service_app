@@ -3,7 +3,7 @@ import 'package:home_service_app/provider/form_provider.dart';
 import 'package:home_service_app/widgets/custom_textfield.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:home_service_app/l10n/app_localizations.dart';
 
 class ContactPage extends StatefulWidget {
   const ContactPage({super.key});

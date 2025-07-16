@@ -13,6 +13,7 @@ import 'package:home_service_app/screens/home/questionnaire_page.dart';
 import 'package:home_service_app/screens/home/category_services.dart';
 import 'package:home_service_app/screens/home/select_location.dart';
 import 'package:home_service_app/screens/home/tender_categorys.dart';
+import 'package:home_service_app/screens/job/job_search_screen.dart';
 import 'package:home_service_app/screens/marketplace/marketplace_home_page.dart';
 import 'package:home_service_app/screens/profile/technician_detail_page.dart';
 import 'package:home_service_app/screens/tender/component/tender_card.dart';
@@ -22,7 +23,7 @@ import 'package:home_service_app/widgets/catagory_skeleton.dart';
 import 'package:home_service_app/widgets/slide_show.dart';
 import 'package:logger/web.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:home_service_app/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 // import 'package:chapasdk/chapasdk.dart';
 
@@ -135,7 +136,30 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           child: ListView(
             children: [
               _buildBannerSection(provider),
-              _buildServiceCategories(provider),
+              // _buildServiceCategories(provider),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          const JobSearchScreen(onboardingData: null),
+                    ),
+                  );
+                },
+                child: Container(
+                  height: 100,
+                  // width: 200,
+                  color: Colors.red,
+                  child: Text(
+                    'WTF',
+                    style: TextStyle(
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              )
               // _buildTechnicianListView(),
               // _buildCustomerReviewsSection(),
               // const FAQSection(),
