@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:home_service_app/screens/job/apply_screen.dart';
-import 'package:home_service_app/screens/job/sample_data.dart';
 import 'package:home_service_app/screens/job/core/constants/color.dart';
+import 'package:home_service_app/screens/job/job_details_screen.dart';
+import 'package:home_service_app/screens/job/profile_screen.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:home_service_app/models/job_model.dart';
+import 'package:home_service_app/provider/job_provider.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:provider/provider.dart';
+import 'package:home_service_app/provider/user_provider.dart';
+import 'package:home_service_app/widgets/bottom_navigation.dart';
 
 // Static storage for user preferences (fallback when SharedPreferences fails)
 class UserPreferences {
@@ -52,6 +59,12 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
     // Initialize speech recognition after a short delay to ensure proper setup
     Future.delayed(const Duration(milliseconds: 500), () {
       _initSpeech();
+    });
+    // Fetch jobs from API
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<JobProvider>().fetchJobs();
+      }
     });
   }
 
@@ -101,24 +114,6 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
     }
   }
 
-  String? _mapIndustryToCategory(String industry) {
-    // Map onboarding industries to job categories
-    switch (industry.toLowerCase()) {
-      case 'it':
-        return 'IT';
-      case 'healthcare':
-        return 'Healthcare';
-      case 'education':
-        return 'Education';
-      case 'finance':
-        return 'Finance';
-      case 'retail':
-        return 'Retail';
-      default:
-        return industry;
-    }
-  }
-
   int get _selectedFilterCount {
     int count = 0;
     if (_selectedJobType != null) count++;
@@ -129,119 +124,92 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
   }
 
   List<JobModel> get _filteredJobs {
-    return sampleJobs.where((job) {
-      // Search filter
-      final searchQuery = _searchController.text.toLowerCase().trim();
-      if (searchQuery.isNotEmpty) {
-        final matchesSearch = job.title.toLowerCase().contains(searchQuery) ||
-            job.companyName.toLowerCase().contains(searchQuery) ||
-            job.category.toLowerCase().contains(searchQuery) ||
-            job.jobLocation.toLowerCase().contains(searchQuery);
-        if (!matchesSearch) return false;
-      }
-
-      // Job type filter
-      if (_selectedJobType != null && job.jobType != _selectedJobType)
-        return false;
-
-      // Location filter
-      if (_selectedLocation != null && job.jobLocation != _selectedLocation)
-        return false;
-
-      // Category filter
-      if (_selectedCategory != null && job.category != _selectedCategory)
-        return false;
-
-      // Date posted filter
-      if (_selectedDatePosted != null) {
-        final now = DateTime.now();
-        final posted = DateTime.tryParse(job.postedDate);
-        if (posted == null) return false;
-        if (_selectedDatePosted == 'Last 24 hours' &&
-            now.difference(posted).inHours > 24) return false;
-        if (_selectedDatePosted == 'Last 7 days' &&
-            now.difference(posted).inDays > 7) return false;
-        if (_selectedDatePosted == 'Last 30 days' &&
-            now.difference(posted).inDays > 30) return false;
-      }
-      return true;
-    }).toList();
+    final jobProvider = context.read<JobProvider>();
+    return jobProvider.filteredJobs;
   }
 
   List<JobModel> get _sortedJobs {
-    final filtered = _filteredJobs;
+    final jobProvider = context.read<JobProvider>();
+    final filtered = jobProvider.filteredJobs;
 
-    // Always sort by relevance if user has preferences
+    // Apply user preferences for relevance sorting
     if (_userJobTypes.isNotEmpty ||
         _userJobRole != null ||
         _userIndustries.isNotEmpty) {
-      filtered.sort((a, b) {
-        int scoreA = _calculateRelevanceScore(a);
-        int scoreB = _calculateRelevanceScore(b);
-        return scoreB.compareTo(scoreA); // Higher score first
-      });
-    } else {
-      // Default sorting for users without preferences
-      if (_sortBy == 'date') {
-        filtered.sort((a, b) {
-          final dateA = DateTime.tryParse(a.postedDate) ?? DateTime.now();
-          final dateB = DateTime.tryParse(b.postedDate) ?? DateTime.now();
-          return dateB.compareTo(dateA); // Newest first
-        });
-      }
+      jobProvider.sortJobsByRelevance(
+        userJobTypes: _userJobTypes,
+        userJobRole: _userJobRole,
+        userIndustries: _userIndustries,
+      );
     }
+
     return filtered;
-  }
-
-  int _calculateRelevanceScore(JobModel job) {
-    int score = 0;
-
-    // Job type match (highest priority)
-    if (_userJobTypes.contains(job.jobType)) {
-      score += 100;
-    }
-
-    // Job role match in title
-    if (_userJobRole != null && _userJobRole!.isNotEmpty) {
-      final role = _userJobRole!.toLowerCase();
-      if (job.title.toLowerCase().contains(role)) {
-        score += 80;
-      }
-      if (job.description.toLowerCase().contains(role)) {
-        score += 40;
-      }
-    }
-
-    // Industry/category match
-    if (_userIndustries.isNotEmpty) {
-      for (String industry in _userIndustries) {
-        final category = _mapIndustryToCategory(industry);
-        if (job.category.toLowerCase() == category?.toLowerCase()) {
-          score += 60;
-          break;
-        }
-      }
-    }
-
-    // Recent posts get bonus points
-    final posted = DateTime.tryParse(job.postedDate);
-    if (posted != null) {
-      final daysSincePosted = DateTime.now().difference(posted).inDays;
-      if (daysSincePosted <= 7)
-        score += 20;
-      else if (daysSincePosted <= 30) score += 10;
-    }
-
-    return score;
   }
 
   int get _filteredResultCount => _filteredJobs.length;
 
+  int _getCurrentFilteredCount() {
+    final jobProvider = context.read<JobProvider>();
+    final allJobs = jobProvider.jobs;
+
+    // Apply current filter selections to get a preview count
+    return allJobs.where((job) {
+      // Search query filter
+      if (_searchController.text.isNotEmpty) {
+        final query = _searchController.text.toLowerCase();
+        final matchesSearch = job.title.toLowerCase().contains(query) ||
+            job.companyName.toLowerCase().contains(query) ||
+            job.jobLocation.toLowerCase().contains(query) ||
+            job.tags.any((tag) => tag.toLowerCase().contains(query));
+        if (!matchesSearch) return false;
+      }
+
+      // Job type filter
+      if (_selectedJobType != null && job.jobType != _selectedJobType) {
+        return false;
+      }
+
+      // Location filter
+      if (_selectedLocation != null && job.jobLocation != _selectedLocation) {
+        return false;
+      }
+
+      // Category filter
+      if (_selectedCategory != null && job.category != _selectedCategory) {
+        return false;
+      }
+
+      // Date posted filter
+      if (_selectedDatePosted != null) {
+        final postedDate = DateTime.parse(job.postedDate);
+        final now = DateTime.now();
+
+        switch (_selectedDatePosted) {
+          case 'Last 24 hours':
+            if (now.difference(postedDate).inHours > 24) return false;
+            break;
+          case 'Last 7 days':
+            if (now.difference(postedDate).inDays > 7) return false;
+            break;
+          case 'Last 30 days':
+            if (now.difference(postedDate).inDays > 30) return false;
+            break;
+        }
+      }
+
+      return true;
+    }).length;
+  }
+
   String _sortBy = 'relevance';
+
+  // ValueNotifier to trigger button rebuilds
+  final ValueNotifier<int> _filterChangeNotifier = ValueNotifier(0);
 
   @override
   void dispose() {
     _searchController.dispose();
+    _filterChangeNotifier.dispose();
     super.dispose();
   }
 
@@ -317,6 +285,7 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
       _selectedDatePosted = null;
       _searchController.clear();
     });
+    context.read<JobProvider>().clearFilters();
   }
 
   Future<void> _startListening() async {
@@ -358,9 +327,7 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
           _lastWords = result.recognizedWords;
           if (result.finalResult) {
             _searchController.text = _lastWords;
-            setState(() {
-              // Trigger search
-            });
+            _applyFilters();
           }
         });
       },
@@ -380,6 +347,17 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
     setState(() {
       _isListening = false;
     });
+  }
+
+  void _applyFilters() {
+    final jobProvider = context.read<JobProvider>();
+    jobProvider.filterJobs(
+      searchQuery: _searchController.text,
+      jobType: _selectedJobType,
+      location: _selectedLocation,
+      category: _selectedCategory,
+      datePosted: _selectedDatePosted,
+    );
   }
 
   void _showSortOptions() {
@@ -434,6 +412,9 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
                         title: const Text('Date'),
                         onTap: () {
                           setState(() => _sortBy = 'date');
+                          context
+                              .read<JobProvider>()
+                              .fetchJobs(sortBy: 'Newest');
                           Navigator.pop(context);
                         },
                       ),
@@ -449,6 +430,8 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
   }
 
   void _showFilterOptions() {
+    final jobProvider = context.read<JobProvider>();
+
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -500,6 +483,7 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
                                   });
                                   _searchController.clear();
                                   setState(() {});
+                                  jobProvider.clearFilters();
                                 },
                                 child: const Text('Clear',
                                     style: TextStyle(
@@ -528,74 +512,41 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
                                   ),
                                 ExpansionTile(
                                   title: const Text('Job Type'),
-                                  children: [
-                                    RadioListTile<String>(
-                                      activeColor: kPrimaryColor,
-                                      title: const Text('Full-time'),
-                                      value: 'Full-time',
-                                      groupValue: _selectedJobType,
-                                      onChanged: (value) {
-                                        setModalState(
-                                            () => _selectedJobType = value);
-                                        setState(() {});
-                                      },
-                                    ),
-                                    RadioListTile<String>(
-                                      activeColor: kPrimaryColor,
-                                      title: const Text('Part-time'),
-                                      value: 'Part-time',
-                                      groupValue: _selectedJobType,
-                                      onChanged: (value) {
-                                        setModalState(
-                                            () => _selectedJobType = value);
-                                        setState(() {});
-                                      },
-                                    ),
-                                  ],
+                                  children: jobProvider.uniqueJobTypes
+                                      .map((jobType) => RadioListTile<String>(
+                                            activeColor: kPrimaryColor,
+                                            title: Text(jobType),
+                                            value: jobType,
+                                            groupValue: _selectedJobType,
+                                            onChanged: (value) {
+                                              setModalState(() =>
+                                                  _selectedJobType = value);
+                                              setState(() {});
+                                              _filterChangeNotifier.value++;
+                                            },
+                                          ))
+                                      .toList(),
                                 ),
                                 ExpansionTile(
                                   title: const Text('Location'),
-                                  children: [
-                                    RadioListTile<String>(
-                                      activeColor: kPrimaryColor,
-                                      title: const Text('Remote'),
-                                      value: 'Remote',
-                                      groupValue: _selectedLocation,
-                                      onChanged: (value) {
-                                        setModalState(
-                                            () => _selectedLocation = value);
-                                        setState(() {});
-                                      },
-                                    ),
-                                    RadioListTile<String>(
-                                      activeColor: kPrimaryColor,
-                                      title: const Text('Hybrid'),
-                                      value: 'Hybrid',
-                                      groupValue: _selectedLocation,
-                                      onChanged: (value) {
-                                        setModalState(
-                                            () => _selectedLocation = value);
-                                        setState(() {});
-                                      },
-                                    ),
-                                    RadioListTile<String>(
-                                      activeColor: kPrimaryColor,
-                                      title: const Text('On-site'),
-                                      value: 'On-site',
-                                      groupValue: _selectedLocation,
-                                      onChanged: (value) {
-                                        setModalState(
-                                            () => _selectedLocation = value);
-                                        setState(() {});
-                                      },
-                                    ),
-                                  ],
+                                  children: jobProvider.uniqueLocations
+                                      .map((location) => RadioListTile<String>(
+                                            activeColor: kPrimaryColor,
+                                            title: Text(location),
+                                            value: location,
+                                            groupValue: _selectedLocation,
+                                            onChanged: (value) {
+                                              setModalState(() =>
+                                                  _selectedLocation = value);
+                                              setState(() {});
+                                              _filterChangeNotifier.value++;
+                                            },
+                                          ))
+                                      .toList(),
                                 ),
                                 ExpansionTile(
                                   title: const Text('Category'),
-                                  children: sampleJobs
-                                      .map((job) => job.category)
-                                      .toSet()
+                                  children: jobProvider.uniqueCategories
                                       .map((cat) => RadioListTile<String>(
                                             activeColor: kPrimaryColor,
                                             title: Text(cat),
@@ -605,6 +556,7 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
                                               setModalState(() =>
                                                   _selectedCategory = value);
                                               setState(() {});
+                                              _filterChangeNotifier.value++;
                                             },
                                           ))
                                       .toList(),
@@ -621,6 +573,7 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
                                         setModalState(
                                             () => _selectedDatePosted = value);
                                         setState(() {});
+                                        _filterChangeNotifier.value++;
                                       },
                                     ),
                                     RadioListTile<String>(
@@ -632,6 +585,7 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
                                         setModalState(
                                             () => _selectedDatePosted = value);
                                         setState(() {});
+                                        _filterChangeNotifier.value++;
                                       },
                                     ),
                                     RadioListTile<String>(
@@ -643,6 +597,7 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
                                         setModalState(
                                             () => _selectedDatePosted = value);
                                         setState(() {});
+                                        _filterChangeNotifier.value++;
                                       },
                                     ),
                                   ],
@@ -654,16 +609,19 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
                         // Bottom apply button
                         Padding(
                           padding: const EdgeInsets.all(24),
-                          child: SaveButton(
-                            text:
-                                'Apply Filter (${_filteredResultCount} results)',
-                            onPressed: () {
-                              setState(() {
-                                // Trigger rebuild with new filters
-                              });
-                              Navigator.pop(context);
+                          child: ValueListenableBuilder<int>(
+                            valueListenable: _filterChangeNotifier,
+                            builder: (context, value, child) {
+                              return SaveButton(
+                                text:
+                                    'Apply Filter (${_getCurrentFilteredCount()} results)',
+                                onPressed: () {
+                                  _applyFilters();
+                                  Navigator.pop(context);
+                                },
+                                height: 48,
+                              );
                             },
-                            height: 48,
                           ),
                         ),
                       ],
@@ -691,314 +649,492 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kCardColorLight,
-      appBar: AppBar(
-        backgroundColor: kCardColorLight,
-        elevation: 0,
-        title: Text('Find your dream job',
-            style: TextStyle(color: kTextPrimary, fontWeight: FontWeight.bold)),
-        iconTheme: IconThemeData(color: kTextPrimary),
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w).copyWith(top: 20.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: kPrimaryColor,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
+        child: Consumer<JobProvider>(
+          builder: (context, jobProvider, child) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 50.h,
-                        child: TextField(
-                          controller: _searchController,
-                          autofocus:
-                              false, // Don't focus initially for any user
-                          onChanged: (value) {
-                            setState(() {
-                              // Trigger rebuild when search text changes
-                            });
-                          },
-                          decoration: InputDecoration(
-                            hintText:
-                                _isListening ? 'Listening...' : 'Search For...',
-                            hintStyle: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w400,
-                              color: _isListening ? kPrimaryColor : kGrey600,
-                            ),
-                            prefixIcon: Icon(
-                              Icons.search,
-                              size: 24.r,
-                              color: _isListening ? kPrimaryColor : null,
-                            ),
-                            suffixIcon: _searchController.text.isNotEmpty
-                                ? IconButton(
-                                    icon: Icon(Icons.clear, size: 24.r),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                      setState(() {});
-                                    },
-                                  )
-                                : IconButton(
-                                    icon: Icon(
-                                      _isListening
-                                          ? Icons.mic
-                                          : Icons.keyboard_voice_outlined,
-                                      size: 24.r,
-                                      color:
-                                          _isListening ? kPrimaryColor : null,
-                                    ),
-                                    onPressed: _startListening,
-                                  ),
-                            filled: true,
-                            fillColor: _isListening
-                                ? kPrimaryColor.withOpacity(0.1)
-                                : kGrey100,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30),
-                              borderSide: BorderSide(
-                                color: _isListening
-                                    ? kPrimaryColor
-                                    : Colors.transparent,
-                                width: _isListening ? 2 : 0,
-                              ),
-                            ),
-                          ),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 20.h),
+                      decoration: BoxDecoration(
+                        color: kPrimaryColor,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(30.r),
+                          bottomRight: Radius.circular(30.r),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                // Voice search help button
-                if (!_speechEnabled)
-                  Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.only(top: 8.h),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                    decoration: BoxDecoration(
-                      color: kWarningColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: kWarningColor.withOpacity(0.3)),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.info_outline,
-                            size: 16, color: kWarningColor),
-                        SizedBox(width: 8.w),
-                        Expanded(
-                          child: Text(
-                            'Voice search is not available on this device',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: kWarningColor,
-                            ),
+                      child: Column(children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 20.h),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    // Check if we can pop back, if not navigate to main app home
+                                    if (Navigator.of(context).canPop()) {
+                                      Navigator.pop(context);
+                                    } else {
+                                      // Navigate to the main app's home screen
+                                      Navigator.of(context).pushAndRemoveUntil(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const Navigation(),
+                                        ),
+                                        (route) => false,
+                                      );
+                                    }
+                                  },
+                                  icon: Icon(
+                                    Icons.arrow_back_ios_new,
+                                    color: kTextOnPrimary,
+                                  )),
+                              const Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Find jobs',
+                                    style: TextStyle(
+                                        color: kTextOnPrimary,
+                                        fontSize: 21,
+                                        fontWeight: FontWeight.w900),
+                                  ),
+                                  Text(
+                                    'Anytime, anywhere',
+                                    style: TextStyle(
+                                        color: kTextOnPrimary,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                ],
+                              ),
+                              Spacer(),
+                              IconButton(
+                                onPressed: () {},
+                                icon: const Icon(
+                                  Icons.notifications_active_outlined,
+                                  color: kTextOnPrimary,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                // Show recognized text when listening
-                if (_isListening && _lastWords.isNotEmpty)
-                  Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.only(top: 8.h),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                    decoration: BoxDecoration(
-                      color: kPrimaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: kPrimaryColor.withOpacity(0.3)),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.mic, size: 16, color: kPrimaryColor),
-                        SizedBox(width: 8.w),
-                        Expanded(
-                          child: Text(
-                            _lastWords,
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              color: kPrimaryColor,
-                              fontStyle: FontStyle.italic,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                                child: SizedBox(
+                                  height: 45.h,
+                                  child: TextField(
+                                    controller: _searchController,
+                                    autofocus:
+                                        false, // Don't focus initially for any user
+                                    onChanged: (value) {
+                                      _applyFilters();
+                                    },
+                                    style: TextStyle(
+                                      color: _isListening
+                                          ? kTextPrimary
+                                          : kTextOnPrimary,
+                                      fontSize: 16,
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText: _isListening
+                                          ? 'Listening...'
+                                          : 'Search For...',
+                                      hintStyle: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.w400,
+                                        color: _isListening
+                                            ? kTextPrimary.withOpacity(0.6)
+                                            : kTextOnPrimary.withOpacity(0.7),
+                                      ),
+                                      prefixIcon: Icon(
+                                        Icons.search,
+                                        size: 24.r,
+                                        color: _isListening
+                                            ? kTextPrimary.withOpacity(0.8)
+                                            : kTextOnPrimary.withOpacity(0.8),
+                                      ),
+                                      suffixIcon:
+                                          _searchController.text.isNotEmpty
+                                              ? IconButton(
+                                                  icon: Icon(
+                                                    Icons.clear,
+                                                    size: 24.r,
+                                                    color: _isListening
+                                                        ? kTextPrimary
+                                                        : kTextOnPrimary,
+                                                  ),
+                                                  onPressed: () {
+                                                    _searchController.clear();
+                                                    _applyFilters();
+                                                  },
+                                                )
+                                              : IconButton(
+                                                  icon: Icon(
+                                                    _isListening
+                                                        ? Icons.mic
+                                                        : Icons
+                                                            .keyboard_voice_outlined,
+                                                    size: 24.r,
+                                                    color: _isListening
+                                                        ? kTextPrimary
+                                                        : kTextOnPrimary
+                                                            .withOpacity(0.8),
+                                                  ),
+                                                  onPressed: _startListening,
+                                                ),
+                                      filled: true,
+                                      fillColor: _isListening
+                                          ? kGrey100
+                                          : kPrimaryColor.withOpacity(0.15),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                        borderSide: BorderSide(
+                                          color: Colors.white,
+                                          // width: _isListening ? 2 : 0,
+                                        ),
+                                      ),
+                                      disabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                        borderSide: BorderSide(
+                                          color: Colors.white,
+                                          // width: _isListening ? 2 : 0,
+                                        ),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                        borderSide: BorderSide(
+                                          color: Colors.white,
+                                          // width: _isListening ? 2 : 0,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                        borderSide: BorderSide(
+                                          color: Colors.white,
+                                          // width: _isListening ? 2 : 0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
+                      ]),
                     ),
-                  ),
-              ],
-            ),
-            SizedBox(height: 10.h),
-            // Clear filters button
-            if (_selectedFilterCount > 0 || _searchController.text.isNotEmpty)
-              Padding(
-                padding: EdgeInsets.only(bottom: 8.h),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 12.w, vertical: 6.h),
+        
+                    // Voice search help button
+                    if (!_speechEnabled)
+                      Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.symmetric(horizontal: 20.w)
+                            .copyWith(top: 8.h),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                         decoration: BoxDecoration(
-                          color: kPrimaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
+                          color: kWarningColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border:
+                              Border.all(color: kWarningColor.withOpacity(0.3)),
                         ),
                         child: Row(
-                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.filter_list,
-                                size: 16, color: kPrimaryColor),
-                            SizedBox(width: 6.w),
-                            Text(
-                              '${_selectedFilterCount + (_searchController.text.isNotEmpty ? 1 : 0)} filter${_selectedFilterCount + (_searchController.text.isNotEmpty ? 1 : 0) == 1 ? '' : 's'} active',
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                color: kPrimaryColor,
-                                fontWeight: FontWeight.w500,
+                            Icon(Icons.info_outline,
+                                size: 16, color: kWarningColor),
+                            SizedBox(width: 8.w),
+                            Expanded(
+                              child: Text(
+                                'Voice search is not available on this device',
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  color: kWarningColor,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    SizedBox(width: 8.w),
-                    TextButton(
-                      onPressed: _clearAllFilters,
-                      child: Text(
-                        'Clear all',
-                        style: TextStyle(
-                          color: kErrorColor,
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
+                    // Show recognized text when listening
+                    if (_isListening && _lastWords.isNotEmpty)
+                      Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.symmetric(horizontal: 20.w)
+                            .copyWith(top: 8.h),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                        decoration: BoxDecoration(
+                          color: kPrimaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border:
+                              Border.all(color: kPrimaryColor.withOpacity(0.3)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.mic, size: 16, color: kPrimaryColor),
+                            SizedBox(width: 8.w),
+                            Expanded(
+                              child: Text(
+                                _lastWords,
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: kPrimaryColor,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
                   ],
                 ),
-              ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+                SizedBox(height: 10.h),
+                // Clear filters button
+                if (_selectedFilterCount > 0 || _searchController.text.isNotEmpty)
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w)
+                        .copyWith(bottom: 8.h),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12.w, vertical: 6.h),
+                            decoration: BoxDecoration(
+                              color: kPrimaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.filter_list,
+                                    size: 16, color: kPrimaryColor),
+                                SizedBox(width: 6.w),
+                                Text(
+                                  '${_selectedFilterCount + (_searchController.text.isNotEmpty ? 1 : 0)} filter${_selectedFilterCount + (_searchController.text.isNotEmpty ? 1 : 0) == 1 ? '' : 's'} active',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    color: kPrimaryColor,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                        TextButton(
+                          onPressed: _clearAllFilters,
+                          child: Text(
+                            'Clear all',
+                            style: TextStyle(
+                              color: kErrorColor,
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Row(
+                        children: [
+                          Text(
+                            _searchController.text.isNotEmpty ||
+                                    _selectedFilterCount > 0
+                                ? 'Search Results'
+                                : '${jobProvider.jobs.length} Jobs Posted',
+                            style: TextStyle(
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.bold,
+                              color: kTextPrimary,
+                            ),
+                          ),
+                          if (_searchController.text.isNotEmpty ||
+                              _selectedFilterCount > 0)
+                            Container(
+                              margin: EdgeInsets.only(left: 8.w),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8.w, vertical: 2.h),
+                              decoration: BoxDecoration(
+                                color: kPrimaryColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                '${_filteredResultCount}',
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: kPrimaryColor,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      SizedBox(height: 2.h),
                       Text(
                         _searchController.text.isNotEmpty ||
                                 _selectedFilterCount > 0
-                            ? 'Search Results'
-                            : 'Job matches with you',
+                            ? '${_filteredResultCount} job${_filteredResultCount == 1 ? '' : 's'} found'
+                            : 'based on your profile details',
                         style: TextStyle(
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.bold,
-                          color: kTextPrimary,
+                          fontSize: 15.sp,
+                          color: kGrey600,
                         ),
                       ),
-                      if (_searchController.text.isNotEmpty ||
-                          _selectedFilterCount > 0)
-                        Container(
-                          margin: EdgeInsets.only(left: 8.w),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 8.w, vertical: 2.h),
-                          decoration: BoxDecoration(
-                            color: kPrimaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '${_filteredResultCount}',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w600,
-                              color: kPrimaryColor,
-                            ),
-                          ),
-                        ),
                     ],
                   ),
-                  SizedBox(height: 2.h),
-                  Text(
-                    _searchController.text.isNotEmpty ||
-                            _selectedFilterCount > 0
-                        ? '${_filteredResultCount} job${_filteredResultCount == 1 ? '' : 's'} found'
-                        : 'based on your profile details',
-                    style: TextStyle(
-                      fontSize: 15.sp,
-                      color: kGrey600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: _sortedJobs.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.search_off,
-                            size: 64,
-                            color: kGrey400,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No jobs found',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: kGrey600,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Try adjusting your search or filters',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: kGrey500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Column(
-                        children: List.generate(_sortedJobs.length, (index) {
-                          return GestureDetector(
-                            onTap: () {
-                              _showJobDetailsModal(context, _sortedJobs[index],
-                                  parentContext: context);
-                            },
-                            child: buildJobPost(
-                                logoColors: logoColors,
-                                sampleJobs: _sortedJobs,
-                                index: index),
-                          );
-                        }),
-                      ),
-                    ),
-            ),
-            SizedBox(height: 20.h),
-          ],
+                ),
+                Expanded(
+                  child: jobProvider.isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : jobProvider.errorMessage != null
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.error_outline,
+                                    size: 64,
+                                    color: kGrey400,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Error loading jobs',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: kGrey600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    jobProvider.errorMessage!,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: kGrey500,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      jobProvider.clearError();
+                                      jobProvider.fetchJobs();
+                                    },
+                                    child: const Text('Retry'),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : _sortedJobs.isEmpty
+                              ? Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.search_off,
+                                        size: 64,
+                                        color: kGrey400,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'No jobs found',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                          color: kGrey600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Try adjusting your search or filters',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: kGrey500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : RefreshIndicator(
+                                  onRefresh: () => jobProvider.refreshJobs(),
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.vertical,
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 20.w),
+                                      child: Column(
+                                        children: List.generate(
+                                            _sortedJobs.length, (index) {
+                                          return buildJobPost(
+                                            logoColors: logoColors,
+                                            sampleJobs: _sortedJobs,
+                                            index: index,
+                                            onJobTap: (job) {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      JobDetailsScreen(
+                                                          initialJob: job),
+                                                ),
+                                              );
+                                            },
+                                            showDetailedModal: (detailedJob) {
+                                              // This is no longer needed with the new stateful screen
+                                            },
+                                          );
+                                        }),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                ),
+                // SizedBox(height: 20.h),
+              ],
+            );
+          },
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ChoiceChip(
             label: Text(
               _selectedFilterCount > 0
-                  ? 'Filters (${_selectedFilterCount})'
+                  ? 'Filters ( ${_selectedFilterCount})'
                   : 'Filters',
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
+                fontSize: 18.sp, // Increased font size
               ),
             ),
+            labelPadding: EdgeInsets.symmetric(
+                horizontal: 8.w, vertical: 4.h), // Increased padding
             selected: _selectedFilterCount > 0,
             onSelected: (_) => _showFilterOptions(),
             avatar: Icon(
@@ -1006,14 +1142,14 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
                   ? Icons.filter_list
                   : Icons.filter_list_outlined,
               color: Colors.white,
-              size: 20,
+              size: 28, // Increased icon size
             ),
             backgroundColor:
                 _selectedFilterCount > 0 ? kPrimaryColor : kGrey600,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20.r),
-                bottomLeft: Radius.circular(20.r),
+                topLeft: Radius.circular(24.r),
+                bottomLeft: Radius.circular(24.r),
               ),
               side: const BorderSide(color: Colors.white),
             ),
@@ -1021,188 +1157,29 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
           ChoiceChip(
             label: Text(
               _sortBy == 'date' ? 'Date' : 'Relevance',
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
+                fontSize: 18.sp, // Increased font size
               ),
             ),
+            labelPadding: EdgeInsets.symmetric(
+                horizontal: 8.w, vertical: 4.h), // Increased padding
             selected: false,
             onSelected: (_) => _showSortOptions(),
-            avatar: const Icon(Icons.sort, color: Colors.white, size: 20),
+            avatar: Icon(Icons.sort,
+                color: Colors.white, size: 28), // Increased icon size
             backgroundColor: kPrimaryColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-                topRight: Radius.circular(20.r),
-                bottomRight: Radius.circular(20.r),
+                topRight: Radius.circular(24.r),
+                bottomRight: Radius.circular(24.r),
               ),
               side: const BorderSide(color: Colors.white),
             ),
           ),
         ],
       ),
-    );
-  }
-
-  void _showJobDetailsModal(BuildContext context, JobModel job,
-      {required BuildContext parentContext}) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.85,
-          minChildSize: 0.5,
-          maxChildSize: 0.95,
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(28),
-                  topRight: Radius.circular(28),
-                ),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-              child: SingleChildScrollView(
-                controller: scrollController,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 4,
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: Colors.red.shade700,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: job.companyLogo != null
-                              ? Image.network(job.companyLogo!,
-                                  fit: BoxFit.cover)
-                              : Center(
-                                  child: Text(
-                                    job.companyName
-                                        .substring(0, 1)
-                                        .toUpperCase(),
-                                    style: const TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                job.title,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Row(
-                                children: [
-                                  Text(
-                                    job.companyName,
-                                    style: const TextStyle(
-                                        color: Colors.grey, fontSize: 15),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  const Icon(Icons.location_on,
-                                      size: 16, color: Colors.grey),
-                                  Text(
-                                    job.companyLocation,
-                                    style: const TextStyle(
-                                        color: Colors.grey, fontSize: 15),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.more_vert, color: Colors.grey),
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        _pillChip('Full Time', kPrimaryColor),
-                        const SizedBox(width: 8),
-                        _pillChip('Remote', Colors.blue),
-                        const SizedBox(width: 8),
-                        _pillChip(job.salary, Colors.black),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
-                    const Text('About the Role',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                    const SizedBox(height: 6),
-                    Text(
-                      job.description ??
-                          'As a Senior UI/UX Designer at Netflix, you’ll be a champion for user experience, translating user needs into intuitive and visually appealing features. You’ll leverage your creativity, design expertise, and technical knowledge to craft exceptional experiences across various digital products.',
-                      style:
-                          const TextStyle(fontSize: 15, color: Colors.black87),
-                    ),
-                    const SizedBox(height: 18),
-                    const Text('Qualification',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                    const SizedBox(height: 6),
-                    _bulletList([
-                      'Minimum 5+ years of experience as a UI/UX Designer or similar role.',
-                      'Strong portfolio showcasing a variety of UI/UX projects.',
-                      'Proven ability to conduct user research and translate insights into actionable design.',
-                      'Mastery of design tools like Figma, Sketch, InVision, and prototyping tools.',
-                      'Excellent communication and collaboration skills.',
-                      'Ability to work independently and manage multiple projects simultaneously.',
-                      'A keen eye for detail and a passion for creating user-centered experiences.',
-                    ]),
-                    const SizedBox(height: 28),
-                    SaveButton(
-                      text: 'Apply for this Job',
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          parentContext,
-                          MaterialPageRoute(
-                            builder: (context) => const ApplyScreen(),
-                          ),
-                        );
-                      },
-                      height: 50,
-                    ),
-                    const SizedBox(height: 12),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
     );
   }
 
@@ -1252,8 +1229,13 @@ class buildJobPost extends StatelessWidget {
     required List<Color> logoColors,
     required List<JobModel> sampleJobs,
     required this.index,
+    required this.onJobTap,
+    required this.showDetailedModal,
   })  : logoColors = logoColors,
         sampleJobs = sampleJobs;
+
+  final Function(JobModel) onJobTap;
+  final Function(JobModel) showDetailedModal;
 
   final int index;
   final List<Color> logoColors;
@@ -1262,186 +1244,236 @@ class buildJobPost extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final job = sampleJobs[index];
-    // Mock tags for demo
-    final List<String> tags = [
-      if (job.jobLocation == 'Remote') 'Remote',
-      if (job.jobLocation == 'Hybrid') 'Hybrid',
-      if (job.jobLocation == 'On-site') 'On-site',
-      if (job.jobType == 'Full-time') 'Full-time',
-      if (job.jobType == 'Contract') 'Contract',
-    ];
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10.w),
-      child: Container(
-        width: MediaQuery.of(context).size.width - 40.w,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.07),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-          border: Border.all(
-            color: Colors.grey.shade100,
-          ),
-        ),
+    return GestureDetector(
+        onTap: () {
+          // Show job details screen
+          onJobTap(job);
+        },
         child: Padding(
-          padding: EdgeInsets.all(16.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+          padding: EdgeInsets.symmetric(vertical: 5.w),
+          child: Container(
+            width: MediaQuery.of(context).size.width - 40.w,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.07),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+              border: Border.all(
+                color: Colors.grey.shade100,
+              ),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(8.r),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 48.w,
-                    height: 48.h,
-                    decoration: BoxDecoration(
-                      color: logoColors[index % logoColors.length],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: job.companyLogo != null
-                        ? Image.network(
-                            job.companyLogo!,
-                            fit: BoxFit.cover,
-                          )
-                        : Center(
-                            child: Text(
-                              job.companyName.substring(0, 1).toUpperCase(),
-                              style: TextStyle(
-                                fontSize: 22.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                  ),
-                  SizedBox(width: 14.w),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          job.title,
-                          style: TextStyle(
-                            fontSize: 17.sp,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 48.w,
+                        height: 48.h,
+                        decoration: BoxDecoration(
+                          color: logoColors[index % logoColors.length],
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        SizedBox(height: 2.h),
-                        Row(
+                        child: job.companyLogo != null
+                            ? Image.network(
+                                job.companyLogo!,
+                                fit: BoxFit.cover,
+                              )
+                            : Center(
+                                child: Text(
+                                  job.companyName.substring(0, 1).toUpperCase(),
+                                  style: TextStyle(
+                                    fontSize: 22.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                      ),
+                      SizedBox(width: 13.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              job.companyName,
+                              job.title,
                               style: TextStyle(
-                                fontSize: 14.sp,
-                                color: Colors.grey.shade600,
+                                fontSize: 19,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
                               ),
                             ),
-                            SizedBox(width: 12.w),
-                            Text(
-                              '• ${job.companyLocation}',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                color: Colors.grey.shade600,
-                              ),
+                            SizedBox(height: 2.h),
+                            Row(
+                              children: [
+                                Text(
+                                  job.companyName,
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    color: Colors.grey.shade800,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.pin_drop_outlined,
+                                  size: 23.r,
+                                  color: Colors.grey.shade800,
+                                ),
+                                SizedBox(width: 5.w),
+                                Text(
+                                  job.companyLocation ?? job.jobLocation,
+                                  overflow: TextOverflow.visible,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    color: Colors.grey.shade800,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        SizedBox(height: 2.h),
-                        Row(
-                          children: tags.map((tag) {
-                            Color tagColor;
-                            if (tag == 'Remote')
-                              tagColor = Colors.blue;
-                            else if (tag == 'Hybrid')
-                              tagColor = Colors.purple;
-                            else if (tag == 'On-site')
-                              tagColor = Colors.green;
-                            else if (tag == 'Full-time')
-                              tagColor = Colors.blue.shade700;
-                            else
-                              tagColor = Colors.orange;
-                            return Container(
-                              margin: EdgeInsets.only(right: 6.w),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 10.w, vertical: 3.h),
-                              decoration: BoxDecoration(
-                                color: tagColor.withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                tag,
-                                style: TextStyle(
-                                  color: tagColor,
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            );
-                          }).toList(),
+                      ),
+                      // Replace static bookmark icon with save/unsave logic
+                      Consumer2<JobProvider, UserProvider>(
+                        builder: (context, jobProvider, userProvider, _) {
+                          final user = userProvider.user;
+                          final isSaved = jobProvider.isJobSaved(job.id);
+                          return IconButton(
+                            icon: Icon(
+                              isSaved ? Icons.bookmark : Icons.bookmark_border,
+                              size: 24.r,
+                              color: isSaved ? kPrimaryColor : Colors.grey,
+                            ),
+                            tooltip: isSaved ? 'Unsave Job' : 'Save Job',
+                            onPressed: user == null
+                                ? null
+                                : () async {
+                                    if (isSaved) {
+                                      await jobProvider.unsaveJob(
+                                          user.id, job.id);
+                                      // ScaffoldMessenger.of(context)
+                                      //     .showSnackBar(
+                                      //   SnackBar(
+                                      //     content:
+                                      //         Text('Job removed from saved'),
+                                      //     backgroundColor: Colors.red,
+                                      //   ),
+                                      // );
+                                    } else {
+                                      await jobProvider.saveJob(
+                                          user.id, job.id);
+                                      // ScaffoldMessenger.of(context)
+                                      //     .showSnackBar(
+                                      //   SnackBar(
+                                      //     content: Text('Job saved'),
+                                      //     backgroundColor: kPrimaryColor,
+                                      //   ),
+                                      // );
+                                    }
+                                  },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 4.h),
+                  Padding(
+                    padding: EdgeInsets.only(left: 60.w),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          size: 23.r,
+                          color: Colors.grey.shade800,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          timeago.format(
+                            DateTime.parse(job.postedDate),
+                          ),
+                          style: TextStyle(
+                            fontSize: 17,
+                            color: Colors.grey.shade800,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  Icon(
-                    Icons.bookmark_border,
-                    size: 24.r,
-                    color: Colors.grey,
-                  ),
+                  // SizedBox(height: 12.h),
+                  // Second tag row: First 3 tags from job tags
+                  // if (job.tags.isNotEmpty)
+                  // Padding(
+                  //   padding: EdgeInsets.only(left: 60.w),
+                  //   child: Row(
+                  //     children: job.tags.take(3).map((tag) {
+                  //       return Container(
+                  //         margin: EdgeInsets.only(right: 6.w),
+                  //         padding: EdgeInsets.symmetric(
+                  //             horizontal: 8.w, vertical: 2.h),
+                  //         decoration: BoxDecoration(
+                  //           color: Colors.grey.withOpacity(0.12),
+                  //           borderRadius: BorderRadius.circular(6),
+                  //         ),
+                  //         child: Text(
+                  //           tag,
+                  //           style: TextStyle(
+                  //             color: Colors.grey.shade700,
+                  //             fontSize: 12.sp,
+                  //             fontWeight: FontWeight.w500,
+                  //           ),
+                  //         ),
+                  //       );
+                  //     }).toList(),
+                  //   ),
+                  // ),
+                  // SizedBox(height: 8.h),
+                  // SizedBox(
+                  //   width: double.infinity,
+                  //   child: ElevatedButton(
+                  //     onPressed: () {},
+                  //     style: ElevatedButton.styleFrom(
+                  //       backgroundColor: const Color(0xFF2563EB),
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //       padding: EdgeInsets.symmetric(vertical: 12.h),
+                  //     ),
+                  //     child: const Text('Apply',
+                  //         style: TextStyle(
+                  //             color: Colors.white, fontWeight: FontWeight.bold)),
+                  //   ),
+                  // ),
                 ],
               ),
-              SizedBox(height: 12.h),
-              Padding(
-                padding: EdgeInsets.only(left: 60.w),
-                child: Row(
-                  children: [
-                    Text(
-                      '${job.salary} / Month',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      timeago.format(
-                        DateTime.parse(job.postedDate),
-                      ),
-                      style: TextStyle(
-                        fontSize: 13.sp,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 12.h),
-              // SizedBox(
-              //   width: double.infinity,
-              //   child: ElevatedButton(
-              //     onPressed: () {},
-              //     style: ElevatedButton.styleFrom(
-              //       backgroundColor: const Color(0xFF2563EB),
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(8),
-              //       ),
-              //       padding: EdgeInsets.symmetric(vertical: 12.h),
-              //     ),
-              //     child: const Text('Apply',
-              //         style: TextStyle(
-              //             color: Colors.white, fontWeight: FontWeight.bold)),
-              //   ),
-              // ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }
+
+// Add the logoColors list here since we removed the sample_data.dart import
+final List<Color> logoColors = [
+  Color(0xFF4F8EF7), // Blue
+  Color(0xFFF76F4F), // Orange
+  Color(0xFF4FF7A1), // Green
+  Color(0xFFF7E14F), // Yellow
+  Color(0xFFB44FF7), // Purple
+  Color(0xFFF74F8E), // Pink
+  Color(0xFF4FF0F7), // Cyan
+  Color(0xFF7DF74F), // Lime
+  Color(0xFFF79C4F), // Amber
+  Color(0xFF4F5AF7), // Indigo
+];

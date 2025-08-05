@@ -101,7 +101,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     // Navigate to main screen and replace the current route
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => MainScreen(onboardingData: onboardingData),
+        builder: (context) =>
+            MainScreen(onboardingData: onboardingData, initialTabIndex: 0),
       ),
     );
   }

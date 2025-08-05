@@ -1,1 +1,1 @@
-enum LoginSource { tender, seeMore, booking, agencyBooking }
+enum LoginSource { tender, seeMore, booking, agencyBooking, jobFinder }

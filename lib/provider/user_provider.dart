@@ -9,6 +9,8 @@ import 'package:home_service_app/models/user_customer.dart';
 import 'package:home_service_app/models/user.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/utils/functions.dart';
+import 'package:home_service_app/provider/job_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:logger/web.dart';
 
 class UserProvider with ChangeNotifier {
@@ -69,6 +71,9 @@ class UserProvider with ChangeNotifier {
         }
       } else if (_user!.role == "TECHNICIAN") {
         final technicianData = await storage.read(key: "technician");
+      } else if (_user!.role == "JOB_SEEKER" || _user!.role == "USER") {
+        // Automatically fetch job seeker profile for JOB_SEEKER and USER users
+        await fetchJobSeekerProfile();
       }
     }
     notifyListeners();
@@ -108,6 +113,18 @@ class UserProvider with ChangeNotifier {
     }
     await GoogleSignIn().signOut();
     _user = null;
+    _customer = null;
+    clearJobSeekerProfile(); // Clear job seeker profile data
+
+    // Clear saved jobs when user logs out
+    try {
+      final jobProvider =
+          Provider.of<JobProvider>(navigatorKey.currentContext!, listen: false);
+      jobProvider.clearSavedJobs();
+    } catch (e) {
+      Logger().e('Error clearing saved jobs on logout: $e');
+    }
+
     notifyListeners();
   }
 
@@ -235,5 +252,104 @@ class UserProvider with ChangeNotifier {
     }
     // Add email/mobile validation logic here (e.g., regex for email or phone)
     return true;
+  }
+
+  // Job Seeker Profile Management
+  Map<String, dynamic>? _jobSeekerProfile;
+  bool _isLoadingJobSeeker = false;
+
+  Map<String, dynamic>? get jobSeekerProfile => _jobSeekerProfile;
+  bool get isLoadingJobSeeker => _isLoadingJobSeeker;
+
+  // Fetch job seeker profile from API
+  Future<void> fetchJobSeekerProfile() async {
+    if (_user == null) {
+      Logger().e('No user available to fetch job seeker profile');
+      return;
+    }
+
+    Logger()
+        .d('Starting to fetch job seeker profile for user: ${_user!.toJson()}');
+    _isLoadingJobSeeker = true;
+    notifyListeners();
+
+    try {
+      Logger().d('Fetching job seeker profile for user ID: ${_user!.id}');
+      final response =
+          await apiService.getRequest('/profiles/seeker/${_user!.id}');
+
+      Logger().d('Job Seeker Profile API Response: ${response.data}');
+
+      if (response.statusCode == 200) {
+        _jobSeekerProfile = Map<String, dynamic>.from(response.data);
+        Logger().d('Job seeker profile fetched successfully');
+      } else {
+        Logger()
+            .e('Failed to fetch job seeker profile: ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      Logger().e('DioException while fetching job seeker profile: $e');
+      Logger().e('Response: ${e.response?.data}');
+    } catch (e) {
+      Logger().e('Unexpected error while fetching job seeker profile: $e');
+    }
+
+    _isLoadingJobSeeker = false;
+    notifyListeners();
+  }
+
+  // Update job seeker profile
+  Future<void> updateJobSeekerProfile(Map<String, dynamic> profileData) async {
+    if (_user == null) {
+      Logger().e('No user available to update job seeker profile');
+      return;
+    }
+
+    _isLoadingJobSeeker = true;
+    notifyListeners();
+
+    try {
+      Logger().d('Updating job seeker profile for user ID: ${_user!.id}');
+      final formData = FormData.fromMap(profileData);
+      final response = await apiService.putRequestWithFormData(
+          '/profiles/seeker/${_user!.id}', formData);
+
+      Logger().d('Job Seeker Profile Update Response: ${response.data}');
+
+      if (response.statusCode == 200) {
+        // Refresh the profile data
+        await fetchJobSeekerProfile();
+        Logger().d('Job seeker profile updated successfully');
+      } else {
+        Logger()
+            .e('Failed to update job seeker profile: ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      Logger().e('DioException while updating job seeker profile: $e');
+      Logger().e('Response: ${e.response?.data}');
+    } catch (e) {
+      Logger().e('Unexpected error while updating job seeker profile: $e');
+    }
+
+    _isLoadingJobSeeker = false;
+    notifyListeners();
+  }
+
+  // Clear job seeker profile data (for logout)
+  void clearJobSeekerProfile() {
+    _jobSeekerProfile = null;
+    _isLoadingJobSeeker = false;
+    notifyListeners();
+  }
+
+  // Get job seeker profile data with fallback
+  Map<String, dynamic>? getJobSeekerInfo() {
+    return _jobSeekerProfile;
+  }
+
+  // Check if user is a job seeker
+  bool get isJobSeeker {
+    // Check for both JOB_SEEKER role and USER role (since job finder users might have USER role)
+    return _user?.role == "JOB_SEEKER" || _user?.role == "USER";
   }
 }

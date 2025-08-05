@@ -15,7 +15,7 @@ final List<Color> logoColors = [
     Color(0xFF4F5AF7), // Indigo
   ];
   // 30 different sample job posts
-  final List<JobModel> sampleJobs = [
+  /*final List<JobModel> sampleJobs = [
     JobModel(
       id: 1,
       title: 'Software Engineer',
@@ -408,4 +408,4 @@ final List<Color> logoColors = [
       companyLogo: null,
       category: 'Events',
     ),
-  ];
+  ];*/

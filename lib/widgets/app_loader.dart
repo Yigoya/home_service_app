@@ -64,7 +64,7 @@ class _LoadingScreen extends StatelessWidget {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          color: Color(0xFF005e4e),
+          color: Color.fromARGB(255, 77, 107, 254),
         ),
         child: Stack(
           children: [
@@ -85,7 +85,7 @@ class _LoadingScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Hulu Moya',
+                        'Hulu',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 56,

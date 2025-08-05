@@ -75,14 +75,14 @@ class CategoryServices extends StatelessWidget {
                               Icons.door_back_door_outlined
                             ].elementAt(category.id % 4),
                             size: 40.sp,
-                            color: Color.fromARGB(255, 0, 88, 22),
+                            color: Theme.of(context).primaryColor,
                           )
                         : Image.network(
                             '${ApiService.API_URL_FILE}${category.icon}',
                             width: 40.w,
                             height: 40.h,
                             fit: BoxFit.cover,
-                            color: Color.fromARGB(255, 0, 88, 22),
+                            color: Theme.of(context).primaryColor,
                           ),
                     const SizedBox(
                       width: 12,
@@ -98,7 +98,7 @@ class CategoryServices extends StatelessWidget {
                             style: TextStyle(
                                 fontSize: 24.sp,
                                 fontWeight: FontWeight.w900,
-                                color: Color.fromARGB(255, 0, 88, 22)),
+                                color: Theme.of(context).primaryColor),
                           ),
                         ),
                         SizedBox(height: 8.h),
@@ -184,14 +184,14 @@ class CategoryServices extends StatelessWidget {
                                         Icons.door_back_door_outlined
                                       ].elementAt(index % 6),
                                       size: 30.sp,
-                                      color: Color.fromARGB(255, 0, 88, 22),
+                                      color: Theme.of(context).primaryColor,
                                     )
                                   : Image.network(
                                       '${ApiService.API_URL_FILE}${services[index].icon}',
                                       width: 30.w,
                                       height: 30.h,
                                       fit: BoxFit.cover,
-                                      color: Color.fromARGB(255, 0, 88, 22),
+                                      color: Theme.of(context).primaryColor,
                                     ),
                               SizedBox(height: 16.h),
                               Text(
