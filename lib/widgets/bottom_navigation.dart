@@ -3,6 +3,7 @@ import 'package:home_service_app/provider/notification_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/home/home.dart';
 import 'package:home_service_app/screens/home/more_page.dart';
+import 'package:home_service_app/screens/marketplace/marketplace_home_page.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,6 +37,7 @@ class _NavigationState extends State<Navigation> {
         activeColorPrimary: Colors.blue,
         inactiveColorPrimary: Colors.grey[800],
       ),
+
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.more_horiz, size: 24),
         title: AppLocalizations.of(context)!.seeMore,

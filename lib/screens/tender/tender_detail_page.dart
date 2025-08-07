@@ -120,45 +120,146 @@ class _TenderDetailPageState extends State<TenderDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        SizedBox(height: 12),
-                        Text("Posted on: ${_formatDate(tender.closingDate)}",
-                            style: TextStyle(
-                                color: Theme.of(context).secondaryHeaderColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold)),
-                        SizedBox(height: 8),
-                        Text("Expiry Date: ${_formatDate(tender.closingDate)}",
-                            style: TextStyle(
-                                color: Theme.of(context).secondaryHeaderColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold)),
-                        SizedBox(height: 8),
-                        Text(
-                          "Category: ${tender.categoryName}",
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
+                        SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Text("Posted on: ",
+                                style: TextStyle(
+                                  color: Theme.of(context).secondaryHeaderColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Figtree',
+                                )),
+                            Text("${_formatDate(tender.closingDate)}",
+                                style: TextStyle(
+                                  color: Theme.of(context).secondaryHeaderColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  // fontFamily: 'Figtree'
+                                )),
+                          ],
                         ),
                         SizedBox(height: 8),
-                        Text("Location: ${tender.location}",
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold)),
+                        Row(
+                          children: [
+                            Text("Expiry Date: ",
+                                style: TextStyle(
+                                  color: Theme.of(context).secondaryHeaderColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Figtree',
+                                )),
+                            Text("${_formatDate(tender.closingDate)}",
+                                style: TextStyle(
+                                    color:
+                                        Theme.of(context).secondaryHeaderColor,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700)),
+                          ],
+                        ),
                         SizedBox(height: 8),
-                        Text("Status: ${_formatStatus(tender.status)}",
-                            style: const TextStyle(
+                        Row(
+                          children: [
+                            Text(
+                              "Category: ",
+                              style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 16,
-                                fontWeight: FontWeight.bold)),
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Figtree',
+                              ),
+                            ),
+                            Text(
+                              "${tender.categoryName}",
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                // fontFamily: 'Figtree'
+                              ),
+                            ),
+                          ],
+                        ),
                         SizedBox(height: 8),
-                        Text(
-                            "Question Answer Deadline: ${_formatDate(tender.questionDeadline)}",
-                            style: const TextStyle(
+                        Row(
+                          children: [
+                            Text("Location: ",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Figtree',
+                                )),
+                            Text("${tender.location}",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  // fontFamily: 'Figtree'
+                                )),
+                          ],
+                        ),
+                        SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Text("Status: ",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Figtree',
+                                )),
+                            Text("${_formatStatus(tender.status)}",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  // fontFamily: 'Figtree'
+                                )),
+                          ],
+                        ),
+                        SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Text(
+                              "Question Deadline: ",
+                              style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 16,
-                                fontWeight: FontWeight.bold)),
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Figtree',
+                              ),
+                            ),
+                            Text("${_formatDate(tender.questionDeadline)}",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  // fontFamily: 'Figtree'
+                                )),
+                          ],
+                        ),
+                        SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Text(
+                              "Published by: ",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Figtree',
+                              ),
+                            ),
+                            Text("hulumoya.com",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  // fontFamily: 'Figtree'
+                                )),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -195,7 +296,7 @@ class _TenderDetailPageState extends State<TenderDetailPage> {
       child: Text(
         tender.title,
         style: const TextStyle(
-            color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -240,7 +341,7 @@ class _TenderDetailPageState extends State<TenderDetailPage> {
               style: const TextStyle(
                   color: Colors.black,
                   fontSize: 16,
-                  fontWeight: FontWeight.w600),
+                  fontWeight: FontWeight.w700),
             ),
           ),
           Container(
@@ -249,7 +350,7 @@ class _TenderDetailPageState extends State<TenderDetailPage> {
               description,
               style: TextStyle(
                 color: Colors.black,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),
@@ -305,11 +406,11 @@ class _TenderDetailPageState extends State<TenderDetailPage> {
   String _formatStatus(String status) {
     switch (status.toUpperCase()) {
       case "OPEN":
-        return "🟢 Open";
+        return "Open";
       case "CLOSED":
-        return "🔴 Closed";
+        return "Closed";
       default:
-        return "⚪ Unknown";
+        return "Unknown";
     }
   }
 }

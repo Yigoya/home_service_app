@@ -1,5 +1,6 @@
 import 'dart:ui'; // Add this import for the BackdropFilter
 import 'package:flutter/material.dart';
+import 'package:home_service_app/models/login_source.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/auth/login.dart';
 import 'package:home_service_app/screens/tender/subscription_page.dart';
@@ -103,7 +104,9 @@ class _LoginBlurState extends State<LoginBlur> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => SubscriptionPage()),
+                          builder: (context) => LoginPage(
+                                source: LoginSource.tender,
+                              )),
                     );
                   },
                   child: Container(

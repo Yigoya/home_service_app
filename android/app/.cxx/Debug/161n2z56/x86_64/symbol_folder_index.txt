@@ -1,0 +1,1 @@
+/home/yigo/dev/projects/home_service_app/build/app/intermediates/cxx/Debug/161n2z56/obj/x86_64

@@ -44,6 +44,7 @@ class AuthenticationProvider with ChangeNotifier {
     required String phoneNumber,
     required String password,
     required BuildContext context,
+    required LoginSource source,
   }) async {
     _isLoading = true;
     _errorMessage = null;
@@ -61,8 +62,12 @@ class AuthenticationProvider with ChangeNotifier {
       showTopMessage(
           context, AppLocalizations.of(context)!.signedUpSuccessfully);
       notifyListeners();
-      Navigator.of(context).pushNamedAndRemoveUntil(
-          RouteGenerator.verificationPage, (route) => false);
+      if (source == LoginSource.tender) {
+        Navigator.of(context).pushNamed(RouteGenerator.subscriptionPage);
+      } else {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            RouteGenerator.verificationPage, (route) => false);
+      }
     } on DioException catch (e) {
       _isLoading = false;
       _errorMessage = e.response?.data['details'].join(', ') ??

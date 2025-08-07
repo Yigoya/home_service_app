@@ -1,3 +1,4 @@
+import 'package:chapa_unofficial/chapa_unofficial.dart';
 import 'package:flutter/material.dart';
 import 'package:home_service_app/models/catagory.dart';
 import 'package:home_service_app/models/rating.dart';
@@ -6,6 +7,9 @@ import 'package:home_service_app/models/technician.dart';
 import 'package:home_service_app/models/tender.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
+import 'package:home_service_app/screens/business/business_home_page.dart';
+import 'package:home_service_app/screens/business/business_list_page.dart';
+import 'package:home_service_app/screens/business/service_details_page.dart';
 import 'package:home_service_app/screens/home/questionnaire_page.dart';
 import 'package:home_service_app/screens/home/category_services.dart';
 import 'package:home_service_app/screens/home/select_location.dart';
@@ -13,8 +17,10 @@ import 'package:home_service_app/screens/home/tender_categorys.dart';
 import 'package:home_service_app/screens/job/job_search_screen.dart';
 import 'package:home_service_app/screens/job/main_screen.dart';
 import 'package:home_service_app/screens/job/onboarding_screen.dart';
+import 'package:home_service_app/screens/marketplace/marketplace_home_page.dart';
 import 'package:home_service_app/screens/profile/technician_detail_page.dart';
 import 'package:home_service_app/screens/tender/component/tender_card.dart';
+import 'package:home_service_app/screens/tender/tender_list_page.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/widgets/catagory_skeleton.dart';
 import 'package:home_service_app/widgets/slide_show.dart';
@@ -23,6 +29,7 @@ import 'package:provider/provider.dart';
 import 'package:home_service_app/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/services.dart';
+// import 'package:chapasdk/chapasdk.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -70,6 +77,51 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         _isFocused = false;
       });
     }
+  }
+
+  Future<void> pay() async {
+    // Generate a random transaction reference with a custom prefix
+    String txRef = TxRefRandomGenerator.generate(prefix: 'Pharmabet');
+
+    // Access the generated transaction reference
+    String storedTxRef = TxRefRandomGenerator.gettxRef;
+
+    // Print the generated transaction reference and the stored transaction reference
+    print('Generated TxRef: $txRef');
+    print('Stored TxRef: $storedTxRef');
+    await Chapa.getInstance.startPayment(
+      context: context,
+      onInAppPaymentSuccess: (successMsg) {
+        // Handle success events
+      },
+      onInAppPaymentError: (errorMsg) {
+        // Handle error
+      },
+      amount: '1000',
+      currency: 'ETB',
+      txRef: storedTxRef,
+    );
+  }
+
+  void onClick() {
+    final txRef = DateTime.now().millisecondsSinceEpoch.toString();
+    // Chapa.paymentParameters(
+    //   context: context,
+    //   publicKey: 'CHAPUBK_TEST-pAf1YBsAF17F5i06Wb9gYAfc4vodbeFs',
+    //   currency: 'ETB',
+    //   amount: '1',
+    //   email: 'fetanchapa.co',
+    //   phone: '0911223344',
+    //   firstName: 'Israel',
+    //   lastName: 'Goytom',
+    //   txRef: txRef,
+    //   title: 'Order Payment',
+    //   desc: 'Payment for order #12345',
+    //   nativeCheckout: true,
+    //   namedRouteFallBack: '/',
+    //   // showPaymentMethodsOnGridView: true,
+    //   availablePaymentMethods: ['mpesa', 'cbebirr', 'telebirr', 'ebirr'],
+    // );
   }
 
   @override
@@ -376,12 +428,71 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             return ListTile(
                               onTap: () {
                                 _focusNode.unfocus();
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => SelectLocation(
-                                            service: provider
-                                                .fiterableBySearch[index])));
+                                if (provider
+                                        .fiterableBySearch[index].categoryId ==
+                                    1) {
+                                  Navigator.of(context, rootNavigator: true)
+                                      .push(MaterialPageRoute(
+                                          builder: (context) => TenderListPage(
+                                                service: provider
+                                                    .fiterableBySearch[index],
+                                              )));
+                                  return;
+                                }
+                                if (provider
+                                        .fiterableBySearch[index].categoryId ==
+                                    2) {
+                                  if (provider.fiterableBySearch[index].services
+                                      .isNotEmpty) {
+                                    // Navigate to ServiceDetailsPage to show child services
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ServiceDetailsPage(
+                                          service:
+                                              provider.fiterableBySearch[index],
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    // Navigate to BusinessListPage to show businesses for this service
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => BusinessListPage(
+                                          service:
+                                              provider.fiterableBySearch[index],
+                                          categoryId: provider
+                                              .fiterableBySearch[index].id,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return;
+                                }
+                                if (provider
+                                        .fiterableBySearch[index].categoryId ==
+                                    3) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => SelectLocation(
+                                              service: provider
+                                                  .fiterableBySearch[index])));
+                                  return;
+                                }
+                                if (provider
+                                        .fiterableBySearch[index].categoryId ==
+                                    4) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => SelectLocation(
+                                              service: provider
+                                                  .fiterableBySearch[index])));
+                                  return;
+                                }
                               },
                               leading:
                                   provider.fiterableBySearch[index].icon == null
@@ -397,6 +508,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                           size: 30.sp,
                                           color: const Color.fromARGB(
                                               255, 77, 107, 254),
+
                                         )
                                       : Image.network(
                                           '${ApiService.API_URL_FILE}${provider.fiterableBySearch[index].icon}',
@@ -493,6 +605,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Widget _buildServiceCategories(HomeServiceProvider provider) {
+    print(provider.categories.length);
     return Column(
       children: [
         Padding(
@@ -543,7 +656,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 onTap: () {
                   provider.filterServicesByCategory(category.id);
                   _focusNode.unfocus();
-                  if (category.id == 3) {
+                  if (category.id == 1) {
                     Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
                             builder: (context) => const TenderCategorys()));
@@ -554,6 +667,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         MaterialPageRoute(
                             builder: (context) =>
                                 const MainScreen(initialTabIndex: 0)));
+                    return;
+                  }
+                  if (category.id == 2) {
+                    Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                            builder: (context) => const BusinessHomePage()));
+                    return;
+                  }
+                  if (category.id == 5) {
+                    Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                            builder: (context) =>  MarketplaceHomePage()));
                     return;
                   }
 
@@ -684,7 +809,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         //                                       ))
         //                                   .toList(),
         //                             ]),
-        //                       ),
+        //            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2IyZjM1ZWJhY2RlNWQ2NzFlYzc2NGMiLCJpYXQiOjE3NDE1MDA1MTQsImV4cCI6MTc0MjM2NDUxNH0.dePxghzCfauUwDFxTOsZNautV9IAQApzS70g_SFpU5g           ),
         //                     ],
         //                   )
         //                 : SizedBox.shrink()

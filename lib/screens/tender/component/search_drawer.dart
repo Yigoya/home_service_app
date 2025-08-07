@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 class SearchDrawer extends StatefulWidget {
   final TextEditingController searchController;
   final String selectedLocation;
-  final List<String> locations;
+
   final List<Service> filteredSubServices;
   final int serviceId;
   final Function(String) onSearchChanged;
@@ -17,7 +17,6 @@ class SearchDrawer extends StatefulWidget {
     super.key,
     required this.searchController,
     required this.selectedLocation,
-    required this.locations,
     required this.filteredSubServices,
     required this.serviceId,
     required this.onSearchChanged,
@@ -127,17 +126,25 @@ class _SearchDrawerState extends State<SearchDrawer> {
                     ),
                     child: ListView.builder(
                       padding: EdgeInsets.zero,
-                      itemCount: widget.locations.length,
+                      itemCount:
+                          Provider.of<TenderProvider>(context, listen: false)
+                              .currentLocations
+                              .length,
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
-                            widget.onLocationChanged(widget.locations[index]);
+                            widget.onLocationChanged(
+                                Provider.of<TenderProvider>(context,
+                                        listen: false)
+                                    .currentLocations[index]);
                             Navigator.of(context).pop();
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(bottom: 16.0),
                             child: Text(
-                              widget.locations[index],
+                              Provider.of<TenderProvider>(context,
+                                      listen: false)
+                                  .currentLocations[index],
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w500),
                             ),

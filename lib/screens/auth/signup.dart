@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:home_service_app/models/login_source.dart';
 import 'package:home_service_app/provider/auth_provider.dart';
+import 'package:home_service_app/screens/auth/login.dart';
 import 'package:home_service_app/utils/elements.dart';
 import 'package:provider/provider.dart';
 import 'package:home_service_app/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SignupPage extends StatefulWidget {
-  const SignupPage({super.key});
+  final LoginSource source;
+  const SignupPage({super.key, this.source = LoginSource.seeMore});
 
   @override
   _SignupPageState createState() => _SignupPageState();
@@ -36,6 +39,7 @@ class _SignupPageState extends State<SignupPage> {
       final provider =
           Provider.of<AuthenticationProvider>(context, listen: false);
       await provider.signup(
+        source: widget.source,
         name: '${_firstNameController.text} ${_lastNameController.text}',
         email: _emailController.text,
         phoneNumber: '+251${_phoneController.text}',
@@ -130,7 +134,12 @@ class _SignupPageState extends State<SignupPage> {
                         style: TextStyle(fontSize: 14.sp)),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/login');
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => LoginPage(
+                                      source: widget.source,
+                                    )));
                       },
                       child: Text(
                         AppLocalizations.of(context)!.logInPrompt,

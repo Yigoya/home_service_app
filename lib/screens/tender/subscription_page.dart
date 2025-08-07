@@ -3,6 +3,7 @@ import 'package:home_service_app/models/subscription.dart';
 import 'package:home_service_app/provider/subsription_provider.dart';
 import 'package:home_service_app/screens/auth/login.dart';
 import 'package:home_service_app/screens/auth/signup.dart';
+import 'package:home_service_app/screens/home/tender_categorys.dart';
 import 'package:home_service_app/screens/tender/tender_registeration.dart';
 import 'package:provider/provider.dart';
 
@@ -83,7 +84,7 @@ class _SubscriptionContentState extends State<SubscriptionContent> {
                 'Subscribe Now to Get Access to Intelligent Tender Database',
                 style: TextStyle(
                   fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                   color: Theme.of(context).secondaryHeaderColor,
                 ),
               ),
@@ -264,7 +265,7 @@ class _SubscriptionContentState extends State<SubscriptionContent> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => SignupPage()));
+                                      builder: (context) => TenderCategorys()));
                             } else {
                               // subscriptionProvider
                               //     .selectSubscription(subscription);
@@ -286,7 +287,7 @@ class _SubscriptionContentState extends State<SubscriptionContent> {
                           ),
                           child: Text(
                             subscription.price == 0.0
-                                ? 'Register Now'
+                                ? 'Continue'
                                 : 'Subscribe Now',
                             style: const TextStyle(
                                 fontSize: 16,

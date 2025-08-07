@@ -8,6 +8,7 @@ import 'package:home_service_app/screens/notification.dart';
 import 'package:home_service_app/screens/payment/checkout_page.dart';
 import 'package:home_service_app/screens/profile/customer_profile_page.dart';
 import 'package:home_service_app/screens/saved_address.dart';
+import 'package:home_service_app/screens/business/business_home_page.dart';
 import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/utils/functions.dart';
 import 'package:home_service_app/utils/route_generator.dart';
@@ -415,6 +416,23 @@ class _MorePageState extends State<MorePage> {
                 } else {
                   _showLoginFirstDialog(context);
                 }
+              },
+            ),
+            CustomListTile(
+              icon: Icons.business,
+              title: "Business Directory",
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const BusinessHomePage()));
+              },
+            ),
+            CustomListTile(
+              icon: Icons.store,
+              title: "B2B Marketplace",
+              onTap: () {
+                Navigator.pushNamed(context, RouteGenerator.marketplaceHomePage);
               },
             ),
 

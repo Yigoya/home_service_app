@@ -47,7 +47,7 @@ class Technician {
       phoneNumber: json['phone_number'] ?? '',
       bio: json['bio'] ?? '',
       availability: json['availability'],
-      rating: json['rating'],
+      rating: json['rating'] ?? 5.0,
       completedJobs: json['completed_jobs'],
       city: json['city'],
       subcity: json['subcity'],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_service_app/CustomColors.dart';
 import 'package:home_service_app/models/tender.dart';
 import 'package:home_service_app/screens/tender/tender_detail_page.dart';
 import 'package:home_service_app/services/api_service.dart';
@@ -54,8 +55,9 @@ class TenderCard extends StatelessWidget {
                     tender.title,
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      fontFamily: 'Figtree',
                     ),
                   ),
                 ),
@@ -83,7 +85,7 @@ class TenderCard extends StatelessWidget {
                     tender.closingDate != null
                         ? formatDate(tender.closingDate!)
                         : "N/A",
-                    color: Theme.of(context).primaryColor),
+                    color: CustomColors.tenderGreen),
 
                 _buildDetailRow(
                     Icons.calendar_month,
@@ -91,13 +93,13 @@ class TenderCard extends StatelessWidget {
                     tender.closingDate != null
                         ? formatDate(tender.closingDate!)
                         : "N/A",
-                    color: Theme.of(context).secondaryHeaderColor),
+                    color: CustomColors.tenderBlue),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildDetailRow(
                         Icons.location_on, "Location", tender.location,
-                        color: Theme.of(context).secondaryHeaderColor),
+                        color: CustomColors.tenderBlue),
                     IconButton(
                         onPressed:
                             _shareContent, // Add functionality for sharing
@@ -157,7 +159,10 @@ class TenderCard extends StatelessWidget {
           Text(
             "$label: ",
             style: TextStyle(
-                fontWeight: FontWeight.w900, color: color, fontSize: 14),
+                color: color,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                fontFamily: 'Figtree'),
           ),
           SizedBox(width: 4),
           Icon(icon, size: 18, color: color),
@@ -165,7 +170,10 @@ class TenderCard extends StatelessWidget {
           Text(
             value,
             style: TextStyle(
-                color: color, fontSize: 14, fontWeight: FontWeight.bold),
+                color: color,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                fontFamily: 'Figtree'),
             overflow: TextOverflow.ellipsis,
           ),
         ],
