@@ -81,6 +81,32 @@ class AuthenticationProvider with ChangeNotifier {
     }
   }
 
+  Future<int?> jobFinderSignup({
+    required String name,
+    required String email,
+    required String phoneNumber,
+    required String password,
+    required BuildContext context,
+  }) async {
+    try {
+      final response = await _apiService.jobFinderSignup(
+        name: name,
+        email: email,
+        phoneNumber: phoneNumber,
+        password: password,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final userId = response.data['id'] ?? response.data['userId'];
+        return userId is int ? userId : int.tryParse(userId.toString());
+      } else {
+        showTopMessage(context, 'Registration failed', isSuccess: false);
+      }
+    } catch (e) {
+      showTopMessage(context, 'Registration error: $e', isSuccess: false);
+    }
+    return null;
+  }
+
   Future<void> login({
     required String email,
     required String password,
@@ -100,6 +126,9 @@ class AuthenticationProvider with ChangeNotifier {
         if (source == LoginSource.tender) {
           Navigator.of(context).pushNamedAndRemoveUntil(
               RouteGenerator.subscriptionPage, (route) => false);
+        } else if (source == LoginSource.jobFinder) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              RouteGenerator.verificationPage, (route) => false);
         } else {
           Navigator.of(context).pushNamedAndRemoveUntil(
               RouteGenerator.verificationPage, (route) => false);
@@ -145,6 +174,21 @@ class AuthenticationProvider with ChangeNotifier {
             MaterialPageRoute(
                 builder: (context) => const TechnicianNavigation()),
             (route) => false);
+      } else if (response.data['user']['role'] == 'JOB_SEEKER') {
+        await storage.write(
+            key: "jobSeeker", value: jsonEncode(response.data['jobSeeker']));
+        await Provider.of<UserProvider>(context, listen: false).loadUser();
+        if (source == LoginSource.jobFinder) {
+          // For job finder login, let the calling screen handle navigation
+          Logger().d(
+              'JOB_SEEKER login successful, letting calling screen handle navigation');
+          showTopMessage(context, 'Login successful!', isSuccess: true);
+          // Don't navigate automatically - let the JobFinderLoginPage handle it
+        } else {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const Navigation()),
+              (route) => false);
+        }
       }
 
       showTopMessage(

@@ -19,6 +19,7 @@ import 'package:home_service_app/provider/profile_page_provider.dart';
 import 'package:home_service_app/provider/technician_provider.dart';
 import 'package:home_service_app/provider/tender_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
+import 'package:home_service_app/provider/job_provider.dart';
 import 'package:home_service_app/screens/auth/token_entery_page.dart';
 import 'package:home_service_app/screens/auth/upload_proof_page.dart';
 import 'package:home_service_app/screens/auth/waiting_for_approval_page.dart';
@@ -59,10 +60,13 @@ void main() async {
         ChangeNotifierProvider(create: (_) => PaymentProvider()),
         ChangeNotifierProvider(create: (_) => TenderProvider()),
         ChangeNotifierProvider(create: (_) => AgencyProvider()),
+        ChangeNotifierProvider(create: (_) => JobProvider()),
         ChangeNotifierProvider(create: (_) => BusinessProvider()),
         ChangeNotifierProvider(create: (_) => MarketplaceProvider()),
       ],
-      child: const MyAppTemporary(),
+      child: const MyApp(
+        defaultLocale: Locale('en'),
+      ),
     ),
   );
 }
@@ -158,7 +162,7 @@ class _MyAppState extends State<MyApp> {
             theme: ThemeData(
               // fontFamily: 'Figtree',
               brightness: Brightness.light,
-              primaryColor: const Color.fromARGB(255, 0, 44, 11),
+              primaryColor: const Color.fromARGB(255, 77, 107, 254),
               secondaryHeaderColor: const Color.fromARGB(255, 25, 84, 124),
               textTheme: TextTheme(
                 headlineLarge: TextStyle(

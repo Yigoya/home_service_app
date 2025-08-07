@@ -23,6 +23,8 @@ import 'package:home_service_app/screens/detail_booking.dart';
 import 'package:home_service_app/screens/dispute_page.dart';
 import 'package:home_service_app/screens/disputelist_page.dart';
 import 'package:home_service_app/screens/home/home.dart';
+import 'package:home_service_app/screens/job/main_screen.dart';
+import 'package:home_service_app/screens/job/onboarding_screen.dart';
 import 'package:home_service_app/screens/marketplace/marketplace_home_page.dart';
 import 'package:home_service_app/screens/marketplace/marketplace_product_detail.dart';
 import 'package:home_service_app/screens/marketplace/marketplace_product_list.dart';
@@ -56,6 +58,7 @@ class RouteGenerator {
   static const String detailBookingPage = '/detail_booking';
   static const String forgotPasswordPage = '/forgot_password';
   static const String subscriptionPage = '/subscription';
+  static const String jobPage = '/main-screen';
   static const String businessHomePage = '/business_home';
   static const String businessListingPage = '/business_listing';
   static const String businessDetailPage = '/business_detail';
@@ -156,6 +159,10 @@ class RouteGenerator {
       case subscriptionPage:
         return MaterialPageRoute(
           builder: (_) => const SubscriptionPage(),
+        );
+      case jobPage:
+        return MaterialPageRoute(
+          builder: (_) => const OnboardingScreen(),
         );
       case businessHomePage:
         return MaterialPageRoute(builder: (_) => const BusinessHomePage());

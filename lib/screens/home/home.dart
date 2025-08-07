@@ -1,5 +1,6 @@
 import 'package:chapa_unofficial/chapa_unofficial.dart';
 import 'package:flutter/material.dart';
+import 'package:home_service_app/models/catagory.dart';
 import 'package:home_service_app/models/rating.dart';
 import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/models/technician.dart';
@@ -14,6 +15,8 @@ import 'package:home_service_app/screens/home/category_services.dart';
 import 'package:home_service_app/screens/home/select_location.dart';
 import 'package:home_service_app/screens/home/tender_categorys.dart';
 import 'package:home_service_app/screens/job/job_search_screen.dart';
+import 'package:home_service_app/screens/job/main_screen.dart';
+import 'package:home_service_app/screens/job/onboarding_screen.dart';
 import 'package:home_service_app/screens/marketplace/marketplace_home_page.dart';
 import 'package:home_service_app/screens/profile/technician_detail_page.dart';
 import 'package:home_service_app/screens/tender/component/tender_card.dart';
@@ -25,6 +28,7 @@ import 'package:logger/web.dart';
 import 'package:provider/provider.dart';
 import 'package:home_service_app/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter/services.dart';
 // import 'package:chapasdk/chapasdk.dart';
 
 class HomePage extends StatefulWidget {
@@ -127,43 +131,51 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            await Provider.of<UserProvider>(context, listen: false).loadUser();
-            await provider.loadHome(Localizations.localeOf(context));
-          },
-          child: ListView(
-            children: [
-              _buildBannerSection(provider),
-              // _buildServiceCategories(provider),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          const JobSearchScreen(onboardingData: null),
-                    ),
-                  );
-                },
-                child: Container(
-                  height: 100,
-                  // width: 200,
-                  color: Colors.red,
-                  child: Text(
-                    'WTF',
-                    style: TextStyle(
-                      fontSize: 22.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              )
-              // _buildTechnicianListView(),
-              // _buildCustomerReviewsSection(),
-              // const FAQSection(),
-            ],
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Color.fromARGB(255, 77, 107, 254),
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
+        child: SafeArea(
+          child: RefreshIndicator(
+            onRefresh: () async {
+              await Provider.of<UserProvider>(context, listen: false)
+                  .loadUser();
+              await provider.loadHome(Localizations.localeOf(context));
+            },
+            child: ListView(
+              children: [
+                _buildBannerSection(provider),
+                _buildServiceCategories(provider),
+                // GestureDetector(
+                //   onTap: () {
+                //     Navigator.push(
+                //       context,
+                //       MaterialPageRoute(
+                //         builder: (context) =>
+                //             const JobSearchScreen(onboardingData: null),
+                //       ),
+                //     );
+                //   },
+                //   child: Container(
+                //     height: 100,
+                //     // width: 200,
+                //     color: Colors.red,
+                //     child: Text(
+                //       'WTF',
+                //       style: TextStyle(
+                //         fontSize: 22.sp,
+                //         fontWeight: FontWeight.bold,
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                _buildTechnicianListView(),
+                // _buildCustomerReviewsSection(),
+                // const FAQSection(),
+              ],
+            ),
           ),
         ),
       ),
@@ -279,44 +291,109 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            // Use a white background to match the new design while keeping brand color accents
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(24.r),
+              bottomRight: Radius.circular(24.r),
+            ),
+          ),
+          padding: EdgeInsets.all(16.w).copyWith(top: 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
+              // Status bar area
+              // SizedBox(
+              //   height: MediaQuery.of(context).padding.top,
+              //   child: Container(
+              //     color: const Color.fromARGB(255, 77, 107, 254),
+              //   ),
+              // ),
+              // Header with hamburger menu, location, and profile
+              /*Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(Icons.location_on_rounded,
-                      color: Theme.of(context).primaryColor, size: 24.sp),
-                  SizedBox(width: 5.w),
-                  Text(AppLocalizations.of(context)!.currentLocation,
-                      style: TextStyle(
-                          fontSize: 16.sp,
-                          color: Colors.black.withOpacity(0.8),
-                          fontWeight: FontWeight.w500)),
-                  SizedBox(width: 5.w),
-                  Text(
-                      '${Provider.of<HomeServiceProvider>(context, listen: false).subCityNameInLanguage(location, Localizations.localeOf(context))}, ${AppLocalizations.of(context)!.addisAbaba}',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.w700,
-                      )),
+                  IconButton(
+                    onPressed: () {
+                      scaffoldKey.currentState?.openDrawer();
+                    },
+                    icon: Icon(
+                      Icons.menu,
+                      color: const Color.fromARGB(255, 77, 107, 254),
+                      size: 29.sp,
+                    ),
+                  ),
+                  // Row(
+                  //   children: [
+                  //     Icon(
+                  //       Icons.location_on_rounded,
+                  //       color: Colors.white,
+                  //       size: 20.sp,
+                  //     ),
+                  //     SizedBox(width: 4.w),
+                  //     Text(
+                  //       '${Provider.of<HomeServiceProvider>(context, listen: false).subCityNameInLanguage(location, Localizations.localeOf(context))}, ${AppLocalizations.of(context)!.addisAbaba}',
+                  //       style: TextStyle(
+                  //         fontSize: 14.sp,
+                  //         color: Colors.white,
+                  //         fontWeight: FontWeight.w600,
+                  //       ),
+                  //     ),
+                  //     Icon(
+                  //       Icons.keyboard_arrow_down,
+                  //       color: Colors.white,
+                  //       size: 20.sp,
+                  //     ),
+                  //   ],
+                  // ),
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                          color: const Color.fromARGB(255, 77, 107, 254),
+                          width: 2.w),
+                    ),
+                    child: CircleAvatar(
+                      radius: 18.r,
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Icons.person,
+                        color: const Color.fromARGB(255, 77, 107, 254),
+                        size: 20.sp,
+                      ),
+                    ),
+                  ),
                 ],
-              ),
+              ),*/
               SizedBox(height: 16.h),
+              // Search bar
               _buildSearchBar(provider),
-              SizedBox(height: 8.h),
-              SlideshowComponent(slides: [
-                {
-                  'image': 'assets/images/banner2.jpg',
-                  'title': 'All in one at huluMoya'
-                },
-                {'image': 'assets/images/banner3.jpg', 'title': 'ሁሉም ሞያ በአንድ'},
-                {
-                  'image': 'assets/images/banner4.jpg',
-                  'title': AppLocalizations.of(context)!.weAreHereToServeYou
-                },
-              ]),
+              SizedBox(height: 16.h),
+              // Hero banner slideshow under the search bar
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12.r),
+                child: SlideshowComponent(
+                  slides: const [
+                    {
+                      'image': 'assets/images/banner.jpg',
+                      'title': 'All in one at huluMoya',
+                    },
+                    {
+                      'image': 'assets/images/banner2.jpg',
+                      'title': 'All in one at huluMoya',
+                    },
+                    {
+                      'image': 'assets/images/banner3.jpg',
+                      'title': 'All in one at huluMoya',
+                    },
+                    {
+                      'image': 'assets/images/banner4.jpg',
+                      'title': 'All in one at huluMoya',
+                    },
+                  ],
+                ),
+              ),
               SizedBox(height: _isFocused ? 120.h : 16.h),
             ],
           ),
@@ -325,7 +402,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           Builder(
             builder: (context) {
               return Positioned(
-                top: 110.h,
+                top: 90.h,
                 height: 300.h,
                 width: MediaQuery.of(context).size.width,
                 child: Container(
@@ -335,7 +412,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
-                        color: const Color.fromARGB(255, 3, 90, 29),
+                        color: const Color.fromARGB(255, 77, 107, 254),
                         width: 1.w),
                     boxShadow: [
                       BoxShadow(
@@ -429,12 +506,17 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                             Icons.door_back_door_outlined
                                           ].elementAt(index % 6),
                                           size: 30.sp,
+                                          color: const Color.fromARGB(
+                                              255, 77, 107, 254),
+
                                         )
                                       : Image.network(
                                           '${ApiService.API_URL_FILE}${provider.fiterableBySearch[index].icon}',
                                           width: 30.w,
                                           height: 30.h,
                                           fit: BoxFit.cover,
+                                          color: const Color.fromARGB(
+                                              255, 77, 107, 254),
                                         ),
                               title: Text(
                                 provider.fiterableBySearch[index].name,
@@ -472,10 +554,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             borderRadius: BorderRadius.circular(36.r),
             border: _isFocused
                 ? Border.all(
-                    color: const Color.fromARGB(255, 0, 88, 22), width: 2.w)
+                    color: const Color.fromARGB(255, 77, 107, 254), width: 3.w)
                 : Border.all(
-                    color: const Color.fromARGB(255, 3, 90, 29), width: 1.w),
+                    color: const Color.fromARGB(255, 77, 107, 254), width: 2.w),
           ),
+          height: 56.h,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -495,18 +578,20 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 ),
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w),
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(255, 0, 88, 22),
+                height: double.infinity,
+                width: 64.w,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 57, 77, 254),
                   borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(36),
-                      bottomRight: Radius.circular(36)),
+                    topRight: Radius.circular(36.r),
+                    bottomRight: Radius.circular(36.r),
+                  ),
                 ),
                 child: IconButton(
                   onPressed: () {
                     provider.filterServicesBySearch(search: '');
                   },
-                  icon: Icon(Icons.search, color: Colors.grey[200]),
+                  icon: Icon(Icons.search, color: Colors.white, size: 24.sp),
                 ),
               ),
             ],
@@ -523,65 +608,48 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     print(provider.categories.length);
     return Column(
       children: [
-        SizedBox(
-          height: 118.h * 5,
-          // (provider.categories.length > 6 && !_showAllCategories
-          //         ? 6
-          //         : provider.categories.length)
-          //     .h),
-          child: ListView.builder(
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          child: Row(
+            children: [
+              Text(
+                'Services Categories',
+                style: TextStyle(
+                  fontSize: 22.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: GridView.builder(
+            shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: provider.categories.length,
-            // itemCount: provider.categories.length > 6 && !_showAllCategories
-            //     ? 7
-            //     : provider.categories.length > 6
-            //         ? provider.categories.length + 1
-            //         : provider.categories.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 16.w,
+              mainAxisSpacing: 16.h,
+              childAspectRatio: 1.0,
+            ),
+            itemCount: 6,
             itemBuilder: (context, index) {
-              // if (index ==
-              //         (provider.categories.length > 6 && !_showAllCategories
-              //             ? 6
-              //             : provider.categories.length) &&
-              //     provider.categories.length > 6) {
-              //   return GestureDetector(
-              //     onTap: () {
-              //       setState(() {
-              //         _showAllCategories = !_showAllCategories;
-              //       });
-              //     },
-              //     child: Container(
-              //       height: 40.h,
-              //       margin:
-              //           EdgeInsets.only(right: 16.w, left: 16.w, bottom: 8.h),
-              //       padding: EdgeInsets.symmetric(horizontal: 16.w),
-              //       decoration: BoxDecoration(
-              //         color: Colors.white,
-              //         borderRadius: BorderRadius.circular(8.r),
-              //         border: Border.all(color: Colors.grey[200]!, width: 1.w),
-              //         boxShadow: [
-              //           BoxShadow(
-              //               color: Colors.grey[400]!,
-              //               offset: Offset(0, 2.h),
-              //               blurRadius: 4.r)
-              //         ],
-              //       ),
-              //       child: Center(
-              //         child: Text(
-              //           _showAllCategories ? 'See Less' : 'See More',
-              //           style: TextStyle(
-              //             color: const Color.fromARGB(255, 0, 88, 22),
-              //             fontWeight: FontWeight.w400,
-              //             fontSize: 20.sp,
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-              //   );
-              // }
-
               if (provider.categories.isEmpty) {
                 return const SkeletonListTile();
               }
+
+              // Hijack the categories list and added a new category
+              final categories = provider.categories;
+              categories.insert(
+                  5,
+                  Category(
+                    id: 6,
+                    categoryName: 'Hulu Jobs',
+                    description: 'A place where you find your dream job',
+                  ));
+              // categories.add();
               final category = provider.categories[index];
 
               return GestureDetector(
@@ -594,116 +662,76 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             builder: (context) => const TenderCategorys()));
                     return;
                   }
+                  if (category.id == 6) {
+                    Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const MainScreen(initialTabIndex: 0)));
+                    return;
+                  }
                   if (category.id == 2) {
                     Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
                             builder: (context) => const BusinessHomePage()));
                     return;
                   }
-                  if (category.id == 6) {
+                  if (category.id == 5) {
                     Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
                             builder: (context) =>  MarketplaceHomePage()));
                     return;
                   }
+
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (_) => const CategoryServices()));
                 },
-                child: Container(
-                  height: 110.h,
-                  margin: EdgeInsets.only(right: 16.w, left: 16.w, bottom: 8.h),
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4.r),
-                    border: Border.all(color: Colors.grey[200]!, width: 1.w),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.grey[400]!,
-                          offset: Offset(0, 2.h),
-                          blurRadius: 2.r)
-                    ],
-                  ),
-                  child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            category.icon == null
-                                ? Icon(
-                                    [
-                                      Icons.home_repair_service,
-                                      Icons.cleaning_services,
-                                      Icons.electrical_services,
-                                      Icons.plumbing,
-                                      Icons.construction,
-                                      Icons.door_back_door_outlined
-                                    ].elementAt(index),
-                                    size: 30.sp,
-                                  )
-                                : Image.network(
-                                    '${ApiService.API_URL_FILE}${category.icon}',
-                                    width: 30.w,
-                                    height: 30.h,
-                                    fit: BoxFit.cover,
-                                  ),
-                            SizedBox(width: 16.w),
-                            Row(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width -
-                                          134.w,
-                                      child: Text(
-                                          category.categoryName.toUpperCase(),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            color: Colors.black87,
-                                            fontFamily: 'Roboto',
-                                            fontSize: 15.sp,
-                                            fontWeight: FontWeight.w900,
-                                          )),
-                                    ),
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width -
-                                          134.w,
-                                      child: Text(
-                                        category.description ?? '',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            color: Colors.grey[500],
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Icon(Icons.arrow_forward_ios,
-                                    color: Colors.grey[600], size: 22.sp),
-                              ],
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: category.icon == null
+                          ? Icon(
+                              [
+                                Icons.restaurant,
+                                Icons.motorcycle,
+                                Icons.directions_car,
+                                Icons.local_shipping,
+                                Icons.shopping_cart,
+                                Icons.face,
+                                Icons.cleaning_services,
+                                Icons.more_horiz
+                              ].elementAt(index % 8),
+                              size: 34.sp,
+                              color: const Color.fromARGB(255, 77, 107, 254),
+                            )
+                          : Image.network(
+                              '${ApiService.API_URL_FILE}${category.icon}',
+                              width: 34.w,
+                              height: 34.h,
+                              fit: BoxFit.cover,
+                              color: const Color.fromARGB(255, 77, 107, 254),
                             ),
-                          ],
-                        ),
-                      ],
                     ),
-                  ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      category.categoryName,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
               );
             },
           ),
         ),
-
         // provider.fiterableBySearch
         //                     .where((service) =>
         //                         service.categoryId ==
