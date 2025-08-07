@@ -240,7 +240,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 77, 107, 254),
+            // Use a white background to match the new design while keeping brand color accents
+            color: Colors.white,
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(24.r),
               bottomRight: Radius.circular(24.r),
@@ -258,7 +259,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               //   ),
               // ),
               // Header with hamburger menu, location, and profile
-              Row(
+              /*Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
@@ -267,7 +268,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     },
                     icon: Icon(
                       Icons.menu,
-                      color: Colors.white,
+                      color: const Color.fromARGB(255, 77, 107, 254),
                       size: 29.sp,
                     ),
                   ),
@@ -297,7 +298,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2.w),
+                      border: Border.all(
+                          color: const Color.fromARGB(255, 77, 107, 254),
+                          width: 2.w),
                     ),
                     child: CircleAvatar(
                       radius: 18.r,
@@ -310,19 +313,35 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     ),
                   ),
                 ],
-              ),
+              ),*/
               SizedBox(height: 16.h),
-              // Welcome message
-              Text(
-                'Welcome Back',
-                style: TextStyle(
-                  fontSize: 28.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              // Search bar
+              _buildSearchBar(provider),
+              SizedBox(height: 16.h),
+              // Hero banner slideshow under the search bar
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12.r),
+                child: SlideshowComponent(
+                  slides: const [
+                    {
+                      'image': 'assets/images/banner.jpg',
+                      'title': 'All in one at huluMoya',
+                    },
+                    {
+                      'image': 'assets/images/banner2.jpg',
+                      'title': 'All in one at huluMoya',
+                    },
+                    {
+                      'image': 'assets/images/banner3.jpg',
+                      'title': 'All in one at huluMoya',
+                    },
+                    {
+                      'image': 'assets/images/banner4.jpg',
+                      'title': 'All in one at huluMoya',
+                    },
+                  ],
                 ),
               ),
-              SizedBox(height: 16.h),
-              _buildSearchBar(provider),
               SizedBox(height: _isFocused ? 120.h : 16.h),
             ],
           ),
@@ -331,7 +350,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           Builder(
             builder: (context) {
               return Positioned(
-                top: 110.h,
+                top: 90.h,
                 height: 300.h,
                 width: MediaQuery.of(context).size.width,
                 child: Container(
@@ -423,10 +442,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             borderRadius: BorderRadius.circular(36.r),
             border: _isFocused
                 ? Border.all(
-                    color: const Color.fromARGB(255, 77, 107, 254), width: 2.w)
+                    color: const Color.fromARGB(255, 77, 107, 254), width: 3.w)
                 : Border.all(
-                    color: const Color.fromARGB(255, 77, 107, 254), width: 1.w),
+                    color: const Color.fromARGB(255, 77, 107, 254), width: 2.w),
           ),
+          height: 56.h,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -446,18 +466,20 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 ),
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w),
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(255, 57, 77, 254),
+                height: double.infinity,
+                width: 64.w,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 57, 77, 254),
                   borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(36),
-                      bottomRight: Radius.circular(36)),
+                    topRight: Radius.circular(36.r),
+                    bottomRight: Radius.circular(36.r),
+                  ),
                 ),
                 child: IconButton(
                   onPressed: () {
                     provider.filterServicesBySearch(search: '');
                   },
-                  icon: Icon(Icons.search, color: Colors.white),
+                  icon: Icon(Icons.search, color: Colors.white, size: 24.sp),
                 ),
               ),
             ],
@@ -540,70 +562,46 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       MaterialPageRoute(
                           builder: (_) => const CategoryServices()));
                 },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(color: Colors.grey[200]!, width: 1.w),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.grey[300]!,
-                          offset: Offset(0, 2.h),
-                          blurRadius: 4.r)
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 68.w,
-                        height: 68.h,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 77, 107, 254)
-                              .withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Center(
-                          child: category.icon == null
-                              ? Icon(
-                                  [
-                                    Icons.restaurant,
-                                    Icons.motorcycle,
-                                    Icons.directions_car,
-                                    Icons.local_shipping,
-                                    Icons.shopping_cart,
-                                    Icons.face,
-                                    Icons.cleaning_services,
-                                    Icons.more_horiz
-                                  ].elementAt(index % 8),
-                                  size: 24.sp,
-                                  color:
-                                      const Color.fromARGB(255, 77, 107, 254),
-                                )
-                              : Image.network(
-                                  '${ApiService.API_URL_FILE}${category.icon}',
-                                  width: 24.w,
-                                  height: 24.h,
-                                  fit: BoxFit.cover,
-                                  color:
-                                      const Color.fromARGB(255, 77, 107, 254),
-                                ),
-                        ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: category.icon == null
+                          ? Icon(
+                              [
+                                Icons.restaurant,
+                                Icons.motorcycle,
+                                Icons.directions_car,
+                                Icons.local_shipping,
+                                Icons.shopping_cart,
+                                Icons.face,
+                                Icons.cleaning_services,
+                                Icons.more_horiz
+                              ].elementAt(index % 8),
+                              size: 34.sp,
+                              color: const Color.fromARGB(255, 77, 107, 254),
+                            )
+                          : Image.network(
+                              '${ApiService.API_URL_FILE}${category.icon}',
+                              width: 34.w,
+                              height: 34.h,
+                              fit: BoxFit.cover,
+                              color: const Color.fromARGB(255, 77, 107, 254),
+                            ),
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      category.categoryName,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
                       ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        category.categoryName,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
               );
             },
