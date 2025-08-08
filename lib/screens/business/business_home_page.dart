@@ -23,7 +23,7 @@ class BusinessHomePage extends StatelessWidget {
     final category = Provider.of<HomeServiceProvider>(context).selectedCategory;
     final location = Provider.of<HomeServiceProvider>(context).selectedLocation;
     final user = Provider.of<UserProvider>(context).user;
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppbarWidget(
@@ -127,7 +127,7 @@ class BusinessHomePage extends StatelessWidget {
               //     ],
               //   ),
               // ),
-              
+
               // Search Bar
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.r, vertical: 8.r),
@@ -147,15 +147,17 @@ class BusinessHomePage extends StatelessWidget {
                   child: Theme(
                     data: Theme.of(context).copyWith(
                       colorScheme: Theme.of(context).colorScheme.copyWith(
-                        primary: Theme.of(context).primaryColor,
-                      ),
+                            primary: Theme.of(context).primaryColor,
+                          ),
                     ),
                     child: TextField(
                       cursorColor: Theme.of(context).primaryColor,
                       cursorWidth: 1.5.w,
                       cursorRadius: Radius.circular(2.r),
                       decoration: InputDecoration(
-                        hintText: AppLocalizations.of(context)!.searchForServices,
+                        hintText: AppLocalizations.of(context) != null
+                            ? AppLocalizations.of(context)!.searchForServices
+                            : 'Search for services',
                         hintStyle: TextStyle(
                           color: Colors.grey[400],
                           fontSize: 16.sp,
@@ -165,7 +167,8 @@ class BusinessHomePage extends StatelessWidget {
                           padding: EdgeInsets.only(left: 6.w, right: 2.w),
                           child: Icon(
                             Icons.search_rounded,
-                            color: Theme.of(context).primaryColor.withOpacity(0.7),
+                            color:
+                                Theme.of(context).primaryColor.withOpacity(0.7),
                             size: 24.sp,
                           ),
                         ),
@@ -174,7 +177,9 @@ class BusinessHomePage extends StatelessWidget {
                           child: IconButton(
                             icon: Icon(
                               Icons.filter_list_rounded,
-                              color: Theme.of(context).primaryColor.withOpacity(0.6),
+                              color: Theme.of(context)
+                                  .primaryColor
+                                  .withOpacity(0.6),
                               size: 24.sp,
                             ),
                             onPressed: () {
@@ -190,11 +195,13 @@ class BusinessHomePage extends StatelessWidget {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12.r),
                           borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor.withOpacity(0.2),
+                            color:
+                                Theme.of(context).primaryColor.withOpacity(0.2),
                             width: 1.5.w,
                           ),
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 8.w),
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 18.h, horizontal: 8.w),
                         filled: true,
                         fillColor: Colors.white,
                       ),
@@ -212,7 +219,7 @@ class BusinessHomePage extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               // Search results indicator
               Consumer<HomeServiceProvider>(
                 builder: (context, provider, child) {
@@ -244,7 +251,7 @@ class BusinessHomePage extends StatelessWidget {
                       : const SizedBox.shrink();
                 },
               ),
-              
+
               // Hero image and welcome text
               Padding(
                 padding: EdgeInsets.symmetric(
@@ -261,7 +268,9 @@ class BusinessHomePage extends StatelessWidget {
                   },
                   {
                     'image': 'assets/images/banner4.jpg',
-                    'title': AppLocalizations.of(context)!.weAreHereToServeYou
+                    'title': AppLocalizations.of(context) != null
+                        ? AppLocalizations.of(context)!.weAreHereToServeYou
+                        : 'Welcome to Just Call',
                   },
                 ]),
               ),

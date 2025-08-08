@@ -294,6 +294,8 @@ class ApiService {
       Logger().e('Unexpected error while fetching applications: $e');
       rethrow;
     }
+  }
+
   Future<Response> postMultipartRequest(
       String endpoint, FormData formData) async {
     try {
@@ -309,7 +311,6 @@ class ApiService {
         ),
       );
     } catch (e) {
-
       rethrow;
     }
   }
@@ -398,6 +399,7 @@ class ApiService {
       return null;
     }
   }
+
   Future<Response> postMultipartRequestWithoutToken(
       String endpoint, FormData formData) async {
     try {

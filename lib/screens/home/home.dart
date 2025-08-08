@@ -508,7 +508,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                           size: 30.sp,
                                           color: const Color.fromARGB(
                                               255, 77, 107, 254),
-
                                         )
                                       : Image.network(
                                           '${ApiService.API_URL_FILE}${provider.fiterableBySearch[index].icon}',
@@ -645,9 +644,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               categories.insert(
                   5,
                   Category(
-                    id: 6,
+                    id: 7,
                     categoryName: 'Hulu Jobs',
                     description: 'A place where you find your dream job',
+                    services: provider.fiterableByCatagory
+                        .where((service) => service.categoryId == 7)
+                        .toList(),
                   ));
               // categories.add();
               final category = provider.categories[index];
@@ -656,13 +658,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 onTap: () {
                   provider.filterServicesByCategory(category.id);
                   _focusNode.unfocus();
+                  print(category.id);
                   if (category.id == 1) {
                     Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
                             builder: (context) => const TenderCategorys()));
                     return;
                   }
-                  if (category.id == 6) {
+                  if (category.id == 7) {
                     Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
                             builder: (context) =>
@@ -675,10 +678,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             builder: (context) => const BusinessHomePage()));
                     return;
                   }
-                  if (category.id == 5) {
+                  if (category.id == 6) {
                     Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
-                            builder: (context) =>  MarketplaceHomePage()));
+                            builder: (context) => MarketplaceHomePage()));
                     return;
                   }
 
