@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:home_service_app/models/service.dart';
-import 'package:home_service_app/services/api_service.dart';
+import 'package:home_service_app/models/promotion.dart';
+import 'package:home_service_app/provider/promotion_provider.dart';
 import 'package:home_service_app/widgets/app_bar_widget.dart';
-import 'business_subcategory_page.dart';
+import 'package:home_service_app/widgets/promotion_card.dart';
 import 'business_list_page.dart';
 
-class ServiceDetailsPage extends StatelessWidget {
+class ServiceDetailsPage extends StatefulWidget {
   final Service service;
 
   const ServiceDetailsPage({
@@ -15,11 +17,25 @@ class ServiceDetailsPage extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<ServiceDetailsPage> createState() => _ServiceDetailsPageState();
+}
+
+class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch promotions when page loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<PromotionProvider>().fetchFeaturedPromotions();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppbarWidget(
-        title: service.name,
+        title: widget.service.name,
         showBackButton: true,
         actions: [
           IconButton(
@@ -37,7 +53,7 @@ class ServiceDetailsPage extends StatelessWidget {
             // Header with service info
             Container(
               width: double.infinity,
-              padding: EdgeInsets.all(16.r),
+              padding: EdgeInsets.all(16.r).copyWith(bottom: 5.h, top: 5.h),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.r),
                 boxShadow: [
@@ -68,15 +84,15 @@ class ServiceDetailsPage extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        Icons.campaign,
+                        Icons.local_offer,
                         size: 32.sp,
                         color: Colors.white,
                       ),
                       SizedBox(width: 12.w),
                       Text(
-                        "ADVERTISEMENT",
+                        "SPECIAL OFFERS",
                         style: TextStyle(
-                          fontSize: 16.sp,
+                          fontSize: 18.sp,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                           letterSpacing: 1.2,
@@ -84,40 +100,75 @@ class ServiceDetailsPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 12.h),
-                  Text(
-                    "Discover exclusive deals on ${service.name} services in your area!",
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                      shadows: [
-                        Shadow(
-                          offset: Offset(1, 1),
-                          blurRadius: 3.0,
-                          color: Colors.black.withOpacity(0.5),
-                        ),
-                      ],
-                    ),
+                  SizedBox(height: 6.h),
+
+                  // Promotions section
+                  Consumer<PromotionProvider>(
+                    builder: (context, promotionProvider, child) {
+                      if (promotionProvider.isLoading) {
+                        return Container(
+                          height: 140.h,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          ),
+                        );
+                      } else if (promotionProvider.hasPromotions) {
+                        return Container(
+                          height: 140.h,
+                          child: RefreshIndicator(
+                            onRefresh: promotionProvider.refreshPromotions,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: promotionProvider.promotions.length,
+                              itemBuilder: (context, index) {
+                                final promotion =
+                                    promotionProvider.promotions[index];
+                                return PromotionCard(
+                                  promotion: promotion,
+                                  onTap: () => _onPromotionTap(promotion),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      } else {
+                        return Container(
+                          height: 140.h,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "No special offers available",
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    color: Colors.white.withOpacity(0.8),
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                                SizedBox(height: 8.h),
+                                TextButton(
+                                  onPressed:
+                                      promotionProvider.fetchFeaturedPromotions,
+                                  child: Text(
+                                    "Refresh",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12.sp,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                    },
                   ),
-                  SizedBox(height: 16.h),
-                  Container(
-                    alignment: Alignment.center,
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 10.h),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                    child: Text(
-                      "Tap to view offers",
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.orange.shade700,
-                      ),
-                    ),
-                  ),
+
+                  SizedBox(height: 6.h),
                 ],
               ),
             ),
@@ -138,33 +189,22 @@ class ServiceDetailsPage extends StatelessWidget {
                       crossAxisSpacing: 10.w,
                       mainAxisSpacing: 10.h,
                     ),
-                    itemCount: service.services.length,
+                    itemCount: widget.service.services.length,
                     itemBuilder: (context, index) {
-                      final childService = service.services[index];
+                      final childService = widget.service.services[index];
                       return InkWell(
                         onTap: () {
-                          if (childService.services.isNotEmpty) {
-                            // If this child has its own children, navigate to a new ServiceDetailsPage
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ServiceDetailsPage(
-                                  service: childService,
-                                ),
+                          // Always navigate to BusinessListPage, passing sub-services as sub-categories
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BusinessListPage(
+                                service: childService,
+                                categoryId: childService.id,
+                                subCategories: childService.services,
                               ),
-                            );
-                          } else {
-                            // Navigate to BusinessListPage to show businesses for this service
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => BusinessListPage(
-                                  service: childService,
-                                  categoryId: childService.id,
-                                ),
-                              ),
-                            );
-                          }
+                            ),
+                          );
                         },
                         child: Container(
                           padding: EdgeInsets.all(8.w),
@@ -196,7 +236,7 @@ class ServiceDetailsPage extends StatelessWidget {
                                       size: 30.sp,
                                     )
                                   : Image.network(
-                                      '${ApiService.API_URL_FILE}${childService.icon}',
+                                      'https://hulumoya.zapto.org/uploads/${childService.icon}',
                                       width: 30.w,
                                       height: 30.h,
                                       fit: BoxFit.cover,
@@ -220,7 +260,7 @@ class ServiceDetailsPage extends StatelessWidget {
                   ),
 
                   // Show a message if there are no child services
-                  if (service.services.isEmpty)
+                  if (widget.service.services.isEmpty)
                     Center(
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 32.h),
@@ -240,5 +280,17 @@ class ServiceDetailsPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _onPromotionTap(Promotion promotion) {
+    // Handle promotion tap - could show details, navigate to business, etc.
+    print('Promotion tapped: ${promotion.title}');
+    // TODO: Implement promotion action - could navigate to business details
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => BusinessDetailsPage(businessId: promotion.businessId),
+    //   ),
+    // );
   }
 }

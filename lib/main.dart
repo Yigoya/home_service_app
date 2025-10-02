@@ -16,6 +16,7 @@ import 'package:home_service_app/provider/marketplace_provider.dart';
 import 'package:home_service_app/provider/notification_provider.dart';
 import 'package:home_service_app/provider/payment_provider.dart';
 import 'package:home_service_app/provider/profile_page_provider.dart';
+import 'package:home_service_app/provider/promotion_provider.dart';
 import 'package:home_service_app/provider/technician_provider.dart';
 import 'package:home_service_app/provider/tender_provider.dart';
 import 'package:home_service_app/provider/user_provider.dart';
@@ -63,6 +64,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => JobProvider()),
         ChangeNotifierProvider(create: (_) => BusinessProvider()),
         ChangeNotifierProvider(create: (_) => MarketplaceProvider()),
+        ChangeNotifierProvider(create: (_) => PromotionProvider()),
       ],
       child: const MyApp(
         defaultLocale: Locale('en'),
@@ -98,6 +100,36 @@ class _MyAppTemporaryState extends State<MyAppTemporary> {
                 headlineLarge: TextStyle(
                   fontSize: 32.sp, // Adjust the font size based on screen size
                   fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+                bodyLarge: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black,
+                ),
+                bodyMedium: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.grey[600],
+                ),
+                bodySmall: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.grey[600],
+                ),
+                labelLarge: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black,
+                ),
+                labelMedium: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black,
+                ),
+                labelSmall: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.normal,
                   color: Colors.black,
                 ),
               ),
@@ -170,6 +202,36 @@ class _MyAppState extends State<MyApp> {
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
+                bodyLarge: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black,
+                ),
+                bodyMedium: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.grey[600],
+                ),
+                bodySmall: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.grey[600],
+                ),
+                labelLarge: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black,
+                ),
+                labelMedium: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black,
+                ),
+                labelSmall: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black,
+                ),
               ),
             ),
             onGenerateRoute: RouteGenerator.generateRoute,
@@ -206,6 +268,7 @@ class _MyAppState extends State<MyApp> {
                   return const TechnicianNavigation();
                 } else if (status == UserStatus.TOKEN_ENTRY) {
                   return TokenEntryPage();
+                  // return const TechnicianNavigation();
                 } else if (status == UserStatus.PROOF_ENTRY) {
                   return UploadProofPage();
                 } else if (status == UserStatus.WAITING_FOR_APPROVAL) {

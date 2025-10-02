@@ -25,4 +25,9 @@ class Category {
           json['services'].map<Service>((e) => Service.fromJson(e)).toList(),
     );
   }
+
+  @override
+  String toString() {
+    return 'Category(id: $id, name: "$categoryName", services: ${services.length})';
+  }
 }

@@ -87,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                           fontSize: 48.sp,
                           fontWeight: FontWeight.w900,
-                          color: Theme.of(context).primaryColor)),
+                          color: Theme.of(context).secondaryHeaderColor)),
                   SizedBox(height: 8.h),
                   Text(AppLocalizations.of(context)!.loginToYourAccount,
                       style: TextStyle(fontSize: 16.sp, color: Colors.grey)),
@@ -122,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
                       isLoading: provider.isLoading,
                       onTap: () => _login(context),
                       buttonText: AppLocalizations.of(context)!.loginSection,
-                      color: Theme.of(context).primaryColor),
+                      color: Theme.of(context).secondaryHeaderColor),
                   SizedBox(height: 16.h),
                   GestureDetector(
                     onTap: () {
@@ -200,7 +200,7 @@ class _LoginPageState extends State<LoginPage> {
                       padding: EdgeInsets.symmetric(vertical: 12.h),
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).secondaryHeaderColor,
                         ),
                         borderRadius: BorderRadius.circular(32.r),
                       ),
@@ -218,7 +218,8 @@ class _LoginPageState extends State<LoginPage> {
                                   AppLocalizations.of(context)!
                                       .signInWithGoogle,
                                   style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16.sp),
                                 ),

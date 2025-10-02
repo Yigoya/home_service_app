@@ -837,15 +837,15 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
                         ),
                       ]),
                     ),
-        
+
                     // Voice search help button
                     if (!_speechEnabled)
                       Container(
                         width: double.infinity,
                         margin: EdgeInsets.symmetric(horizontal: 20.w)
                             .copyWith(top: 8.h),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 8.h),
                         decoration: BoxDecoration(
                           color: kWarningColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
@@ -875,8 +875,8 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
                         width: double.infinity,
                         margin: EdgeInsets.symmetric(horizontal: 20.w)
                             .copyWith(top: 8.h),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 8.h),
                         decoration: BoxDecoration(
                           color: kPrimaryColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
@@ -904,7 +904,8 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
                 ),
                 SizedBox(height: 10.h),
                 // Clear filters button
-                if (_selectedFilterCount > 0 || _searchController.text.isNotEmpty)
+                if (_selectedFilterCount > 0 ||
+                    _searchController.text.isNotEmpty)
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20.w)
                         .copyWith(bottom: 8.h),
@@ -952,7 +953,8 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
                     ),
                   ),
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 20.w),
+                  padding:
+                      EdgeInsets.symmetric(vertical: 8.h, horizontal: 20.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -1083,8 +1085,8 @@ class _JobSearchScreenState extends State<JobSearchScreen> {
                                   child: SingleChildScrollView(
                                     scrollDirection: Axis.vertical,
                                     child: Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 20.w),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 20.w),
                                       child: Column(
                                         children: List.generate(
                                             _sortedJobs.length, (index) {
@@ -1319,6 +1321,8 @@ class buildJobPost extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 17,
                                     color: Colors.grey.shade800,
+                                    // fontFamily: 'Roboto',
+                                    // fontWeight: FontWeight.w400,
                                   ),
                                 ),
                               ],

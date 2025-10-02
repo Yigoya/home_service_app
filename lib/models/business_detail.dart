@@ -5,11 +5,13 @@ class BusinessDetail {
   final Business business;
   final List<Review> reviews;
   final List<Service> services;
+  final List<String> gallery;
 
   BusinessDetail({
     required this.business,
     required this.reviews,
     required this.services,
+    required this.gallery,
   });
 
   factory BusinessDetail.fromJson(Map<String, dynamic> json) {
@@ -19,6 +21,7 @@ class BusinessDetail {
           (json['reviews'] as List).map((e) => Review.fromJson(e)).toList(),
       services:
           (json['services'] as List).map((e) => Service.fromJson(e)).toList(),
+      gallery: List<String>.from(json['gallery'] ?? []),
     );
   }
 
@@ -27,8 +30,49 @@ class BusinessDetail {
       'business': business.toJson(),
       'reviews': reviews.map((e) => e.toJson()).toList(),
       'services': services.map((e) => e.toJson()).toList(),
+      'gallery': gallery,
     };
   }
+
+  // Calculate average rating from reviews
+  double? get averageRating {
+    if (reviews.isEmpty) return null;
+
+    final validReviews = reviews.where((review) => review.rating > 0).toList();
+    if (validReviews.isEmpty) return null;
+
+    final totalRating =
+        validReviews.fold<int>(0, (sum, review) => sum + review.rating);
+    return totalRating / validReviews.length;
+  }
+
+  // Get total review count
+  int get reviewCount => reviews.length;
+
+  // Get only approved/published reviews
+  List<Review> get publishedReviews {
+    return reviews
+        .where((review) =>
+            review.status == 'APPROVED' || review.status == 'PUBLISHED')
+        .toList();
+  }
+
+  // Calculate average rating from published reviews only
+  double? get publishedAverageRating {
+    final published = publishedReviews;
+    if (published.isEmpty) return null;
+
+    final validReviews =
+        published.where((review) => review.rating > 0).toList();
+    if (validReviews.isEmpty) return null;
+
+    final totalRating =
+        validReviews.fold<int>(0, (sum, review) => sum + review.rating);
+    return totalRating / validReviews.length;
+  }
+
+  // Get published review count
+  int get publishedReviewCount => publishedReviews.length;
 }
 
 class Review {

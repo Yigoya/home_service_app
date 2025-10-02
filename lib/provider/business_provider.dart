@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -16,7 +18,7 @@ class BusinessProvider extends ChangeNotifier {
   String _error = '';
 
   // Business listing state
-  List<Business> _businesses = [];
+  List<BusinessDetail> _businessDetails = [];
   int _currentPage = 0;
   int _totalPages = 0;
   int _totalElements = 0;
@@ -40,7 +42,9 @@ class BusinessProvider extends ChangeNotifier {
   String get error => _error;
 
   // Business listing getters
-  List<Business> get businesses => _businesses;
+  List<BusinessDetail> get businessDetails => _businessDetails;
+  List<Business> get businesses =>
+      _businessDetails.map((bd) => bd.business).toList();
   int get currentPage => _currentPage;
   int get totalPages => _totalPages;
   int get totalElements => _totalElements;
@@ -82,10 +86,11 @@ class BusinessProvider extends ChangeNotifier {
     try {
       // Build query parameters
       final queryParams = {
-        'categoryId': serviceId.toString(),
+        'serviceIds': serviceId.toString(),
         'page': page.toString(),
         'size': '10',
         'query': query,
+        // 'serviceIds': '1119',
       };
 
       if (_searchQuery.isNotEmpty) {
@@ -96,6 +101,11 @@ class BusinessProvider extends ChangeNotifier {
         queryParams['locationId'] = locationId.toString();
       }
 
+      print("API Request Parameters: $queryParams");
+      print("API Endpoint: /businesses/search");
+      print("Requesting businesses for serviceId: $serviceId");
+      print("Requesting businesses for locationId: $locationId");
+
       // Make API request
       final apiService = ApiService();
       final response = await apiService.getRequestByQueryWithoutToken(
@@ -103,14 +113,54 @@ class BusinessProvider extends ChangeNotifier {
         queryParams,
       );
       final data = response.data;
-      print(data);
+      print("API Response for serviceId $serviceId:");
+      print("Total businesses returned: ${data['content']?.length ?? 0}");
+      print(
+          "First business: ${data['content']?.isNotEmpty == true ? data['content'][0]['name'] : 'None'}");
+      print(
+          "Business categoryIds: ${data['content']?.isNotEmpty == true ? data['content'][0]['categoryIds'] : 'None'}");
+      print(
+          "Business categories: ${data['content']?.isNotEmpty == true ? data['content'][0]['categories'] : 'None'}");
+      log("data: $data");
       final paginatedBusinesses = PaginatedBusinesses.fromJson(data);
+
+      // Fetch business details for each business to get reviews and ratings
+      List<BusinessDetail> businessDetails = [];
+      for (Business business in paginatedBusinesses.content) {
+        try {
+          final detailResponse = await apiService.getRequestWithoutToken(
+            '/businesses/${business.id}/details',
+          );
+          if (detailResponse.statusCode == 200) {
+            final detailData = detailResponse.data;
+            businessDetails.add(BusinessDetail.fromJson(detailData));
+          } else {
+            // If we can't get details, create a BusinessDetail with empty reviews, services, and gallery
+            businessDetails.add(BusinessDetail(
+              business: business,
+              reviews: [],
+              services: [],
+              gallery: [],
+            ));
+          }
+        } catch (e) {
+          print('Error fetching details for business ${business.id}: $e');
+          // If we can't get details, create a BusinessDetail with empty reviews, services, and gallery
+          businessDetails.add(BusinessDetail(
+            business: business,
+            reviews: [],
+            services: [],
+            gallery: [],
+          ));
+        }
+      }
+
       if (page == 0) {
         // Replace the list if it's the first page
-        _businesses = paginatedBusinesses.content;
+        _businessDetails = businessDetails;
       } else {
         // Append to the list if it's a subsequent page
-        _businesses.addAll(paginatedBusinesses.content);
+        _businessDetails.addAll(businessDetails);
       }
 
       _currentPage = paginatedBusinesses.currentPage;
@@ -289,6 +339,15 @@ class BusinessProvider extends ChangeNotifier {
   // Clear any errors
   void clearError() {
     _error = '';
+    notifyListeners();
+  }
+
+  // Clear businesses list
+  void clearBusinesses() {
+    _businessDetails.clear();
+    _currentPage = 0;
+    _totalPages = 0;
+    _totalElements = 0;
     notifyListeners();
   }
 
@@ -486,5 +545,46 @@ class BusinessProvider extends ChangeNotifier {
   void clearOrderError() {
     _orderError = '';
     notifyListeners();
+  }
+
+  // Submit an enquiry
+  Future<bool> submitEnquiry({
+    required int businessId,
+    required String name,
+    required String email,
+    required String phoneNumber,
+    required String message,
+  }) async {
+    _isSubmittingOrder = true; // Reuse the order loading state
+    _orderError = '';
+    notifyListeners();
+
+    try {
+      final apiService = ApiService();
+      final response = await apiService.postRequestWithoutToken(
+        '/businesses/enquiries',
+        {
+          'businessId': businessId,
+          'name': name,
+          'email': email,
+          'phoneNumber': phoneNumber,
+          'message': message,
+        },
+      );
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return true;
+      } else {
+        _orderError =
+            'Failed to submit enquiry. Server returned: ${response.statusCode} ${response.statusMessage}';
+        return false;
+      }
+    } catch (e) {
+      _orderError = 'Error submitting enquiry: $e';
+      return false;
+    } finally {
+      _isSubmittingOrder = false;
+      notifyListeners();
+    }
   }
 }

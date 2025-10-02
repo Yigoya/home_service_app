@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:home_service_app/screens/job/applications_screen.dart';
 import 'package:home_service_app/screens/job/job_search_screen.dart';
 import 'package:home_service_app/screens/job/profile_screen.dart';

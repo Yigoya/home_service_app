@@ -53,7 +53,7 @@ class _MorePageState extends State<MorePage> {
                     .pushNamed(RouteGenerator.signupPage);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: Theme.of(context).secondaryHeaderColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(32.r),
                 ),
@@ -160,7 +160,7 @@ class _MorePageState extends State<MorePage> {
                 AppLocalizations.of(context)!.welcomeBack,
                 style: TextStyle(
                   fontSize: 28.sp,
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).secondaryHeaderColor,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -268,7 +268,8 @@ class _MorePageState extends State<MorePage> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(4.r),
                                     border: Border.all(
-                                      color: Theme.of(context).primaryColor,
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor,
                                       width: 1.7.w,
                                     ),
                                     color: Colors.white,
@@ -277,7 +278,8 @@ class _MorePageState extends State<MorePage> {
                                     AppLocalizations.of(context)!.signIn,
                                     style: TextStyle(
                                       fontSize: 18.sp,
-                                      color: Theme.of(context).primaryColor,
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -299,7 +301,8 @@ class _MorePageState extends State<MorePage> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(4.r),
                                     border: Border.all(
-                                      color: Theme.of(context).primaryColor,
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor,
                                       width: 1.7.w,
                                     ),
                                     color: Colors.white,
@@ -309,7 +312,8 @@ class _MorePageState extends State<MorePage> {
                                         .registerPrompt,
                                     style: TextStyle(
                                       fontSize: 18.sp,
-                                      color: Theme.of(context).primaryColor,
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -418,23 +422,24 @@ class _MorePageState extends State<MorePage> {
                 }
               },
             ),
-            CustomListTile(
-              icon: Icons.business,
-              title: "Business Directory",
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const BusinessHomePage()));
-              },
-            ),
-            CustomListTile(
-              icon: Icons.store,
-              title: "B2B Marketplace",
-              onTap: () {
-                Navigator.pushNamed(context, RouteGenerator.marketplaceHomePage);
-              },
-            ),
+            // CustomListTile(
+            //   icon: Icons.business,
+            //   title: "Business Directory",
+            //   onTap: () {
+            //     Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //             builder: (context) => const BusinessHomePage()));
+            //   },
+            // ),
+            // CustomListTile(
+            //   icon: Icons.store,
+            //   title: "B2B Marketplace",
+            //   onTap: () {
+            //     Navigator.pushNamed(
+            //         context, RouteGenerator.marketplaceHomePage);
+            //   },
+            // ),
 
             // GestureDetector(
             //   onTap: () async {
@@ -529,7 +534,7 @@ class _MorePageState extends State<MorePage> {
                         .pushNamed(RouteGenerator.loginPage);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: Theme.of(context).secondaryHeaderColor,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),
                   ),

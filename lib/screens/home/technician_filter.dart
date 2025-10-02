@@ -148,7 +148,7 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    /*SizedBox(
                       height: 8.h,
                     ),
                     CustomDropdown(
@@ -175,13 +175,13 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
                           selectedWereda = value;
                         });
                       },
-                    ),
+                    ),*/
                     SizedBox(height: 16.h),
                     CustomButton(
                       onLoad: () {},
                       text: AppLocalizations.of(context)!.applyFilters,
                       onTap: fetchTechnicians,
-                      color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ],
                 ),
@@ -421,23 +421,32 @@ class _TechnicianFilterState extends State<TechnicianFilter> {
               Container(
                 padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 12.w),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).secondaryHeaderColor,
                   borderRadius: BorderRadius.circular(16.r),
                 ),
                 child: InkWell(
                   onTap: () async {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => BookingPage(
-                            technician: tech, service: widget.service)));
-
                     final user =
                         Provider.of<UserProvider>(context, listen: false).user;
                     if (user == null) {
+                      // Store booking context before redirecting to login
+                      Logger().d(
+                          'Storing booking context - tech: $tech, service: ${widget.service}');
+                      Provider.of<AuthenticationProvider>(context,
+                              listen: false)
+                          .setPendingBookingContext({
+                        'technician': tech,
+                        'service': widget.service,
+                      });
                       Provider.of<AuthenticationProvider>(context,
                               listen: false)
                           .setFromAnotherPage(true);
                       Navigator.of(context, rootNavigator: true)
                           .pushNamed(RouteGenerator.loginPage);
+                    } else {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => BookingPage(
+                              technician: tech, service: widget.service)));
                     }
                   },
                   child: Padding(

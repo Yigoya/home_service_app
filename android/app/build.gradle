@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id "com.android.application"
     // START: FlutterFire Configuration
@@ -7,8 +10,15 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+
 android {
-    namespace "com.example.home_service_app"
+    namespace "com.hulu.hulu"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -26,17 +36,25 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.home_service_app"
+        applicationId "com.hulu.hulu"
         minSdkVersion 23
         targetSdkVersion flutter.targetSdkVersion
         versionCode project.hasProperty("flutter.versionCode") ? project.property("flutter.versionCode").toInteger() : 1
         versionName project.hasProperty("flutter.versionName") ? project.property("flutter.versionName") : "1.0.0"
     }
-
+    
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
+        }
+    }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.debug
+           signingConfig signingConfigs.release
         }
     }
 }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chapa_unofficial/chapa_unofficial.dart';
 import 'package:flutter/material.dart';
 import 'package:home_service_app/models/catagory.dart';
@@ -132,8 +134,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       key: scaffoldKey,
       backgroundColor: Colors.white,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: const SystemUiOverlayStyle(
-          statusBarColor: Color.fromARGB(255, 77, 107, 254),
+        value: SystemUiOverlayStyle(
+          statusBarColor: Theme.of(context).secondaryHeaderColor,
           statusBarIconBrightness: Brightness.light,
           statusBarBrightness: Brightness.dark,
         ),
@@ -171,7 +173,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 //     ),
                 //   ),
                 // ),
-                _buildTechnicianListView(),
+                // _buildTechnicianListView(),
                 // _buildCustomerReviewsSection(),
                 // const FAQSection(),
               ],
@@ -366,7 +368,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   ),
                 ],
               ),*/
-              SizedBox(height: 16.h),
+              SizedBox(height: 18.h),
               // Search bar
               _buildSearchBar(provider),
               SizedBox(height: 16.h),
@@ -412,7 +414,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
-                        color: const Color.fromARGB(255, 77, 107, 254),
+                        color: Theme.of(context).secondaryHeaderColor,
                         width: 1.w),
                     boxShadow: [
                       BoxShadow(
@@ -457,17 +459,20 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     );
                                   } else {
                                     // Navigate to BusinessListPage to show businesses for this service
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => BusinessListPage(
-                                          service:
-                                              provider.fiterableBySearch[index],
-                                          categoryId: provider
-                                              .fiterableBySearch[index].id,
-                                        ),
-                                      ),
-                                    );
+                                    // Navigator.push(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //     builder: (context) => BusinessListPage(
+                                    //       service:
+                                    //           provider.fiterableBySearch[index],
+                                    //       categoryId: provider
+                                    //           .fiterableBySearch[index].id,
+                                    //       subCategories: provider
+                                    //           .fiterableBySearch[index]
+                                    //           .services,
+                                    //     ),
+                                    //   ),
+                                    // );
                                   }
                                   return;
                                 }
@@ -506,16 +511,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                             Icons.door_back_door_outlined
                                           ].elementAt(index % 6),
                                           size: 30.sp,
-                                          color: const Color.fromARGB(
-                                              255, 77, 107, 254),
+                                          color: Theme.of(context)
+                                              .secondaryHeaderColor,
                                         )
                                       : Image.network(
                                           '${ApiService.API_URL_FILE}${provider.fiterableBySearch[index].icon}',
                                           width: 30.w,
                                           height: 30.h,
                                           fit: BoxFit.cover,
-                                          color: const Color.fromARGB(
-                                              255, 77, 107, 254),
+                                          color: Theme.of(context)
+                                              .secondaryHeaderColor,
                                         ),
                               title: Text(
                                 provider.fiterableBySearch[index].name,
@@ -553,9 +558,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             borderRadius: BorderRadius.circular(36.r),
             border: _isFocused
                 ? Border.all(
-                    color: const Color.fromARGB(255, 77, 107, 254), width: 3.w)
+                    color: Theme.of(context).secondaryHeaderColor, width: 3.w)
                 : Border.all(
-                    color: const Color.fromARGB(255, 77, 107, 254), width: 2.w),
+                    color: Theme.of(context).secondaryHeaderColor, width: 2.w),
           ),
           height: 56.h,
           child: Row(
@@ -580,7 +585,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 height: double.infinity,
                 width: 64.w,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 57, 77, 254),
+                  color: Theme.of(context).secondaryHeaderColor,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(36.r),
                     bottomRight: Radius.circular(36.r),
@@ -608,11 +613,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h)
+              .copyWith(bottom: 20.h),
           child: Row(
             children: [
               Text(
-                'Services Categories',
+                'Categories',
                 style: TextStyle(
                   fontSize: 22.sp,
                   fontWeight: FontWeight.bold,
@@ -639,26 +645,73 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 return const SkeletonListTile();
               }
 
-              // Hijack the categories list and added a new category
-              final categories = provider.categories;
-              categories.insert(
-                  5,
-                  Category(
-                    id: 7,
-                    categoryName: 'Hulu Jobs',
-                    description: 'A place where you find your dream job',
-                    services: provider.fiterableByCatagory
-                        .where((service) => service.categoryId == 7)
-                        .toList(),
-                  ));
-              // categories.add();
-              final category = provider.categories[index];
+              // Get categories and reorder them according to requirements
+              final categories = List<Category>.from(provider.categories);
+
+              // Reorder categories: 1. Yellow page, 2. home services, 3. professional, 4. tender, 5. market, 6. job
+              final orderedCategories = <Category>[];
+
+              // Add Yellow Page (id: 2)
+              final yellowPage = categories.firstWhere((cat) => cat.id == 2,
+                  orElse: () => categories[1]);
+              orderedCategories.add(yellowPage);
+
+              // Add Home Services (id: 4)
+              final homeServices = categories.firstWhere((cat) => cat.id == 4,
+                  orElse: () => categories[3]);
+              orderedCategories.add(homeServices);
+
+              // Add Professional (id: 3)
+              final professional = categories.firstWhere((cat) => cat.id == 3,
+                  orElse: () => categories[4]);
+              orderedCategories.add(professional);
+
+              // Add Tender (id: 1)
+              final tender = categories.firstWhere((cat) => cat.id == 1,
+                  orElse: () => categories[0]);
+              orderedCategories.add(tender);
+
+              // Add Market (id: 6)
+              final market = categories.firstWhere((cat) => cat.id == 6,
+                  orElse: () => categories[2]);
+              orderedCategories.add(market);
+
+              // Add Jobs (id: 7) - this is already being inserted
+              final jobs = Category(
+                id: 7,
+                categoryName: 'Jobs',
+                description: 'A place where you find your dream job',
+                services: provider.fiterableByCatagory
+                    .where((service) => service.categoryId == 7)
+                    .toList(),
+              );
+              orderedCategories.add(jobs);
+
+              // Debug: Print the final ordered categories
+              log('Final ordered categories:');
+              for (int i = 0; i < orderedCategories.length; i++) {
+                final cat = orderedCategories[i];
+                log('Index $i: ID=${cat.id}, Name="${cat.categoryName}"');
+              }
+
+              // Log the ordered categories
+              log('Total categories: ${orderedCategories.length}');
+              for (int i = 0; i < orderedCategories.length; i++) {
+                final category = orderedCategories[i];
+                log('Ordered Category $i: ${category.toString()}');
+              }
+
+              final category = orderedCategories[index];
 
               return GestureDetector(
                 onTap: () {
-                  provider.filterServicesByCategory(category.id);
+                  // Only filter services for categories that exist in the provider
+                  if (category.id != 7) {
+                    provider.filterServicesByCategory(category.id);
+                  }
                   _focusNode.unfocus();
-                  print(category.id);
+                  print('Clicked category: ${category.toString()}');
+
                   if (category.id == 1) {
                     Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
@@ -666,6 +719,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     return;
                   }
                   if (category.id == 7) {
+                    print('Navigating to MainScreen for Jobs category');
                     Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
                             builder: (context) =>
@@ -690,46 +744,61 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       MaterialPageRoute(
                           builder: (_) => const CategoryServices()));
                 },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: category.icon == null
-                          ? Icon(
-                              [
-                                Icons.restaurant,
-                                Icons.motorcycle,
-                                Icons.directions_car,
-                                Icons.local_shipping,
-                                Icons.shopping_cart,
-                                Icons.face,
-                                Icons.cleaning_services,
-                                Icons.more_horiz
-                              ].elementAt(index % 8),
-                              size: 34.sp,
-                              color: const Color.fromARGB(255, 77, 107, 254),
-                            )
-                          : Image.network(
-                              '${ApiService.API_URL_FILE}${category.icon}',
-                              width: 34.w,
-                              height: 34.h,
-                              fit: BoxFit.cover,
-                              color: const Color.fromARGB(255, 77, 107, 254),
-                            ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      category.categoryName,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(6.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.3),
+                        spreadRadius: 1.r,
+                        blurRadius: 2.r,
+                        offset: Offset(0, 1.h),
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: category.icon == null
+                            ? Icon(
+                                [
+                                  Icons.restaurant,
+                                  Icons.motorcycle,
+                                  Icons.work_outline,
+                                  Icons.local_shipping,
+                                  Icons.shopping_cart,
+                                  Icons.saved_search_rounded,
+                                  Icons.cleaning_services,
+                                  Icons.more_horiz
+                                ].elementAt(index % 8),
+                                size: 41.sp,
+                                // color: const Color.fromARGB(255, 77, 107, 254),
+                                color: Theme.of(context).secondaryHeaderColor,
+                              )
+                            : Image.network(
+                                '${ApiService.API_URL_FILE}${category.icon}',
+                                width: 41.w,
+                                height: 41.h,
+                                fit: BoxFit.cover,
+                                color: Theme.of(context).secondaryHeaderColor,
+                              ),
+                      ),
+                      SizedBox(height: 8.h),
+                      Text(
+                        category.categoryName,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

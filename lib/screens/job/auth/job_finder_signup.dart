@@ -116,7 +116,7 @@ class _JobFinderSignupPageState extends State<JobFinderSignupPage> {
                     style: TextStyle(
                         fontSize: 48.sp,
                         fontWeight: FontWeight.w900,
-                        color: Theme.of(context).primaryColor)),
+                        color: Theme.of(context).secondaryHeaderColor)),
                 SizedBox(height: 8.h),
                 Text(
                   "Create your Job Finder Account",
@@ -149,7 +149,7 @@ class _JobFinderSignupPageState extends State<JobFinderSignupPage> {
                     onPressed:
                         provider.isLoading ? null : () => _signup(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
+                      backgroundColor: Theme.of(context).secondaryHeaderColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -187,7 +187,7 @@ class _JobFinderSignupPageState extends State<JobFinderSignupPage> {
                         "Login",
                         style: TextStyle(
                           fontSize: 14.sp,
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).secondaryHeaderColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
