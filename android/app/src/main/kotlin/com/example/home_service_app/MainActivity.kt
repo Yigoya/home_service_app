@@ -1,4 +1,4 @@
-package com.example.home_service_app
+package com.hulu.hulu
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -6,7 +6,6 @@ import 'package:home_service_app/screens/marketplace/marketplace_product_detail.
 import 'package:home_service_app/services/api_service.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MarketplaceProductList extends StatefulWidget {
   final String? category;

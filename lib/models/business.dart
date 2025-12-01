@@ -4,7 +4,7 @@ class Business {
   final int id;
   final String name;
   final String description;
-  final int ownerId;
+  final int? ownerId;
   final Location location;
   final String phoneNumber;
   final String email;

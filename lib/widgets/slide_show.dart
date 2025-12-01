@@ -54,7 +54,7 @@ class _SlideshowComponentState extends State<SlideshowComponent> {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 16 / 7,
+      aspectRatio: 16 / 10,
       child: Stack(
         children: [
           GestureDetector(
@@ -84,7 +84,7 @@ class _SlideshowComponentState extends State<SlideshowComponent> {
                       child: Text(
                         widget.slides[index]['title']!,
                         style: TextStyle(
-                          fontSize: 24.sp,
+                          fontSize: 27.sp,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),

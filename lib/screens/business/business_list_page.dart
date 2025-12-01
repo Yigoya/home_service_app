@@ -1,25 +1,45 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:home_service_app/models/business.dart';
+import 'package:home_service_app/models/business_detail.dart'
+    as business_detail;
 import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/provider/business_provider.dart';
 import 'package:home_service_app/provider/home_service_provider.dart';
 import 'package:home_service_app/screens/business/business_detail_page.dart';
 import 'package:home_service_app/services/api_service.dart';
-import 'package:home_service_app/widgets/app_bar_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+// Sub-category model
+class SubCategory {
+  final int id;
+  final String name;
+  final IconData icon;
+  final Color color;
+
+  SubCategory({
+    required this.id,
+    required this.name,
+    required this.icon,
+    required this.color,
+  });
+}
+
 class BusinessListPage extends StatefulWidget {
   final Service service;
   final int categoryId;
+  final List<Service>? subCategories;
 
   const BusinessListPage({
     Key? key,
     required this.service,
     required this.categoryId,
+    this.subCategories,
   }) : super(key: key);
 
   @override
@@ -34,9 +54,16 @@ class _BusinessListPageState extends State<BusinessListPage>
   late AnimationController _animationController;
   late Animation<double> _animation;
 
+  // Sub-category selection state
+  String? _selectedSubCategory;
+  List<SubCategory> _subCategories = [];
+
   @override
   void initState() {
     super.initState();
+
+    // Initialize sub-categories from service data
+    _initializeSubCategories();
 
     // Animation setup
     _animationController = AnimationController(
@@ -50,18 +77,61 @@ class _BusinessListPageState extends State<BusinessListPage>
 
     // Fetch businesses when the page loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = Provider.of<BusinessProvider>(context, listen: false);
-      final homeProvider =
-          Provider.of<HomeServiceProvider>(context, listen: false);
-      print("${widget.categoryId}");
-      provider.fetchBusinessesByServiceId(
-        widget.categoryId,
-        locationId: homeProvider.selectedLocation?.id,
-      );
+      _fetchBusinesses();
 
       // Add scroll listener for pagination
       _scrollController.addListener(_scrollListener);
     });
+  }
+
+  // Initialize sub-categories from service data
+  void _initializeSubCategories() {
+    print("Initializing sub-categories...");
+    print("Widget subCategories: ${widget.subCategories?.length ?? 0}");
+    log("Widget subCategories: ${widget.subCategories}");
+
+    if (widget.subCategories != null && widget.subCategories!.isNotEmpty) {
+      _subCategories = widget.subCategories!.map((service) {
+        // Generate colors and icons based on service index
+        final colors = [
+          Colors.green,
+          Colors.orange,
+          Colors.brown,
+          Colors.blue,
+          Colors.pink,
+          Colors.red,
+          Colors.purple,
+          Colors.teal,
+          Colors.amber,
+          Colors.indigo,
+        ];
+        final icons = [
+          Icons.eco,
+          Icons.grain,
+          Icons.local_cafe,
+          Icons.agriculture,
+          Icons.local_florist,
+          Icons.store,
+          Icons.pets,
+          Icons.apple,
+          Icons.local_drink,
+          Icons.business,
+        ];
+
+        final index = widget.subCategories!.indexOf(service);
+        print(
+            "Creating sub-category: ${service.services.toString()} with ID: ${service.id}");
+        return SubCategory(
+          id: service.id,
+          name: service.name,
+          icon: icons[index % icons.length],
+          color: colors[index % colors.length],
+        );
+      }).toList();
+      print("Initialized ${_subCategories.length} sub-categories");
+    } else {
+      print("No sub-categories to initialize");
+    }
   }
 
   @override
@@ -71,6 +141,42 @@ class _BusinessListPageState extends State<BusinessListPage>
     _scrollController.dispose();
     _animationController.dispose();
     super.dispose();
+  }
+
+  // Fetch businesses based on selected sub-category or main category
+  void _fetchBusinesses() {
+    final provider = Provider.of<BusinessProvider>(context, listen: false);
+    final homeProvider =
+        Provider.of<HomeServiceProvider>(context, listen: false);
+
+    // If a sub-category is selected, fetch businesses for that sub-category
+    // Otherwise, fetch businesses for the main category
+    int categoryId = widget.categoryId;
+    print(
+        "_fetchBusinesses called - Selected sub-category: $_selectedSubCategory");
+    print("Main category ID: $categoryId");
+
+    if (_selectedSubCategory != null) {
+      // Find the sub-category ID from the selected sub-category name
+      final selectedSubCat = _subCategories.firstWhere(
+        (subCat) => subCat.name == _selectedSubCategory,
+      );
+      categoryId = selectedSubCat.id;
+      print(
+          "Using sub-category ID: $categoryId for sub-category: $_selectedSubCategory");
+    } else {
+      print("No sub-category selected, using main category ID: $categoryId");
+    }
+
+    print("Fetching businesses for category ID: $categoryId");
+
+    // Clear existing businesses before fetching new ones
+    provider.clearBusinesses();
+
+    provider.fetchBusinessesByServiceId(
+      widget.categoryId,
+      locationId: homeProvider.selectedLocation?.id,
+    );
   }
 
   // Load more businesses when reaching the end of the list
@@ -118,6 +224,14 @@ class _BusinessListPageState extends State<BusinessListPage>
 
     // Clear focus
     FocusScope.of(context).unfocus();
+  }
+
+  // Reset sub-category selection
+  void _resetSubCategory() {
+    setState(() {
+      _selectedSubCategory = null;
+    });
+    _fetchBusinesses();
   }
 
   // Handle phone call
@@ -195,6 +309,326 @@ class _BusinessListPageState extends State<BusinessListPage>
         SnackBar(content: Text('Could not launch WhatsApp')),
       );
     }
+  }
+
+  // Show sub-category selection modal
+  void _showSubCategoryModal() {
+    print("_showSubCategoryModal called");
+    print("Sub-categories count: ${_subCategories.length}");
+    for (var subCat in _subCategories) {
+      print("Sub-category: ${subCat.name} (ID: ${subCat.id})");
+    }
+
+    if (_subCategories.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No sub-categories available')),
+      );
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _buildSubCategoryModal(),
+    );
+  }
+
+  // Build sub-category selection modal
+  Widget _buildSubCategoryModal() {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.75,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24.r),
+          topRight: Radius.circular(24.r),
+        ),
+      ),
+      child: Column(
+        children: [
+          // Handle bar
+          Container(
+            margin: EdgeInsets.only(top: 12.h),
+            width: 40.w,
+            height: 4.h,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(2.r),
+            ),
+          ),
+
+          // Header
+          Padding(
+            padding: EdgeInsets.all(24.w),
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(12.r),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.blue[400]!, Colors.blue[600]!],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.blue.withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.category,
+                    color: Colors.white,
+                    size: 24.sp,
+                  ),
+                ),
+                SizedBox(width: 16.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Select Sub-Categories',
+                        style: TextStyle(
+                          fontSize: 22.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      SizedBox(height: 4.h),
+                      Text(
+                        'Choose the services you\'re interested in',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (_selectedSubCategory != null)
+                  GestureDetector(
+                    onTap: _resetSubCategory,
+                    child: Container(
+                      padding: EdgeInsets.all(8.r),
+                      decoration: BoxDecoration(
+                        color: Colors.red[50],
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Icon(
+                        Icons.clear_all,
+                        color: Colors.red[600],
+                        size: 20.sp,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+
+          // Selected category chip
+          if (_selectedSubCategory != null)
+            Container(
+              height: 50.h,
+              margin: EdgeInsets.symmetric(horizontal: 24.w),
+              child: Row(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(right: 8.w),
+                    child: Chip(
+                      label: Text(
+                        _selectedSubCategory!,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                      backgroundColor: _subCategories
+                          .firstWhere(
+                            (cat) => cat.name == _selectedSubCategory,
+                          )
+                          .color,
+                      deleteIcon: Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 16.sp,
+                      ),
+                      onDeleted: _resetSubCategory,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.r),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          SizedBox(height: 16.h),
+
+          // Sub-categories list
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
+              child: ListView.builder(
+                itemCount: _subCategories.length,
+                itemBuilder: (context, index) {
+                  final category = _subCategories[index];
+                  final isSelected = _selectedSubCategory == category.name;
+
+                  return GestureDetector(
+                    onTap: () {
+                      print(
+                          "Sub-category tapped: ${category.name} (ID: ${category.id})");
+                      setState(() {
+                        if (isSelected) {
+                          _selectedSubCategory = null;
+                          print("Deselected sub-category");
+                        } else {
+                          _selectedSubCategory = category.name;
+                          print("Selected sub-category: $_selectedSubCategory");
+                        }
+                      });
+                      // Fetch businesses for the selected sub-category
+                      _fetchBusinesses();
+                      Navigator.pop(context);
+                    },
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeInOut,
+                      margin: EdgeInsets.only(bottom: 12.h),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 20.w, vertical: 16.h),
+                      decoration: BoxDecoration(
+                        color: isSelected ? category.color : Colors.white,
+                        borderRadius: BorderRadius.circular(16.r),
+                        border: Border.all(
+                          color:
+                              isSelected ? category.color : Colors.grey[200]!,
+                          width: isSelected ? 2 : 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: isSelected
+                                ? category.color.withOpacity(0.3)
+                                : Colors.black.withOpacity(0.05),
+                            blurRadius: isSelected ? 12 : 8,
+                            offset: Offset(0, isSelected ? 6 : 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          // Category name
+                          Expanded(
+                            child: Text(
+                              category.name,
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600,
+                                color:
+                                    isSelected ? Colors.white : Colors.black87,
+                              ),
+                            ),
+                          ),
+                          // Selection indicator
+                          AnimatedContainer(
+                            duration: Duration(milliseconds: 200),
+                            width: 24.w,
+                            height: 24.h,
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? Colors.white.withOpacity(0.2)
+                                  : Colors.transparent,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isSelected
+                                    ? Colors.white
+                                    : Colors.grey[400]!,
+                                width: 2,
+                              ),
+                            ),
+                            child: isSelected
+                                ? Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 16.sp,
+                                  )
+                                : null,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+
+          // Apply button
+          Container(
+            padding: EdgeInsets.all(24.w),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[100],
+                      foregroundColor: Colors.grey[700],
+                      elevation: 0,
+                      padding: EdgeInsets.symmetric(vertical: 16.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.r),
+                      ),
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 16.w),
+                Expanded(
+                  flex: 2,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue[600],
+                      foregroundColor: Colors.white,
+                      elevation: 4,
+                      padding: EdgeInsets.symmetric(vertical: 16.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.r),
+                      ),
+                      shadowColor: Colors.blue.withOpacity(0.3),
+                    ),
+                    child: Text(
+                      'Close',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -301,86 +735,144 @@ class _BusinessListPageState extends State<BusinessListPage>
           Expanded(
             child: Consumer<BusinessProvider>(
               builder: (context, provider, _) {
-                if (provider.isLoading && provider.businesses.isEmpty) {
+                if (provider.isLoading && provider.businessDetails.isEmpty) {
                   // Show loading shimmer
                   return _buildLoadingShimmer();
                 }
 
-                if (provider.businesses.isEmpty) {
+                if (provider.businessDetails.isEmpty) {
                   // Show empty state
                   return _buildEmptyState(provider);
                 }
 
                 // Show business list
-                return Stack(
+                return Column(
                   children: [
-                    // Business list
-                    RefreshIndicator(
-                      onRefresh: () async {
-                        final homeProvider = Provider.of<HomeServiceProvider>(
-                            context,
-                            listen: false);
-                        await provider.fetchBusinessesByServiceId(
-                          widget.categoryId,
-                          locationId: homeProvider.selectedLocation?.id,
-                          query: provider.searchQuery,
-                        );
-                      },
-                      child: ListView(
-                        controller: _scrollController,
-                        padding: EdgeInsets.symmetric(vertical: 12.h),
-                        children: [
-                          // Results count header
-                          Padding(
-                            padding: EdgeInsets.only(
-                                bottom: 16.h, left: 16.w, right: 16.w),
-                            child: Text(
-                              '${provider.totalElements} Results for your search',
-                              style: TextStyle(
-                                fontSize: 22.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-
-                          // Business listing
-                          ...List.generate(
-                            provider.businesses.length,
-                            (index) => _buildBusinessCard(
-                                provider.businesses[index], index),
-                          ),
-
-                          // Loading indicator for pagination
-                          if (provider.hasMorePages)
-                            Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(16.r),
-                                child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.blue[400]!),
+                    // Categories button - only show if there are sub-categories
+                    if (_subCategories.isNotEmpty)
+                      Padding(
+                        padding: EdgeInsets.only(left: 16.w, right: 16.w),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: GestureDetector(
+                            onTap: _showSubCategoryModal,
+                            child: AnimatedContainer(
+                              duration: Duration(milliseconds: 200),
+                              height: 40.h,
+                              width: MediaQuery.of(context).size.width * .4,
+                              decoration: BoxDecoration(
+                                gradient: _selectedSubCategory != null
+                                    ? LinearGradient(
+                                        colors: [
+                                          Colors.blue[400]!,
+                                          Colors.blue[600]!
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      )
+                                    : LinearGradient(
+                                        colors: [
+                                          Colors.grey[200]!,
+                                          Colors.grey[100]!
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                borderRadius: BorderRadius.circular(25.r),
+                                border: Border.all(
+                                  color: _selectedSubCategory != null
+                                      ? Colors.blue[300]!
+                                      : Colors.grey[400]!,
+                                  width: 1.5,
                                 ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: _selectedSubCategory != null
+                                        ? Colors.blue.withOpacity(0.3)
+                                        : Colors.black.withOpacity(0.1),
+                                    blurRadius:
+                                        _selectedSubCategory != null ? 12 : 6,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    _selectedSubCategory != null
+                                        ? Icons.filter_list
+                                        : Icons.menu_sharp,
+                                    color: _selectedSubCategory != null
+                                        ? Colors.white
+                                        : Colors.grey[700],
+                                    size: 20.sp,
+                                  ),
+                                  SizedBox(width: 8.w),
+                                  Text(
+                                    _selectedSubCategory == null
+                                        ? 'Sub-Categories'
+                                        : _selectedSubCategory!,
+                                    style: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w700,
+                                      color: _selectedSubCategory != null
+                                          ? Colors.white
+                                          : Colors.grey[800],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                        ],
-                      ),
-                    ),
-
-                    // Loading overlay when fetching more data
-                    if (provider.isLoading && provider.businesses.isNotEmpty)
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          height: 4.h,
-                          child: LinearProgressIndicator(
-                            backgroundColor: Colors.transparent,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.blue[400]!),
                           ),
                         ),
                       ),
+                    // Business list
+                    Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          _fetchBusinesses();
+                        },
+                        child: ListView(
+                          controller: _scrollController,
+                          padding: EdgeInsets.symmetric(vertical: 12.h),
+                          children: [
+                            // Results count header
+                            // Padding(
+                            //   padding: EdgeInsets.only(
+                            //       bottom: 16.h, left: 16.w, right: 16.w),
+                            //   child: Text(
+                            //     '${provider.businessDetails.length} Results for your search',
+                            //     style: TextStyle(
+                            //       fontSize: 22.sp,
+                            //       fontWeight: FontWeight.w600,
+                            //       color: Colors.black,
+                            //     ),
+                            //   ),
+                            // ),
+
+                            // Business listing
+                            ...List.generate(
+                              provider.businessDetails.length,
+                              (index) => _buildBusinessCard(
+                                  provider.businessDetails[index], index),
+                            ),
+
+                            // Loading indicator for pagination
+                            if (provider.hasMorePages)
+                              Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(16.r),
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.blue[400]!),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 );
               },
@@ -483,450 +975,477 @@ class _BusinessListPageState extends State<BusinessListPage>
     );
   }
 
-  // New business card design using only available data from the model
-  Widget _buildBusinessCard(Business business, int index) {
+  // New business card design using BusinessDetail for complete data
+  Widget _buildBusinessCard(
+      business_detail.BusinessDetail businessDetail, int index) {
+    final business = businessDetail.business;
     return GestureDetector(
-        onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => BusinessDetailPage(
-                        businessId: business.id,
-                      )),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BusinessDetailPage(
+            businessId: business.id,
+          ),
+        ),
+      ),
+      child: Container(
+        margin: EdgeInsets.only(bottom: 24.h, left: 16.w, right: 16.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+              spreadRadius: 0,
             ),
-        child: Container(
-          margin: EdgeInsets.only(bottom: 20.h),
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-          decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                bottom: BorderSide(
-                  color: Colors.grey[300]!,
-                  width: 2,
-                ),
-              )),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Business info row with image
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Business image
-                  Container(
-                    width: 132.w,
-                    height: 144.h,
-                    child: business.images.isNotEmpty
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(8.r),
-                            child: CachedNetworkImage(
-                              imageUrl:
-                                  '${ApiService.API_URL_FILE}${business.images[0]}',
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => Shimmer.fromColors(
-                                baseColor: Colors.grey[300]!,
-                                highlightColor: Colors.grey[100]!,
-                                child: Container(color: Colors.white),
-                              ),
-                              errorWidget: (context, url, error) => Container(
-                                color: Color.fromARGB(97, 56, 146, 219),
-                                child: Center(
-                                  child: Icon(Icons.business,
-                                      color: Color.fromARGB(255, 56, 145, 219),
-                                      size: 40.sp),
-                                ),
-                              ),
-                            ),
-                          )
-                        : Container(
-                            color: Color.fromARGB(97, 56, 146, 219),
-                            child: Center(
-                              child: Icon(Icons.business,
-                                  color: Color.fromARGB(255, 56, 145, 219),
-                                  size: 40.sp),
-                            ),
-                          ),
-                  ),
-
-                  // Business details
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.all(12.r),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Featured flag (if business is featured)
-                          if (business.isFeatured)
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 10.w, vertical: 4.h),
-                              margin: EdgeInsets.only(bottom: 8.h),
-                              decoration: BoxDecoration(
-                                color: Colors.amber[50],
-                                border: Border.all(color: Colors.amber[300]!),
-                                borderRadius: BorderRadius.circular(4.r),
-                              ),
-                              child: Text(
-                                'Featured Business',
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.amber[800],
-                                ),
-                              ),
-                            ),
-
-                          // Verification badge
-                          if (business.isVerified)
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 8.w, vertical: 2.h),
-                              margin: EdgeInsets.only(bottom: 8.h),
-                              decoration: BoxDecoration(
-                                color: Colors.blue[50],
-                                borderRadius: BorderRadius.circular(4.r),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.verified,
-                                      color: Colors.blue, size: 14.sp),
-                                  SizedBox(width: 4.w),
-                                  Text(
-                                    'Verified',
-                                    style: TextStyle(
-                                      fontSize: 12.sp,
-                                      color: Colors.blue,
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 40,
+              offset: const Offset(0, 16),
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Main content row (image + text)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Left side - Image section
+                Container(
+                  width: 140.w,
+                  height: 140.h,
+                  child: Stack(
+                    children: [
+                      // Business image
+                      ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20.r),
+                          bottomLeft: Radius.circular(20.r),
+                        ),
+                        child: business.images.isNotEmpty
+                            ? CachedNetworkImage(
+                                imageUrl:
+                                    '${ApiService.API_URL_FILE}${business.images[0]}',
+                                fit: BoxFit.cover,
+                                width: 140.w,
+                                height: 140.h,
+                                placeholder: (context, url) =>
+                                    Shimmer.fromColors(
+                                  baseColor: Colors.grey[200]!,
+                                  highlightColor: Colors.grey[100]!,
+                                  child: Container(
+                                    width: 140.w,
+                                    height: 140.h,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[200],
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(20.r),
+                                        bottomLeft: Radius.circular(20.r),
+                                      ),
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-
-                          // Business name with verified icon
-
-                          Text(
-                            business.name,
-                            style: TextStyle(
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-
-                          SizedBox(height: 6.h),
-                          Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 8.w, vertical: 2.h),
+                                ),
+                                errorWidget: (context, url, error) => Container(
+                                  width: 140.w,
+                                  height: 140.h,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.blue.shade100,
+                                        Colors.blue.shade200,
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(20.r),
+                                      bottomLeft: Radius.circular(20.r),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.business,
+                                      color: Colors.blue.shade600,
+                                      size: 32.sp,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                width: 140.w,
+                                height: 140.h,
                                 decoration: BoxDecoration(
-                                  color: Colors.green,
-                                  borderRadius: BorderRadius.circular(4.r),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Colors.blue.shade100,
+                                      Colors.blue.shade200,
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20.r),
+                                    bottomLeft: Radius.circular(20.r),
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.business,
+                                    color: Colors.blue.shade600,
+                                    size: 32.sp,
+                                  ),
+                                ),
+                              ),
+                      ),
+
+                      // Top-right badges
+                      Positioned(
+                        top: 8.h,
+                        right: 8.w,
+                        child: Column(
+                          children: [
+                            // Featured badge
+                            if (business.isFeatured)
+                              Container(
+                                margin: EdgeInsets.only(bottom: 4.h),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8.w,
+                                  vertical: 4.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.amber.shade400,
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.amber.withOpacity(0.3),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(
-                                      "5.0",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14.sp,
-                                      ),
+                                    Icon(
+                                      Icons.star,
+                                      color: Colors.white,
+                                      size: 10.sp,
                                     ),
                                     SizedBox(width: 2.w),
-                                    Icon(Icons.star,
-                                        color: Colors.white, size: 12.sp),
+                                    Text(
+                                      'Featured',
+                                      style: TextStyle(
+                                        fontSize: 9.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                            // Verified badge
+                            if (business.isVerified)
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8.w,
+                                  vertical: 4.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.shade500,
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.blue.withOpacity(0.3),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.verified,
+                                      color: Colors.white,
+                                      size: 10.sp,
+                                    ),
+                                    SizedBox(width: 2.w),
+                                    Text(
+                                      'Verified',
+                                      style: TextStyle(
+                                        fontSize: 9.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Right side - Content section
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Business name
+                        Text(
+                          business.name,
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+
+                        SizedBox(height: 8.h),
+
+                        // Rating row
+                        if (businessDetail.averageRating != null &&
+                            businessDetail.averageRating! > 0)
+                          Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8.w,
+                                  vertical: 4.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.green.shade400,
+                                      Colors.green.shade500
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.green.withOpacity(0.3),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.star,
+                                      color: Colors.white,
+                                      size: 12.sp,
+                                    ),
+                                    SizedBox(width: 4.w),
+                                    Text(
+                                      businessDetail.averageRating!
+                                          .toStringAsFixed(1),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 11.sp,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
                               SizedBox(width: 8.w),
                               Text(
-                                "8 Ratings",
+                                "${businessDetail.reviewCount} ${businessDetail.reviewCount == 1 ? 'Review' : 'Reviews'}",
                                 style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: Colors.grey[900],
+                                  fontSize: 12.sp,
+                                  color: Colors.grey.shade600,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 6.h),
-                          // Short description
-                          Text(
-                            business.description.length > 60
-                                ? '${business.description.substring(0, 60)}...'
-                                : business.description,
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              color: Colors.grey[600],
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+
+                        SizedBox(height: 12.h),
+
+                        // Description
+                        Text(
+                          business.description.length > 60
+                              ? '${business.description.substring(0, 60)}...'
+                              : business.description,
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            color: Colors.grey.shade700,
+                            height: 1.3,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+
+                        SizedBox(height: 12.h),
+
+                        // Location
+                        if (business.location.city != null &&
+                            business.location.city!.isNotEmpty)
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.location_on,
+                                size: 14.sp,
+                                color: Colors.grey.shade600,
+                              ),
+                              SizedBox(width: 6.w),
+                              Expanded(
+                                child: Text(
+                                  business.location.city!,
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    color: Colors.grey.shade700,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
 
-                          SizedBox(height: 6.h),
-
-                          // Location and contact info
-
-                          if (business.location.city != null &&
-                              business.location.city!.isNotEmpty)
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.location_on,
-                                  size: 18.sp,
-                                  color: Colors.grey[800],
-                                ),
-                                SizedBox(width: 4.w),
-                                Expanded(
-                                  child: Text(
-                                    business.location.city!,
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: Colors.grey[800],
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                        ],
-                      ),
+                        SizedBox(height: 16.h),
+                      ],
                     ),
                   ),
-                ],
-              ),
-              // SizedBox(height: 10.h),
-              // if (_hasSocialMedia(business.socialMedia))
-              //   Padding(
-              //     padding: EdgeInsets.only(left: 10.r, right: 10.r, bottom: 10.r),
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.end,
-              //       children: [
-              //         if (business.socialMedia.facebook != null &&
-              //             business.socialMedia.facebook!.isNotEmpty)
-              //           _buildSocialButton(Icons.facebook, Colors.blue[700]!,
-              //               () => _launchUrl(business.socialMedia.facebook!)),
-              //         if (business.socialMedia.twitter != null &&
-              //             business.socialMedia.twitter!.isNotEmpty)
-              //           _buildSocialButton(Icons.abc, Colors.blue[400]!,
-              //               () => _launchUrl(business.socialMedia.twitter!)),
-              //         if (business.socialMedia.instagram != null &&
-              //             business.socialMedia.instagram!.isNotEmpty)
-              //           _buildSocialButton(Icons.camera_alt, Colors.pink[400]!,
-              //               () => _launchUrl(business.socialMedia.instagram!)),
-              //         if (business.socialMedia.linkedin != null &&
-              //             business.socialMedia.linkedin!.isNotEmpty)
-              //           _buildSocialButton(Icons.work, Colors.blue[800]!,
-              //               () => _launchUrl(business.socialMedia.linkedin!)),
-              //       ],
-              //     ),
-              //   ),
-              // Action buttons
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 4.w),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: BouncingScrollPhysics(),
-                  child: Row(
-                    children: [
-                      // Call Now button
-                      Container(
-                        width: 120.w,
-                        child: InkWell(
-                          onTap: () => _callPhone(business.phoneNumber),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 10.h),
-                            decoration: BoxDecoration(
-                              color: Color.fromARGB(255, 56, 145, 219),
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.call,
-                                    color: Colors.white, size: 20.sp),
-                                SizedBox(width: 6.w),
-                                Text(
-                                  'Call Now',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.sp,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                ),
+              ],
+            ),
 
-                      SizedBox(width: 10.w),
-
-                      // Directions button (launches map)
-                      Container(
-                        width: 140.w,
-                        child: InkWell(
-                          onTap: () => _launchMap(business.location),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 9.h),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black87),
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.directions,
-                                    color: Colors.black87, size: 20.sp),
-                                SizedBox(width: 6.w),
-                                Text(
-                                  'Directions',
-                                  style: TextStyle(
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.sp,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(width: 10.w),
-
-                      // WhatsApp button
-                      Container(
-                        width: 140.w,
-                        child: InkWell(
-                          onTap: () => _launchWhatsApp(business.phoneNumber),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 10.h, horizontal: 18.w),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Icon(
-                                  Icons.message,
-                                  color: Colors.white,
-                                  size: 20.sp,
-                                ),
-                                SizedBox(width: 8.w),
-                                Text(
-                                  'WhatsApp',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16.sp,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(width: 10.w),
-
-                      // Website button (only shown if website exists)
-                      if (business.website.isNotEmpty)
-                        Container(
-                          width: 140.w,
-                          child: InkWell(
-                            onTap: () => _launchWebsite(business.website),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10.h, horizontal: 24.w),
-                              decoration: BoxDecoration(
-                                color: Colors.purple,
-                                borderRadius: BorderRadius.circular(8.r),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    Icons.public,
-                                    color: Colors.white,
-                                    size: 20.sp,
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Text(
-                                    'Website',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16.sp,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                      if (business.website.isNotEmpty) SizedBox(width: 10.w),
-
-                      // Space for additional buttons
-                      SizedBox(width: 10.w),
-                    ],
-                  ),
+            // Action buttons - Scrollable horizontal list
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20.r),
+                  bottomRight: Radius.circular(20.r),
                 ),
               ),
-            ],
-          ),
-        ));
-  }
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    // Call Now button
+                    _buildActionButton(
+                      icon: Icons.call,
+                      label: 'Call Now',
+                      color: Colors.blue.shade600,
+                      onTap: () => _callPhone(business.phoneNumber),
+                      width: 120.w,
+                    ),
 
-  // Check if business has any social media links
-  bool _hasSocialMedia(SocialMedia socialMedia) {
-    return (socialMedia.facebook != null && socialMedia.facebook!.isNotEmpty) ||
-        (socialMedia.twitter != null && socialMedia.twitter!.isNotEmpty) ||
-        (socialMedia.instagram != null && socialMedia.instagram!.isNotEmpty) ||
-        (socialMedia.linkedin != null && socialMedia.linkedin!.isNotEmpty);
-  }
+                    SizedBox(width: 12.w),
 
-  // Create social media button
-  Widget _buildSocialButton(IconData icon, Color color, VoidCallback onTap) {
-    return Padding(
-      padding: EdgeInsets.only(left: 8.w),
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          padding: EdgeInsets.all(6.r),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            icon,
-            color: color,
-            size: 18.sp,
-          ),
+                    // Directions button
+                    _buildActionButton(
+                      icon: Icons.directions,
+                      label: 'Directions',
+                      color: Colors.grey.shade700,
+                      isOutlined: true,
+                      onTap: () => _launchMap(business.location),
+                      width: 120.w,
+                    ),
+
+                    SizedBox(width: 12.w),
+
+                    // WhatsApp button
+                    _buildActionButton(
+                      icon: Icons.message,
+                      label: 'WhatsApp',
+                      color: Colors.green.shade600,
+                      onTap: () => _launchWhatsApp(business.phoneNumber),
+                      width: 120.w,
+                    ),
+
+                    // Website button
+                    if (business.website.isNotEmpty) ...[
+                      SizedBox(width: 12.w),
+                      _buildActionButton(
+                        icon: Icons.public,
+                        label: 'Website',
+                        color: Colors.purple.shade600,
+                        onTap: () => _launchWebsite(business.website),
+                        width: 120.w,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  // Launch URL
-  Future<void> _launchUrl(String url) async {
-    String formattedUrl = url;
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      formattedUrl = 'https://$url';
-    }
-
-    final Uri uri = Uri.parse(formattedUrl);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not launch $formattedUrl')),
-      );
-    }
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+    required double width,
+    bool isOutlined = false,
+  }) {
+    return Container(
+      width: width > 0 ? width : null,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16.r),
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+            decoration: BoxDecoration(
+              color: isOutlined ? Colors.transparent : color,
+              border: isOutlined ? Border.all(color: color, width: 1.5) : null,
+              borderRadius: BorderRadius.circular(16.r),
+              boxShadow: isOutlined
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: color.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  color: isOutlined ? color : Colors.white,
+                  size: 18.sp,
+                ),
+                SizedBox(width: 6.w),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: isOutlined ? color : Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13.sp,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   // Loading shimmer effect
@@ -943,7 +1462,7 @@ class _BusinessListPageState extends State<BusinessListPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: 180.h,
+                height: 200.h,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,

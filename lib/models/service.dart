@@ -46,4 +46,9 @@ class Service {
       'services': services.map((e) => e.toJson()).toList(),
     };
   }
+
+  @override
+  String toString() {
+    return 'Service(id: $id, name: "$name", services: ${services.length})';
+  }
 }

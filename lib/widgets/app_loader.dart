@@ -62,76 +62,72 @@ class _LoadingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFF005e4e),
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle(
+          statusBarColor: Theme.of(context).secondaryHeaderColor,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
         ),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: AnimatedBuilder(
-                animation: controller,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: opacityAnimation.value,
-                    child: Transform.scale(
-                      scale: scaleAnimation.value,
-                      child: child,
-                    ),
-                  );
-                },
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).secondaryHeaderColor,
+          ),
+          child: Stack(
+            children: [
+              Positioned.fill(
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        'Hulu',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 56,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 2,
-                        ),
-                      ),
+                      // Text(
+                      //   'hulu',
+                      //   style: TextStyle(
+                      //     color: Colors.white,
+                      //     fontSize: 60,
+                      //     fontWeight: FontWeight.bold,
+                      //     letterSpacing: 2,
+                      //   ),
+                      // ),
+                      Image.asset('assets/icons/hulu-splash.png'),
                       // const SizedBox(height: 40),
                       // const _LoadingDots(),
                     ],
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              bottom: 50,
-              left: 0,
-              right: 0,
-              child: Column(
-                children: [
-                  Text(
-                    'Loading Data ...',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
-                      fontSize: 14,
-                      letterSpacing: 2,
+              Positioned(
+                bottom: 50,
+                left: 0,
+                right: 0,
+                child: Column(
+                  children: [
+                    Text(
+                      'Loading Data ...',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: 14,
+                        letterSpacing: 2,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: 200,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: LinearProgressIndicator(
-                        minHeight: 2,
-                        backgroundColor: Colors.white10,
-                        valueColor: AlwaysStoppedAnimation(
-                          Colors.white.withOpacity(0.5),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: 200,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: LinearProgressIndicator(
+                          minHeight: 2,
+                          backgroundColor: Colors.white10,
+                          valueColor: AlwaysStoppedAnimation(
+                            Colors.white.withOpacity(0.5),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

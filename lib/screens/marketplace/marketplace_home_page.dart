@@ -12,7 +12,6 @@ import 'package:home_service_app/services/api_service.dart';
 import 'package:home_service_app/widgets/bottom_navigation.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MarketplaceHomePage extends StatefulWidget {
   const MarketplaceHomePage({Key? key}) : super(key: key);
@@ -24,8 +23,10 @@ class MarketplaceHomePage extends StatefulWidget {
 class _MarketplaceHomePageState extends State<MarketplaceHomePage> {
   final TextEditingController _searchController = TextEditingController();
   List<Service> _marketplaceServices = [];
-  Service? _selectedService;
+  List<MarketplaceProduct> _allProducts = [];
+  List<MarketplaceProduct> _filteredProducts = [];
   bool _isLoadingCategories = true;
+  bool _isLoadingProducts = true;
 
   @override
   void initState() {
@@ -38,49 +39,99 @@ class _MarketplaceHomePageState extends State<MarketplaceHomePage> {
   Future<void> _loadMarketplaceServices() async {
     setState(() {
       _isLoadingCategories = true;
+      _isLoadingProducts = true;
     });
 
     // Get the marketplace category services from HomeServiceProvider
     final homeServiceProvider =
         Provider.of<HomeServiceProvider>(context, listen: false);
 
-    // Find the B2B marketplace category - typically the last category
-    // Note: This depends on your actual data structure
-    final marketplaceCategory = homeServiceProvider.categories[2];
-    // .lastWhere(
-    //     (category) =>
-    //         category.categoryName.toLowerCase().contains('marketplace') ||
-    //         category.categoryName.toLowerCase().contains('b2b'),
-    //     orElse: () => homeServiceProvider.categories.last);
+    // Find the B2B marketplace category
+    print(
+        'Available categories: ${homeServiceProvider.categories.map((c) => c.categoryName).toList()}');
+
+    final marketplaceCategory = homeServiceProvider.categories.lastWhere(
+        (category) =>
+            category.categoryName.toLowerCase().contains('marketplace') ||
+            category.categoryName.toLowerCase().contains('b2b') ||
+            category.categoryName.toLowerCase().contains('market'),
+        orElse: () => homeServiceProvider.categories.last);
+
+    print('Selected marketplace category: ${marketplaceCategory.categoryName}');
 
     // Get the services from the marketplace category
     _marketplaceServices = marketplaceCategory.services;
 
-    // If there are services, select the first one by default
-    if (_marketplaceServices.isNotEmpty) {
-      _selectedService = _marketplaceServices.first;
+    print('Found ${_marketplaceServices.length} marketplace services');
+    for (var service in _marketplaceServices) {
+      print(
+          'Service: ${service.name} (ID: ${service.id}) - Sub-services: ${service.services.length}');
+    }
 
-      // Load products for the selected service
-      if (_selectedService != null) {
-        await _loadProductsForService(_selectedService!);
+    // Load all products from all services
+    await _loadAllProducts();
+
+    setState(() {
+      _isLoadingCategories = false;
+      _isLoadingProducts = false;
+    });
+  }
+
+  Future<void> _loadAllProducts() async {
+    final marketplaceProvider =
+        Provider.of<MarketplaceProvider>(context, listen: false);
+    List<MarketplaceProduct> allProducts = [];
+
+    // Load products from all services
+    for (var service in _marketplaceServices) {
+      if (service.services.isNotEmpty) {
+        // If service has sub-services, load products from all sub-services
+        for (var subService in service.services) {
+          try {
+            await marketplaceProvider.fetchProductsByServiceId(subService.id);
+            // Create a copy of the products to avoid overwriting
+            allProducts.addAll(List.from(marketplaceProvider.products));
+            print(
+                'Loaded ${marketplaceProvider.products.length} products from sub-service: ${subService.name}');
+          } catch (e) {
+            print(
+                'Error loading products from sub-service ${subService.name}: $e');
+          }
+        }
+      } else {
+        // Load products directly from the service
+        try {
+          await marketplaceProvider.fetchProductsByServiceId(service.id);
+          // Create a copy of the products to avoid overwriting
+          allProducts.addAll(List.from(marketplaceProvider.products));
+          print(
+              'Loaded ${marketplaceProvider.products.length} products from service: ${service.name}');
+        } catch (e) {
+          print('Error loading products from service ${service.name}: $e');
+        }
+      }
+    }
+
+    print('Total products loaded: ${allProducts.length}');
+
+    // If no products found through services, try to load all products directly
+    if (allProducts.isEmpty) {
+      print(
+          'No products found through services, trying to load all products directly...');
+      try {
+        await marketplaceProvider.searchProducts(
+            size: 100); // Load more products
+        allProducts = List.from(marketplaceProvider.products);
+        print('Loaded ${allProducts.length} products directly from provider');
+      } catch (e) {
+        print('Error loading all products: $e');
       }
     }
 
     setState(() {
-      _isLoadingCategories = false;
+      _allProducts = allProducts;
+      _filteredProducts = allProducts;
     });
-  }
-
-  Future<void> _loadProductsForService(Service service) async {
-    if (service.services.isNotEmpty) {
-      // If the service has sub-services, get products for the first sub-service
-      await Provider.of<MarketplaceProvider>(context, listen: false)
-          .fetchProductsByServiceId(service.services.first.id);
-    } else {
-      // Otherwise, get products for this service
-      await Provider.of<MarketplaceProvider>(context, listen: false)
-          .fetchProductsByServiceId(service.id);
-    }
   }
 
   @override
@@ -91,10 +142,7 @@ class _MarketplaceHomePageState extends State<MarketplaceHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final marketplaceProvider = Provider.of<MarketplaceProvider>(context);
-    final products = marketplaceProvider.products;
-    final isLoading =
-        marketplaceProvider.isLoadingProducts || _isLoadingCategories;
+    final isLoading = _isLoadingCategories || _isLoadingProducts;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -111,9 +159,9 @@ class _MarketplaceHomePageState extends State<MarketplaceHomePage> {
               _buildFeaturedProductsHeader(context),
               isLoading
                   ? _buildLoadingProductGrid()
-                  : products.isEmpty
+                  : _filteredProducts.isEmpty
                       ? _buildEmptyProductList()
-                      : _buildProductGrid(products),
+                      : _buildProductGrid(_filteredProducts),
             ],
           ),
         ),
@@ -150,7 +198,7 @@ class _MarketplaceHomePageState extends State<MarketplaceHomePage> {
           },
           icon: Icon(
             Icons.person,
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).secondaryHeaderColor,
             size: 22.sp,
           ),
           padding: EdgeInsets.zero,
@@ -162,7 +210,7 @@ class _MarketplaceHomePageState extends State<MarketplaceHomePage> {
         style: TextStyle(
           fontSize: 24.sp,
           fontWeight: FontWeight.bold,
-          color: Theme.of(context).primaryColor,
+          color: Theme.of(context).secondaryHeaderColor,
         ),
       ),
       actions: [
@@ -209,16 +257,13 @@ class _MarketplaceHomePageState extends State<MarketplaceHomePage> {
               children: [
                 Icon(Icons.search, color: Colors.grey[600], size: 22.sp),
                 SizedBox(width: 12.w),
-                Expanded(
-                  child: Text(
-                    'Spas & Salons',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: Colors.grey[600],
-                    ),
+                Text(
+                  'Search marketplace...',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    color: Colors.grey[600],
                   ),
                 ),
-                Icon(Icons.mic, color: Colors.blue, size: 22.sp),
               ],
             ),
           ),
@@ -360,30 +405,16 @@ class _MarketplaceHomePageState extends State<MarketplaceHomePage> {
               final service = displayedServices[index];
               return GestureDetector(
                 onTap: () {
-                  setState(() {
-                    _selectedService = service;
-                  });
-
-                  // If this service has sub-services, navigate to a list view
-                  if (service.services.isNotEmpty) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => _buildNestedServiceView(service),
+                  // Navigate to product list for this service
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MarketplaceProductList(
+                        serviceId: service.id,
+                        category: service.name,
                       ),
-                    );
-                  } else {
-                    // Otherwise, navigate to product list
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MarketplaceProductList(
-                          serviceId: service.id,
-                          category: service.name,
-                        ),
-                      ),
-                    );
-                  }
+                    ),
+                  );
                 },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -482,30 +513,17 @@ class _MarketplaceHomePageState extends State<MarketplaceHomePage> {
 
           return GestureDetector(
             onTap: () {
-              setState(() {
-                _selectedService = service;
-              });
-
-              // If this service has sub-services, navigate to a list view
-              if (service.services.isNotEmpty) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => _buildNestedServiceView(service),
+              Navigator.pop(context); // Close the all categories screen
+              // Navigate to product list for this service
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MarketplaceProductList(
+                    serviceId: service.id,
+                    category: service.name,
                   ),
-                );
-              } else {
-                // Otherwise, navigate to product list
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MarketplaceProductList(
-                      serviceId: service.id,
-                      category: service.name,
-                    ),
-                  ),
-                );
-              }
+                ),
+              );
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -791,127 +809,4 @@ class _MarketplaceHomePageState extends State<MarketplaceHomePage> {
   }
 
   // Widget to display nested services
-  Widget _buildNestedServiceView(Service parentService) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(parentService.name),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
-      ),
-      body: ListView.builder(
-        padding: EdgeInsets.all(16.w),
-        itemCount: parentService.services.length,
-        itemBuilder: (context, index) {
-          final service = parentService.services[index];
-          return Container(
-            margin: EdgeInsets.only(bottom: 16.h),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 1,
-                  blurRadius: 6,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  if (service.services.isNotEmpty) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => _buildNestedServiceView(service),
-                      ),
-                    );
-                  } else {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MarketplaceProductList(
-                          serviceId: service.id,
-                          category: service.name,
-                        ),
-                      ),
-                    );
-                  }
-                },
-                borderRadius: BorderRadius.circular(12.r),
-                child: Padding(
-                  padding: EdgeInsets.all(16.w),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 48.w,
-                        height: 48.h,
-                        decoration: BoxDecoration(
-                          color:
-                              Theme.of(context).primaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: Center(
-                          child: service.icon == null
-                              ? Icon(
-                                  _getServiceIcon(service.name),
-                                  size: 24.sp,
-                                  color: Theme.of(context).primaryColor,
-                                )
-                              : Image.network(
-                                  '${ApiService.API_URL_FILE}${service.icon}',
-                                  width: 24.w,
-                                  height: 24.h,
-                                  fit: BoxFit.cover,
-                                ),
-                        ),
-                      ),
-                      SizedBox(width: 16.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              service.name,
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            if (service.description != null &&
-                                service.description!.isNotEmpty)
-                              Padding(
-                                padding: EdgeInsets.only(top: 4.h),
-                                child: Text(
-                                  service.description!,
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    color: Colors.grey[600],
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        size: 16.sp,
-                        color: Colors.grey[600],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
 }

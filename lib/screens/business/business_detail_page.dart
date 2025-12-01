@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -32,6 +33,7 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
   Map<String, dynamic>? _businessData;
   List<dynamic> _reviews = [];
   List<dynamic> _services = [];
+  double? _totalRating;
 
   // Review form controllers
   final _reviewCommentController = TextEditingController();
@@ -53,9 +55,21 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
   bool _isSubmittingOrder = false;
   String _orderErrorMessage = '';
 
+  // Enquiry form variables
+  final _enquiryNameController = TextEditingController();
+  final _enquiryEmailController = TextEditingController();
+  final _enquiryPhoneController = TextEditingController();
+  final _enquiryMessageController = TextEditingController();
+  bool _isSubmittingEnquiry = false;
+  String _enquiryErrorMessage = '';
+
   @override
   void dispose() {
     _reviewCommentController.dispose();
+    _enquiryNameController.dispose();
+    _enquiryEmailController.dispose();
+    _enquiryPhoneController.dispose();
+    _enquiryMessageController.dispose();
     _tabController.dispose();
     super.dispose();
   }
@@ -63,7 +77,7 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _fetchBusinessDetails();
   }
 
@@ -84,6 +98,9 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
             // Update state with data from provider
             _businessData = provider.businessData;
             _reviews = provider.reviews;
+            _totalRating = _calculateRatingFromReviews(_reviews);
+            log('Reviews :&&&& $_reviews');
+            log('Total Rating :&&&& $_totalRating');
             _services = provider.services;
             _isLoading = false;
           });
@@ -105,46 +122,81 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
   Widget _buildReviewsTab() {
     return _reviews.isEmpty
         ? Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.rate_review_outlined,
-                  size: 80,
-                  color: Colors.grey[400],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'No reviews yet',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[600],
+            child: Container(
+              margin: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Be the first to review this business',
-                  style: TextStyle(
-                    color: Colors.grey[500],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton.icon(
-                  onPressed: _showReviewForm,
-                  icon: const Icon(Icons.create),
-                  label: const Text('Write a Review'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6366F1).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                    child: Icon(
+                      Icons.rate_review_outlined,
+                      size: 60,
+                      color: const Color(0xFF6366F1),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 24),
+                  Text(
+                    'No reviews yet',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF1E293B),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Be the first to review this business',
+                    style: TextStyle(
+                      color: const Color(0xFF64748B),
+                      fontSize: 16,
+                      height: 1.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 32),
+                  ElevatedButton.icon(
+                    onPressed: _showReviewForm,
+                    icon: const Icon(Icons.create, size: 20),
+                    label: const Text(
+                      'Write a Review',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6366F1),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 16,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                      shadowColor: const Color(0xFF6366F1).withOpacity(0.3),
+                    ),
+                  ),
+                ],
+              ),
             ),
           )
         : Stack(
@@ -154,17 +206,16 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
                   // Review summary
                   SliverToBoxAdapter(
                     child: Container(
-                      margin: const EdgeInsets.all(16),
-                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.1),
-                            spreadRadius: 1,
-                            blurRadius: 4,
-                            offset: const Offset(0, 1),
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
                           ),
                         ],
                       ),
@@ -177,10 +228,11 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    '${_businessData?['rating'] ?? 0.0}',
+                                    '${_totalRating ?? 0.0}',
                                     style: const TextStyle(
-                                      fontSize: 36,
-                                      fontWeight: FontWeight.bold,
+                                      fontSize: 42,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF1E293B),
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -188,14 +240,17 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
                                     children: List.generate(5, (index) {
                                       double rating =
                                           _businessData?['rating'] ?? 0.0;
-                                      return Icon(
-                                        index < rating.floor()
-                                            ? Icons.star
-                                            : (index < rating
-                                                ? Icons.star_half
-                                                : Icons.star_border),
-                                        color: Colors.amber,
-                                        size: 20,
+                                      return Container(
+                                        margin: const EdgeInsets.only(right: 4),
+                                        child: Icon(
+                                          index < rating.floor()
+                                              ? Icons.star
+                                              : (index < rating
+                                                  ? Icons.star_half
+                                                  : Icons.star_border),
+                                          color: const Color(0xFFFFD700),
+                                          size: 24,
+                                        ),
                                       );
                                     }),
                                   ),
@@ -203,8 +258,9 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
                                   Text(
                                     '${_reviews.length} reviews',
                                     style: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 14,
+                                      color: const Color(0xFF64748B),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ],
@@ -212,19 +268,28 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
                               ElevatedButton.icon(
                                 onPressed: _showReviewForm,
                                 icon: Icon(Icons.edit,
-                                    size: 16, color: Colors.grey[600]),
-                                label: const Text('Write Review'),
+                                    size: 18, color: const Color(0xFF6366F1)),
+                                label: const Text(
+                                  'Write Review',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
+                                ),
                                 style: ElevatedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 8,
+                                    horizontal: 12,
+                                    vertical: 12,
                                   ),
-                                  backgroundColor: Colors.grey[100],
-                                  side: BorderSide(color: Colors.grey[300]!),
-                                  foregroundColor: Colors.black,
+                                  backgroundColor:
+                                      const Color(0xFF6366F1).withOpacity(0.1),
+                                  side: BorderSide(
+                                      color: const Color(0xFF6366F1)),
+                                  foregroundColor: const Color(0xFF6366F1),
+                                  elevation: 0,
                                 ),
                               ),
                             ],
@@ -290,7 +355,7 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
                           return Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 16,
-                              vertical: 8,
+                              vertical: 4,
                             ),
                             child: _buildReviewCard(_reviews[index]),
                           );
@@ -298,27 +363,32 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
                         // Add a "View all reviews" button if there are more than 5 reviews
                         if (index == 5 && _reviews.length > 5) {
                           return Padding(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(20),
                             child: TextButton.icon(
                               onPressed: _showAllReviews,
                               icon: Icon(Icons.more_horiz,
-                                  color: Colors.grey[600]),
+                                  color: const Color(0xFF6366F1)),
                               label: Text(
                                 'View all ${_reviews.length} reviews',
                                 style: TextStyle(
-                                  color: Colors.grey[900],
+                                  color: const Color(0xFF1E293B),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
                                 ),
                               ),
                               style: TextButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
+                                  horizontal: 24,
+                                  vertical: 16,
                                 ),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  side: BorderSide(color: Colors.grey[300]!),
+                                  borderRadius: BorderRadius.circular(12),
+                                  side: BorderSide(
+                                      color: const Color(0xFF6366F1)),
                                 ),
-                                backgroundColor: Colors.grey[100],
-                                foregroundColor: Colors.black,
+                                backgroundColor:
+                                    const Color(0xFF6366F1).withOpacity(0.1),
+                                foregroundColor: const Color(0xFF6366F1),
                               ),
                             ),
                           );
@@ -399,6 +469,16 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
     );
   }
 
+  // Calculate rating from reviews
+  double _calculateRatingFromReviews(List<dynamic> reviews) {
+    if (reviews.isEmpty) return 0.0;
+    double totalRating = 0.0;
+    for (var review in reviews) {
+      totalRating += review['rating'] as num;
+    }
+    return totalRating / reviews.length;
+  }
+
   // Helper method to calculate the percentage of ratings for each star level
   double _calculateRatingPercentage(int stars) {
     if (_reviews.isEmpty) return 0.0;
@@ -434,36 +514,59 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
   Widget _buildServicesTab() {
     return _services.isEmpty
         ? Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.business_center_outlined,
-                  size: 100,
-                  color: Colors.grey[300],
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'No services available',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[700],
+            child: Container(
+              margin: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Text(
-                    'This business hasn\'t added any services yet',
-                    style: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 16,
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    textAlign: TextAlign.center,
+                    child: Icon(
+                      Icons.business_center_outlined,
+                      size: 60,
+                      color: const Color(0xFF10B981),
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 24),
+                  Text(
+                    'No services available',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF1E293B),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      'This business hasn\'t added any services yet',
+                      style: TextStyle(
+                        color: const Color(0xFF64748B),
+                        fontSize: 16,
+                        height: 1.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
             ),
           )
         : ListView.builder(
@@ -488,12 +591,12 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
                 margin: const EdgeInsets.only(bottom: 24),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      offset: const Offset(0, 5),
-                      blurRadius: 15,
+                      color: Colors.black.withOpacity(0.08),
+                      offset: const Offset(0, 8),
+                      blurRadius: 20,
                       spreadRadius: 1,
                     ),
                   ],
@@ -1940,9 +2043,240 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
               ],
             ),
           ),
+          const SizedBox(height: 20),
+
+          // Enquiry section
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.contact_support,
+                        color: Theme.of(context).primaryColor, size: 20),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Send Enquiry',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildEnquiryForm(),
+              ],
+            ),
+          ),
           // Add bottom padding for better scrolling experience
           const SizedBox(height: 80),
         ],
+      ),
+    );
+  }
+
+  // Add a method to build the Gallery tab
+  Widget _buildGalleryTab() {
+    // Get gallery images from the provider
+    final provider = Provider.of<BusinessProvider>(context, listen: false);
+    final businessDetail = provider.businessDetail;
+
+    if (businessDetail == null || businessDetail.gallery.isEmpty) {
+      return Center(
+        child: Container(
+          margin: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF8B5CF6).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  Icons.photo_library_outlined,
+                  size: 60,
+                  color: const Color(0xFF8B5CF6),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'No gallery images available',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF1E293B),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'This business hasn\'t added any gallery images yet',
+                  style: TextStyle(
+                    color: const Color(0xFF64748B),
+                    fontSize: 16,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return GridView.builder(
+      padding: const EdgeInsets.all(20),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 20,
+        childAspectRatio: 1.0,
+      ),
+      itemCount: businessDetail.gallery.length,
+      itemBuilder: (context, index) {
+        final imageUrl = businessDetail.gallery[index];
+        return GestureDetector(
+          onTap: () =>
+              _showGalleryFullScreenImage(imageUrl, businessDetail.gallery),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  offset: const Offset(0, 8),
+                  blurRadius: 20,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: CachedNetworkImage(
+                imageUrl: '${ApiService.API_URL_FILE}$imageUrl',
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFFE2E8F0),
+                        const Color(0xFFCBD5E1),
+                      ],
+                    ),
+                  ),
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Color(0xFF6366F1)),
+                    ),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFFF1F5F9),
+                        const Color(0xFFE2E8F0),
+                      ],
+                    ),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.image_not_supported_outlined,
+                      size: 40,
+                      color: const Color(0xFF64748B),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // Helper method to show full-screen gallery image
+  void _showGalleryFullScreenImage(String imageUrl, List<String> allImages) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            backgroundColor: Colors.black,
+            elevation: 0,
+            iconTheme: const IconThemeData(color: Colors.white),
+            title: const Text(
+              'Gallery',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 18,
+              ),
+            ),
+          ),
+          body: PageView.builder(
+            itemCount: allImages.length,
+            itemBuilder: (context, index) {
+              return Center(
+                child: InteractiveViewer(
+                  child: CachedNetworkImage(
+                    imageUrl: '${ApiService.API_URL_FILE}${allImages[index]}',
+                    fit: BoxFit.contain,
+                    placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Color(0xFF6366F1)),
+                        strokeWidth: 3,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => const Center(
+                      child: Icon(
+                        Icons.image_not_supported_outlined,
+                        size: 60,
+                        color: Colors.white54,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }
@@ -2154,21 +2488,266 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
     );
   }
 
+  // Build enquiry form widget
+  Widget _buildEnquiryForm() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Name field
+        TextField(
+          controller: _enquiryNameController,
+          decoration: const InputDecoration(
+            labelText: 'Full Name',
+            hintText: 'Enter your full name',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
+            prefixIcon: Icon(Icons.person_outline),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Email field
+        TextField(
+          controller: _enquiryEmailController,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(
+            labelText: 'Email Address',
+            hintText: 'Enter your email address',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
+            prefixIcon: Icon(Icons.email_outlined),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Phone field
+        TextField(
+          controller: _enquiryPhoneController,
+          keyboardType: TextInputType.phone,
+          decoration: const InputDecoration(
+            labelText: 'Phone Number',
+            hintText: 'Enter your phone number',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
+            prefixIcon: Icon(Icons.phone_outlined),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Message field
+        TextField(
+          controller: _enquiryMessageController,
+          maxLines: 4,
+          decoration: const InputDecoration(
+            labelText: 'Message',
+            hintText: 'Tell us about your enquiry...',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
+            prefixIcon: Icon(Icons.message_outlined),
+            alignLabelWithHint: true,
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Error message
+        if (_enquiryErrorMessage.isNotEmpty)
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.red[50],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.red[200]!),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.red[700], size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _enquiryErrorMessage,
+                    style: TextStyle(color: Colors.red[700]),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+        if (_enquiryErrorMessage.isNotEmpty) const SizedBox(height: 16),
+
+        // Submit button
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: _isSubmittingEnquiry ? null : _submitEnquiry,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 0,
+            ),
+            child: _isSubmittingEnquiry
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : const Text(
+                    'Send Enquiry',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Submit enquiry to the backend
+  Future<void> _submitEnquiry() async {
+    // Validate form
+    if (_enquiryNameController.text.trim().isEmpty) {
+      setState(() {
+        _enquiryErrorMessage = 'Please enter your name';
+      });
+      return;
+    }
+
+    if (_enquiryEmailController.text.trim().isEmpty) {
+      setState(() {
+        _enquiryErrorMessage = 'Please enter your email address';
+      });
+      return;
+    }
+
+    if (_enquiryPhoneController.text.trim().isEmpty) {
+      setState(() {
+        _enquiryErrorMessage = 'Please enter your phone number';
+      });
+      return;
+    }
+
+    if (_enquiryMessageController.text.trim().isEmpty) {
+      setState(() {
+        _enquiryErrorMessage = 'Please enter your message';
+      });
+      return;
+    }
+
+    setState(() {
+      _isSubmittingEnquiry = true;
+      _enquiryErrorMessage = '';
+    });
+
+    try {
+      // Get the provider
+      final provider = Provider.of<BusinessProvider>(context, listen: false);
+
+      // Submit enquiry using provider
+      final success = await provider.submitEnquiry(
+        businessId: widget.businessId,
+        name: _enquiryNameController.text.trim(),
+        email: _enquiryEmailController.text.trim(),
+        phoneNumber: _enquiryPhoneController.text.trim(),
+        message: _enquiryMessageController.text.trim(),
+      );
+
+      if (success) {
+        // Reset form
+        _enquiryNameController.clear();
+        _enquiryEmailController.clear();
+        _enquiryPhoneController.clear();
+        _enquiryMessageController.clear();
+
+        // Reset loading state
+        setState(() {
+          _isSubmittingEnquiry = false;
+        });
+
+        // Enquiry submitted successfully
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Enquiry submitted successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        // Handle error
+        setState(() {
+          _enquiryErrorMessage = provider.orderError;
+          _isSubmittingEnquiry = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _enquiryErrorMessage = 'Error: $e';
+        _isSubmittingEnquiry = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF8FAFC),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text(
-                'Loading business details...',
-                style: TextStyle(color: Colors.grey[600]),
-                textAlign: TextAlign.center,
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6366F1).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Color(0xFF6366F1)),
+                        strokeWidth: 3,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Loading business details...',
+                      style: TextStyle(
+                        color: const Color(0xFF1E293B),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -2178,85 +2757,202 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
 
     if (_errorMessage.isNotEmpty) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF8FAFC),
         appBar: AppBar(
-          title: const Text('Business Details'),
+          title: const Text(
+            'Business Details',
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF1E293B),
+            ),
+          ),
           elevation: 0,
+          backgroundColor: Colors.white,
+          foregroundColor: const Color(0xFF1E293B),
         ),
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error_outline, size: 48, color: Colors.red[300]),
-              const SizedBox(height: 16),
-              Text(_errorMessage,
-                  style: const TextStyle(fontSize: 16),
-                  textAlign: TextAlign.center),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: _fetchBusinessDetails,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEF4444).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Icon(
+                          Icons.error_outline,
+                          size: 48,
+                          color: const Color(0xFFEF4444),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Oops! Something went wrong',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF1E293B),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _errorMessage,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: const Color(0xFF64748B),
+                          height: 1.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        onPressed: _fetchBusinessDetails,
+                        icon: const Icon(Icons.refresh, size: 20),
+                        label: const Text(
+                          'Try Again',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6366F1),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                          shadowColor: const Color(0xFF6366F1).withOpacity(0.3),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
     }
+
     print(
         '${ApiService.API_URL_FILE}${_businessData?['image']} image is image');
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF8FAFC),
       body: CustomScrollView(
         slivers: [
-          // App Bar with image background
+          // Modern App Bar with enhanced image background
           SliverAppBar(
-            expandedHeight: 240.0,
+            leading: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                margin: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            expandedHeight: 280.0,
             pinned: true,
+            backgroundColor: Colors.white,
+            elevation: 0,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: false,
-              title: Text(
-                _businessData?['name'] ?? 'Business Details',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(0, 1),
-                      blurRadius: 3.0,
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ],
+              title: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  _businessData?['name'] ?? 'Business Details',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  // Background image
+                  // Enhanced background image with shimmer loading
                   CachedNetworkImage(
                     imageUrl:
                         '${ApiService.API_URL_FILE}${_businessData?['images'][0]}' ??
                             'https://via.placeholder.com/800x600',
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
-                      color: Colors.grey[300],
-                      child: const Center(child: CircularProgressIndicator()),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            const Color(0xFFE2E8F0),
+                            const Color(0xFFCBD5E1),
+                          ],
+                        ),
+                      ),
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Color(0xFF6366F1)),
+                        ),
+                      ),
                     ),
                     errorWidget: (context, url, error) => Container(
-                      color: Colors.grey[800],
-                      child: const Icon(Icons.business,
-                          size: 80, color: Colors.white54),
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF475569),
+                            Color(0xFF334155),
+                          ],
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.business,
+                        size: 80,
+                        color: Colors.white54,
+                      ),
                     ),
                   ),
-                  // Gradient overlay for better text visibility
+                  // Enhanced gradient overlay for better text visibility
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -2264,9 +2960,9 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.7),
+                          Colors.black.withOpacity(0.8),
                         ],
-                        stops: const [0.6, 1.0],
+                        stops: const [0.5, 1.0],
                       ),
                     ),
                   ),
@@ -2275,10 +2971,22 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
             ),
           ),
 
-          // Business rating summary
+          // Modern business rating summary with enhanced design
           SliverToBoxAdapter(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              margin: const EdgeInsets.all(20).copyWith(bottom: 10),
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -2286,90 +2994,113 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                            horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(4),
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF6366F1).withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
                         child: Row(
                           children: [
                             const Icon(Icons.star,
-                                color: Colors.white, size: 16),
-                            const SizedBox(width: 4),
+                                color: Colors.white, size: 18),
+                            const SizedBox(width: 6),
                             Text(
-                              '${_businessData?['rating'] ?? '0.0'}',
+                              '${_totalRating ?? '0.0'}',
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 12),
                       Text(
                         '(${_reviews.length} reviews)',
                         style: TextStyle(
-                          color: Colors.grey[600],
+                          color: const Color(0xFF64748B),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
                   ),
-                  if (_businessData?['isOpen'] == true)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.green[100],
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.circle, color: Colors.green, size: 8),
-                          SizedBox(width: 4),
-                          Text(
-                            'Open Now',
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  else
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.red[100],
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.circle, color: Colors.red, size: 8),
-                          SizedBox(width: 4),
-                          Text(
-                            'Closed',
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+                  // Enhanced open/closed status indicator
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: _businessData?['isOpen'] == true
+                          ? const Color(0xFF10B981).withOpacity(0.1)
+                          : const Color(0xFFEF4444).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: _businessData?['isOpen'] == true
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFFEF4444),
+                        width: 1.5,
                       ),
                     ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: _businessData?['isOpen'] == true
+                                ? const Color(0xFF10B981)
+                                : const Color(0xFFEF4444),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _businessData?['isOpen'] == true
+                              ? 'Open Now'
+                              : 'Closed',
+                          style: TextStyle(
+                            color: _businessData?['isOpen'] == true
+                                ? const Color(0xFF10B981)
+                                : const Color(0xFFEF4444),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
 
-          // Quick action buttons
+          // Enhanced quick action buttons with modern design
           SliverToBoxAdapter(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -2382,19 +3113,19 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
                         _launchUrl('tel:$phone');
                       }
                     },
-                    color: Colors.blue,
+                    color: const Color(0xFF3B82F6),
                   ),
                   _buildQuickAction(
                     icon: Icons.directions,
                     label: 'Directions',
                     onTap: _openMap,
-                    color: Colors.green,
+                    color: const Color(0xFF10B981),
                   ),
                   _buildQuickAction(
                     icon: Icons.language,
                     label: 'Website',
                     onTap: _openWebsite,
-                    color: Colors.purple,
+                    color: const Color(0xFF8B5CF6),
                   ),
                   _buildQuickAction(
                     icon: Icons.message,
@@ -2405,52 +3136,48 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
                         _launchUrl('https://wa.me/$phone');
                       }
                     },
-                    color: Colors.orange,
+                    color: const Color(0xFFF59E0B),
                   ),
                 ],
               ),
             ),
           ),
 
-          // Tab Bar
+          // Modern Tab Bar with enhanced design
           SliverPersistentHeader(
             delegate: _SliverAppBarDelegate(
               TabBar(
                 controller: _tabController,
-                labelColor: Theme.of(context).primaryColor,
-                unselectedLabelColor: Colors.grey,
+                dividerColor: Colors.transparent,
+                labelColor: const Color(0xFF6366F1),
+                unselectedLabelColor: const Color(0xFF64748B),
+                indicatorSize: TabBarIndicatorSize.tab,
                 indicator: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(8.0),
-                    topRight: Radius.circular(8.0),
-                  ),
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Colors.black,
-                      width: 4.0,
-                    ),
-                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  color: const Color(0xFF6366F1).withOpacity(0.1),
                 ),
-                indicatorPadding: EdgeInsets.zero,
-                labelStyle: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18.0,
+                indicatorPadding: const EdgeInsets.all(4),
+                labelStyle: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                  letterSpacing: 0.5,
                 ),
-                unselectedLabelStyle: TextStyle(
-                  fontSize: 18.0,
+                unselectedLabelStyle: const TextStyle(
+                  fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
                 tabs: const [
                   Tab(text: 'About'),
                   Tab(text: 'Services'),
                   Tab(text: 'Reviews'),
+                  Tab(text: 'Gallery'),
                 ],
               ),
             ),
             pinned: true,
           ),
 
-          // Tab content
+          // Tab content with enhanced styling
           SliverFillRemaining(
             child: TabBarView(
               controller: _tabController,
@@ -2458,33 +3185,12 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
                 _buildAboutTab(),
                 _buildServicesTab(),
                 _buildReviewsTab(),
+                _buildGalleryTab(),
               ],
             ),
           ),
         ],
       ),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   onPressed: () {
-      //     if (_services.isNotEmpty) {
-      //       _showOrderForm(_services[0]);
-      //     } else {
-      //       ScaffoldMessenger.of(context).showSnackBar(
-      //         SnackBar(
-      //           content: const Text('No services available'),
-      //           behavior: SnackBarBehavior.floating,
-      //           margin: EdgeInsets.only(
-      //             bottom: 20,
-      //             right: 20,
-      //             left: 20,
-      //           ),
-      //         ),
-      //       );
-      //     }
-      //   },
-      //   icon: const Icon(Icons.shopping_cart),
-      //   label: const Text('Order Service'),
-      //   backgroundColor: Theme.of(context).primaryColor,
-      // ),
     );
   }
 
@@ -2496,27 +3202,41 @@ class _BusinessDetailPageState extends State<BusinessDetailPage>
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(6.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(8),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    color,
+                    color.withOpacity(0.8),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
               ),
-              child: Icon(icon, color: Colors.white, size: 20),
+              child: Icon(icon, color: Colors.white, size: 24),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
             Text(
               label,
               style: TextStyle(
                 fontSize: 14.sp,
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
+                color: const Color(0xFF1E293B),
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
@@ -2536,7 +3256,18 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      color: Colors.white,
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: _tabBar,
     );
   }

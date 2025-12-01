@@ -77,7 +77,7 @@ class _SignupPageState extends State<SignupPage> {
                     style: TextStyle(
                         fontSize: 48.sp,
                         fontWeight: FontWeight.w900,
-                        color: Theme.of(context).primaryColor)),
+                        color: Theme.of(context).secondaryHeaderColor)),
                 SizedBox(height: 8.h),
                 Text(
                   AppLocalizations.of(context)!.joinUs,
@@ -117,7 +117,7 @@ class _SignupPageState extends State<SignupPage> {
                     isLoading: provider.isLoading,
                     onTap: () => _signup(context),
                     buttonText: AppLocalizations.of(context)!.signUp,
-                    color: Theme.of(context).primaryColor),
+                    color: Theme.of(context).secondaryHeaderColor),
                 if (provider.errorMessage != null)
                   Padding(
                     padding: EdgeInsets.only(top: 8.h),
@@ -190,7 +190,7 @@ class _SignupPageState extends State<SignupPage> {
                     padding: EdgeInsets.symmetric(vertical: 12.h),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: Theme.of(context).primaryColor,
+                        color: Theme.of(context).secondaryHeaderColor,
                       ),
                       borderRadius: BorderRadius.circular(6.r),
                     ),
@@ -207,7 +207,8 @@ class _SignupPageState extends State<SignupPage> {
                               Text(
                                 AppLocalizations.of(context)!.signInWithGoogle,
                                 style: TextStyle(
-                                    color: Theme.of(context).primaryColor,
+                                    color:
+                                        Theme.of(context).secondaryHeaderColor,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16.sp),
                               ),

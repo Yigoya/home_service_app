@@ -7,8 +7,9 @@ import 'package:home_service_app/screens/job/core/constants/color.dart';
 
 class MainScreen extends StatefulWidget {
   final Map<String, dynamic>? onboardingData;
+  final int? initialTabIndex;
 
-  const MainScreen({super.key, this.onboardingData});
+  const MainScreen({super.key, this.onboardingData, this.initialTabIndex});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -28,13 +29,18 @@ class _MainScreenState extends State<MainScreen> {
       const ApplicationsScreen(),
       const ProfileScreen(),
     ];
+
+    // Set initial tab index if provided
+    if (widget.initialTabIndex != null) {
+      _currentIndex = widget.initialTabIndex!;
+    }
   }
 
   final List<_NavItemData> _navItems = const [
-    _NavItemData(icon: Icons.work_outline, label: 'Jobs'),
-    _NavItemData(icon: Icons.bookmark, label: 'Saved'),
+    _NavItemData(icon: Icons.work_outline, label: 'Home'),
+    _NavItemData(icon: Icons.bookmark, label: 'My Jobs'),
     _NavItemData(icon: Icons.work_outline, label: 'Applications'),
-    _NavItemData(icon: Icons.person_outline, label: 'Profile'),
+    _NavItemData(icon: Icons.more_vert, label: 'More'),
   ];
 
   @override
@@ -56,7 +62,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ],
         ),
-        padding: const EdgeInsets.only(top: 8, bottom: 12),
+        padding: const EdgeInsets.only(bottom: 4, top: 2),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(_navItems.length, (index) {
@@ -90,7 +96,7 @@ class _MainScreenState extends State<MainScreen> {
                         color: selected ? kPrimaryColor : kGrey500,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    // SizedBox(height: 2.h),
                     Text(
                       item.label,
                       style: TextStyle(

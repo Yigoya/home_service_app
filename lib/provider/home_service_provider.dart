@@ -125,8 +125,41 @@ class HomeServiceProvider with ChangeNotifier {
   List<Technician> get topTechnicians => _topTechnicians;
   List<Review> get reviews => _reviews;
   List<FAQ> get faqs => _faqs;
-  List<Service> get fiterableByCatagory =>
-      _fiterableByCatagory..sort((a, b) => a.id.compareTo(b.id));
+  List<Service> get fiterableByCatagory {
+    // Define the priority order for specific services
+    const priorityServices = [
+      'Hospitals',
+      'Restaurants',
+      'Driving Schools',
+      'Hotels'
+    ];
+
+    return _fiterableByCatagory
+      ..sort((a, b) {
+        // Check if either service is in the priority list
+        final aIndex = priorityServices.indexOf(a.name);
+        final bIndex = priorityServices.indexOf(b.name);
+
+        // If both are in priority list, sort by priority order
+        if (aIndex != -1 && bIndex != -1) {
+          return aIndex.compareTo(bIndex);
+        }
+
+        // If only 'a' is in priority list, it comes first
+        if (aIndex != -1 && bIndex == -1) {
+          return -1;
+        }
+
+        // If only 'b' is in priority list, it comes first
+        if (aIndex == -1 && bIndex != -1) {
+          return 1;
+        }
+
+        // If neither is in priority list, sort by ID
+        return a.id.compareTo(b.id);
+      });
+  }
+
   List<Service> get fiterableBySearch => _fiterableBySearch;
   int? selectedCategoryId = 0;
   Category? get selectedCategory =>
@@ -266,15 +299,16 @@ class HomeServiceProvider with ChangeNotifier {
     });
     final data = res.data as List<dynamic>;
     final categories = data.map<Category>((e) => Category.fromJson(e)).toList();
-    _categories = categories..sort((a, b) {
-      const order = [1, 2, 6, 4, 3];
-      final aIndex = order.indexOf(a.id);
-      final bIndex = order.indexOf(b.id);
-      if (aIndex == -1 && bIndex == -1) return a.id.compareTo(b.id);
-      if (aIndex == -1) return 1;
-      if (bIndex == -1) return -1;
-      return aIndex.compareTo(bIndex);
-    });
+    _categories = categories
+      ..sort((a, b) {
+        const order = [1, 2, 6, 4, 3];
+        final aIndex = order.indexOf(a.id);
+        final bIndex = order.indexOf(b.id);
+        if (aIndex == -1 && bIndex == -1) return a.id.compareTo(b.id);
+        if (aIndex == -1) return 1;
+        if (bIndex == -1) return -1;
+        return aIndex.compareTo(bIndex);
+      });
     _services = categories.expand((category) => category.services).toList()
       ..sort((a, b) => a.id.compareTo(b.id));
     _fiterableByCatagory = _services
@@ -363,7 +397,7 @@ class HomeServiceProvider with ChangeNotifier {
           .toList();
     } else {
       _fiterableByCatagory = _services
-          .where((service) => 
+          .where((service) =>
               service.categoryId == selectedCategoryId &&
               service.name.toLowerCase().contains(searchTerm.toLowerCase()))
           .toList();

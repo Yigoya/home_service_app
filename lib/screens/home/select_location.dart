@@ -52,7 +52,7 @@ class _SelectLocationState extends State<SelectLocation> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).secondaryHeaderColor,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -159,7 +159,7 @@ class _SelectLocationState extends State<SelectLocation> {
                                   width: 40.w,
                                   height: 40.h,
                                   fit: BoxFit.cover,
-                                  color: Theme.of(context).primaryColor,
+                                  color: Theme.of(context).secondaryHeaderColor,
                                 ),
                           SizedBox(width: 10.w),
                           Column(
@@ -173,7 +173,8 @@ class _SelectLocationState extends State<SelectLocation> {
                                   style: TextStyle(
                                       fontSize: 22.sp,
                                       fontWeight: FontWeight.bold,
-                                      color: Theme.of(context).primaryColor),
+                                      color: Theme.of(context)
+                                          .secondaryHeaderColor),
                                 ),
                               ),
                               SizedBox(height: 8.h),
@@ -248,7 +249,7 @@ class _SelectLocationState extends State<SelectLocation> {
                         text: AppLocalizations.of(context)!
                             .conti, // : AppLocalizations.of(context)!.bookServicePrompt,
                         borderRadius: 32.r,
-                        color: Theme.of(context).primaryColor,
+                        color: Theme.of(context).secondaryHeaderColor,
                         onTap: () {
                           Navigator.push(
                               context,

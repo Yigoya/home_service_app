@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // Primary color (main blue)
-const Color kPrimaryColor = Color.fromARGB(255, 37, 99, 235); // #2563EB
+const Color kPrimaryColor = Color.fromARGB(255, 25, 84, 124); // #2563EB
 const Color kPrimaryDark = Color(0xFF1E40AF); // Darker blue
 const Color kPrimaryLight = Color(0xFF60A5FA); // Lighter blue
 
@@ -69,10 +69,18 @@ final ThemeData kLightTheme = ThemeData(
   textTheme: const TextTheme(
     headlineLarge: TextStyle(
         fontSize: 32, fontWeight: FontWeight.bold, color: kTextPrimary),
-    bodyLarge: TextStyle(fontSize: 16, color: kTextPrimary),
-    bodyMedium: TextStyle(fontSize: 14, color: kTextSecondary),
+    bodyLarge: TextStyle(
+        fontSize: 16, fontWeight: FontWeight.normal, color: kTextPrimary),
+    bodyMedium: TextStyle(
+        fontSize: 14, fontWeight: FontWeight.normal, color: kTextSecondary),
+    bodySmall: TextStyle(
+        fontSize: 12, fontWeight: FontWeight.normal, color: kTextSecondary),
     labelLarge: TextStyle(
         fontSize: 14, color: kPrimaryColor, fontWeight: FontWeight.w600),
+    labelMedium: TextStyle(
+        fontSize: 12, fontWeight: FontWeight.normal, color: kTextPrimary),
+    labelSmall: TextStyle(
+        fontSize: 10, fontWeight: FontWeight.normal, color: kTextPrimary),
   ),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: kPrimaryColor,
@@ -120,10 +128,18 @@ final ThemeData kDarkTheme = ThemeData(
   textTheme: const TextTheme(
     headlineLarge: TextStyle(
         fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
-    bodyLarge: TextStyle(fontSize: 16, color: Colors.white),
-    bodyMedium: TextStyle(fontSize: 14, color: kGrey300),
+    bodyLarge: TextStyle(
+        fontSize: 16, fontWeight: FontWeight.normal, color: Colors.white),
+    bodyMedium:
+        TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: kGrey300),
+    bodySmall:
+        TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: kGrey300),
     labelLarge: TextStyle(
         fontSize: 14, color: kPrimaryLight, fontWeight: FontWeight.w600),
+    labelMedium: TextStyle(
+        fontSize: 12, fontWeight: FontWeight.normal, color: Colors.white),
+    labelSmall: TextStyle(
+        fontSize: 10, fontWeight: FontWeight.normal, color: Colors.white),
   ),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: kPrimaryColor,

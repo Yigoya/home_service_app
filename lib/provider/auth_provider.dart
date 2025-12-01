@@ -10,7 +10,10 @@ import 'package:home_service_app/main.dart';
 import 'package:home_service_app/models/login_source.dart';
 import 'package:home_service_app/provider/user_provider.dart';
 import 'package:home_service_app/screens/auth/verification_wait_screen.dart';
+import 'package:home_service_app/screens/booking/booking.dart';
 import 'package:home_service_app/services/api_service.dart';
+import 'package:home_service_app/models/technician.dart';
+import 'package:home_service_app/models/service.dart';
 import 'package:home_service_app/utils/functions.dart';
 import 'package:home_service_app/utils/route_generator.dart';
 import 'package:home_service_app/widgets/bottom_navigation.dart';
@@ -33,8 +36,27 @@ class AuthenticationProvider with ChangeNotifier {
 
   bool fromAnotherPage = false;
 
+  // Temporary storage for booking context
+  Map<String, dynamic>? _pendingBookingContext;
+  Map<String, dynamic>? get pendingBookingContext => _pendingBookingContext;
+
   void setFromAnotherPage(bool value) {
     fromAnotherPage = value;
+    notifyListeners();
+  }
+
+  void setPendingBookingContext(Map<String, dynamic>? context) {
+    _pendingBookingContext = context;
+    Logger().d('Setting pending booking context: $context');
+    Logger().d('Technician: ${context?['technician']}');
+    Logger().d('Service: ${context?['service']}');
+    Logger().d('Technician type: ${context?['technician'].runtimeType}');
+    Logger().d('Service type: ${context?['service'].runtimeType}');
+    notifyListeners();
+  }
+
+  void clearPendingBookingContext() {
+    _pendingBookingContext = null;
     notifyListeners();
   }
 
@@ -81,6 +103,32 @@ class AuthenticationProvider with ChangeNotifier {
     }
   }
 
+  Future<int?> jobFinderSignup({
+    required String name,
+    required String email,
+    required String phoneNumber,
+    required String password,
+    required BuildContext context,
+  }) async {
+    try {
+      final response = await _apiService.jobFinderSignup(
+        name: name,
+        email: email,
+        phoneNumber: phoneNumber,
+        password: password,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final userId = response.data['id'] ?? response.data['userId'];
+        return userId is int ? userId : int.tryParse(userId.toString());
+      } else {
+        showTopMessage(context, 'Registration failed', isSuccess: false);
+      }
+    } catch (e) {
+      showTopMessage(context, 'Registration error: $e', isSuccess: false);
+    }
+    return null;
+  }
+
   Future<void> login({
     required String email,
     required String password,
@@ -100,20 +148,56 @@ class AuthenticationProvider with ChangeNotifier {
         if (source == LoginSource.tender) {
           Navigator.of(context).pushNamedAndRemoveUntil(
               RouteGenerator.subscriptionPage, (route) => false);
-        } else {
+        } else if (source == LoginSource.jobFinder) {
           Navigator.of(context).pushNamedAndRemoveUntil(
               RouteGenerator.verificationPage, (route) => false);
+        } else {
+          // Check if there's a pending booking context for inactive users
+          Logger()
+              .d('Checking pending booking context: $_pendingBookingContext');
+          if (_pendingBookingContext != null &&
+              _pendingBookingContext!['technician'] != null &&
+              _pendingBookingContext!['service'] != null) {
+            try {
+              Logger().d(
+                  'Attempting to cast technician: ${_pendingBookingContext!['technician']}');
+              Logger().d(
+                  'Attempting to cast service: ${_pendingBookingContext!['service']}');
+              final technician =
+                  _pendingBookingContext!['technician'] as Technician;
+              final service = _pendingBookingContext!['service'] as Service;
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (context) => BookingPage(
+                          technician: technician, service: service)),
+                  (route) => false);
+              clearPendingBookingContext();
+            } catch (e) {
+              // If casting fails, navigate to home page
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  RouteGenerator.homePage, (route) => false);
+              clearPendingBookingContext();
+            }
+          } else {
+            // Navigate to home page if no booking context
+            Navigator.of(context).pushNamedAndRemoveUntil(
+                RouteGenerator.homePage, (route) => false);
+          }
         }
 
         return;
       }
 
-      if (response.data['user']['status'] == 'INACTIVE' &&
-          response.data['user']['role'] == 'TECHNICIAN') {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-            RouteGenerator.verificationWaitPage, (route) => false);
-        return;
-      }
+      // if (response.data['user']['status'] == 'INACTIVE' &&
+      //     response.data['user']['role'] == 'TECHNICIAN') {
+      //   print('-----------------INACTIVE TECHNICIAN-----------------');
+      //   print('INACTIVE TECHNICIAN');
+      //   print(response.data['user']);
+      //   print('-----------------INACTIVE TECHNICIAN-----------------');
+      //   Navigator.of(context).pushNamedAndRemoveUntil(
+      //       RouteGenerator.verificationWaitPage, (route) => false);
+      //   return;
+      // }
       await storage.write(key: "jwt_token", value: response.data['token']);
       await storage.write(
           key: "user", value: jsonEncode(response.data['user']));
@@ -131,7 +215,29 @@ class AuthenticationProvider with ChangeNotifier {
             key: "customer", value: jsonEncode(response.data['customer']));
         await Provider.of<UserProvider>(context, listen: false).loadUser();
         if (fromAnotherPage) {
-          Navigator.of(context).pop();
+          // Check if there's a pending booking context
+          if (_pendingBookingContext != null &&
+              _pendingBookingContext!['technician'] != null &&
+              _pendingBookingContext!['service'] != null) {
+            try {
+              final technician =
+                  _pendingBookingContext!['technician'] as Technician;
+              final service = _pendingBookingContext!['service'] as Service;
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (context) => BookingPage(
+                          technician: technician, service: service)),
+                  (route) => false);
+              clearPendingBookingContext();
+            } catch (e) {
+              // If casting fails, navigate to home page
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  RouteGenerator.homePage, (route) => false);
+              clearPendingBookingContext();
+            }
+          } else {
+            Navigator.of(context).pop();
+          }
         } else {
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => const Navigation()),
@@ -145,6 +251,21 @@ class AuthenticationProvider with ChangeNotifier {
             MaterialPageRoute(
                 builder: (context) => const TechnicianNavigation()),
             (route) => false);
+      } else if (response.data['user']['role'] == 'JOB_SEEKER') {
+        await storage.write(
+            key: "jobSeeker", value: jsonEncode(response.data['jobSeeker']));
+        await Provider.of<UserProvider>(context, listen: false).loadUser();
+        if (source == LoginSource.jobFinder) {
+          // For job finder login, let the calling screen handle navigation
+          Logger().d(
+              'JOB_SEEKER login successful, letting calling screen handle navigation');
+          showTopMessage(context, 'Login successful!', isSuccess: true);
+          // Don't navigate automatically - let the JobFinderLoginPage handle it
+        } else {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const Navigation()),
+              (route) => false);
+        }
       }
 
       showTopMessage(
@@ -227,7 +348,29 @@ class AuthenticationProvider with ChangeNotifier {
             key: "customer", value: jsonEncode(response.data['customer']));
         await Provider.of<UserProvider>(context, listen: false).loadUser();
         if (fromAnotherPage) {
-          Navigator.of(context).pop();
+          // Check if there's a pending booking context
+          if (_pendingBookingContext != null &&
+              _pendingBookingContext!['technician'] != null &&
+              _pendingBookingContext!['service'] != null) {
+            try {
+              final technician =
+                  _pendingBookingContext!['technician'] as Technician;
+              final service = _pendingBookingContext!['service'] as Service;
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (context) => BookingPage(
+                          technician: technician, service: service)),
+                  (route) => false);
+              clearPendingBookingContext();
+            } catch (e) {
+              // If casting fails, navigate to home page
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  RouteGenerator.homePage, (route) => false);
+              clearPendingBookingContext();
+            }
+          } else {
+            Navigator.of(context).pop();
+          }
         } else {
           Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => const Navigation()),
@@ -272,7 +415,8 @@ class AuthenticationProvider with ChangeNotifier {
                 builder: (context) => const VerificationWaitPage()),
             (route) => false);
       }
-      saveUserStatus(UserStatus.TOKEN_ENTRY);
+      // saveUserStatus(UserStatus.TOKEN_ENTRY);
+      saveUserStatus(UserStatus.TECHNICIAN);
       _isLoading = false;
       showTopMessage(context, 'Registered successfully');
       notifyListeners();

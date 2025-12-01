@@ -32,12 +32,12 @@ class _NavigationState extends State<Navigation> {
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
       PersistentBottomNavBarItem(
-        icon: const Icon(Icons.construction, size: 24),
-        title: AppLocalizations.of(context)!.services,
-        activeColorPrimary: Colors.blue,
+        icon: const Icon(Icons.home, size: 24),
+        // title: AppLocalizations.of(context)!.services, will come back to u later
+        title: 'Home',
+        activeColorPrimary: Theme.of(context).secondaryHeaderColor,
         inactiveColorPrimary: Colors.grey[800],
       ),
-
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.more_horiz, size: 24),
         title: AppLocalizations.of(context)!.seeMore,
